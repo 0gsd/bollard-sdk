@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# A routine that touches the four hooks the other two examples leave alone.
+name: tour_guide
+version: 0.1.0
+author: Pop Boll examples
+api: 1
+description: >
+  Doubles the last note of every take an octave up, adds one overdub note to the first locked
+  part, records how many notes it saw, and puts a title card at the front of the film.
+hooks:
+  - on_part_candidate
+  - on_overdub
+  - on_export
+  - on_drama
+order: 200
+limits:
+  max_ms_per_call: 50
+  max_added_shots: 1

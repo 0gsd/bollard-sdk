@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "9001-PLACEHOLDERS",
+  "number": 9001,
+  "slug": "PLACEHOLDERS",
+  "name": "The Placeholders: Collected Examples",
+  "artist": "The Placeholders",
+  "display_label": "9001-PLACEHOLDERS",
+  "form_cap": {
+    "max_song_sec": 136.0,
+    "not_longer_than": "9002-OTHERS",
+    "reason": "An example rule."
+  }
+}

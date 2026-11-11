@@ -1,0 +1,9 @@
+{
+  "name": "ab",
+  "version": "1",
+  "author": "x",
+  "hooks": [
+    "on_plan",
+    "on_export"
+  ]
+}

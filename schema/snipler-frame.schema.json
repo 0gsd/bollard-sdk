@@ -1,0 +1,513 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/snipler-frame.schema.json",
+  "title": "Glass Snipler frame",
+  "description": "The whole display state the Glass Snipler sends a renderer: frame envelope version 1 (\"v\": 1), as the public PWHAMSS page (version 0.0.2-draft) describes it. A speculative draft: written from that page alone and not checked against an engine. New optional members may appear within version 1, so unknown members are valid. The workshop's guts, text and picker objects are not described on the page and are left open.",
+  "type": "object",
+  "required": [
+    "v",
+    "t_ms",
+    "mode",
+    "keys",
+    "side",
+    "knobs",
+    "workshop",
+    "matrix"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "t_ms": {
+      "type": "integer"
+    },
+    "mode": {
+      "enum": [
+        "K",
+        "P",
+        "S",
+        "A"
+      ]
+    },
+    "layer": {
+      "type": "string"
+    },
+    "layer_held": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string"
+    },
+    "keys": {
+      "description": "The 48 keys, in device order.",
+      "type": "array",
+      "minItems": 48,
+      "maxItems": 48,
+      "items": {
+        "$ref": "#/$defs/card"
+      }
+    },
+    "side": {
+      "description": "The 6 side keys, in device order.",
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/card"
+      }
+    },
+    "knobs": {
+      "description": "The 4 knobs, in the order S, M, L, H.",
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/knob"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "S"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/knob"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "M"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/knob"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "L"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/knob"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "H"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "workshop": {
+      "$ref": "#/$defs/workshop"
+    },
+    "matrix": {
+      "$ref": "#/$defs/matrix"
+    },
+    "selection": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "held": {
+      "type": "array"
+    }
+  },
+  "$defs": {
+    "card": {
+      "description": "One key's underlay. A renderer draws it from these members alone.",
+      "type": "object",
+      "required": [
+        "glyph",
+        "sub",
+        "label",
+        "tint",
+        "field",
+        "band",
+        "state",
+        "marks"
+      ],
+      "properties": {
+        "glyph": {
+          "type": "string"
+        },
+        "sub": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "field": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "band": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "state": {
+          "enum": [
+            "idle",
+            "selected",
+            "held",
+            "pressed",
+            "dim",
+            "empty",
+            "armed",
+            "active"
+          ]
+        },
+        "stamp": {
+          "description": "Four glyph names, or null for none.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "marks": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "agi",
+              "lock",
+              "draft",
+              "ear",
+              "now"
+            ]
+          }
+        }
+      }
+    },
+    "knob": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "S",
+            "M",
+            "L",
+            "H"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "display": {
+          "type": "string"
+        }
+      }
+    },
+    "workshop": {
+      "type": "object",
+      "required": [
+        "view"
+      ],
+      "properties": {
+        "view": {
+          "enum": [
+            "board",
+            "guts",
+            "keymap",
+            "text",
+            "picker"
+          ]
+        },
+        "bpm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "key": {
+          "type": "string"
+        },
+        "easy": {
+          "type": "boolean"
+        },
+        "transport": {
+          "$ref": "#/$defs/transport"
+        },
+        "lanes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/lane"
+          }
+        },
+        "guts": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "text": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "picker": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "band": {
+          "type": "object",
+          "properties": {
+            "listening": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "log": {
+              "type": "array"
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "view"
+            ],
+            "properties": {
+              "view": {
+                "const": "guts"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "guts"
+            ],
+            "properties": {
+              "guts": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "view"
+            ],
+            "properties": {
+              "view": {
+                "const": "text"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "view"
+            ],
+            "properties": {
+              "view": {
+                "const": "picker"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "picker"
+            ],
+            "properties": {
+              "picker": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "transport": {
+      "type": "object",
+      "properties": {
+        "playing": {
+          "type": "boolean"
+        },
+        "recording": {
+          "type": "boolean"
+        },
+        "playhead_beat": {
+          "type": "number"
+        },
+        "loop": {
+          "description": "Start and end, in bars.",
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number"
+          }
+        },
+        "bars": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cue": {
+          "type": "boolean"
+        }
+      }
+    },
+    "lane": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "sniplet",
+            "riff",
+            "loop",
+            "beat",
+            "macro"
+          ]
+        },
+        "bars": {
+          "type": "number",
+          "minimum": 0
+        },
+        "native_bpm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "gain": {
+          "type": "number",
+          "minimum": 0
+        },
+        "mute": {
+          "type": "boolean"
+        },
+        "solo": {
+          "type": "boolean"
+        },
+        "cue": {
+          "type": "boolean"
+        },
+        "stamp": {
+          "description": "Four glyph names, or null for none.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "fit": {
+          "type": "string"
+        },
+        "repeats": {
+          "type": "number",
+          "minimum": 0
+        },
+        "enter_bar": {
+          "type": "number"
+        },
+        "preview": {
+          "type": "array"
+        }
+      }
+    },
+    "matrix": {
+      "description": "The LED matrix: 26 by 16 pixels, six hex digits each, row by row from the top left.",
+      "type": "object",
+      "required": [
+        "w",
+        "h",
+        "rgb"
+      ],
+      "properties": {
+        "w": {
+          "const": 26
+        },
+        "h": {
+          "const": 16
+        },
+        "rgb": {
+          "type": "string",
+          "pattern": "^[0-9A-Fa-f]{2496}$"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+name: judge_heckler
+version: 0.1.0
+author: Pop Boll examples
+api: 1
+description: >
+  Heckles from the back of the room: whenever J2 (Melodic Hook) scores a take below 0.6 it
+  adds a MORE_HOOK directive for the next take. It never changes a score or a vote.
+hooks: [on_verdict]
+limits:
+  max_ms_per_call: 20
+  max_directives_per_verdict: 1

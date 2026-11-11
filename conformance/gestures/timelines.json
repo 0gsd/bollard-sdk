@@ -1,0 +1,418 @@
+{
+  "version": 1,
+  "about": "Behaviour vectors for the gesture engine (python: bollardeck.device.gestures, js: bollardeck.gestures). Each vector makes a fresh engine from \"config\" and feeds it \"events\" in order. An event is a button edge (down, up or cancel, with a button), a tick, a key event (edge \"key\": \"key\" holds a device key event, and t_ms is when it is read, passed as now_ms) or a change of combos (edge \"combos\", with \"combos\"), at t_ms. \"emits\" lists the gestures that very call must return, in order, each with the time it became certain; an emitted gesture may also state \"hold_ms\", how long its press lasted, which must then match. An event with no \"emits\" must return none. \"raises\": true means the call must fail and the vector ends there. Every timeline is made up.",
+  "vectors": [
+    {"name": "tap-on-a-button-without-combos", "about": "Button 2 has no combos: its tap is reported at the release.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": [{"gesture": "tap2", "t_ms": 100}]}
+      ]},
+    {"name": "lone-tap-waits-for-its-window", "about": "Button 1 has a triple tap, so one tap is reported when its follow window has closed, stamped with the end of the window. A call at exactly that time does not report it yet.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 600, "edge": "tick", "emits": []},
+        {"t_ms": 601, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 600}]}
+      ]},
+    {"name": "triple-tap", "about": "Three chained taps are one gesture, reported at the third release. The single taps are never reported.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 300, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 400, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 700, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 800, "edge": "up", "button": 1, "emits": [{"gesture": "tap1x3", "t_ms": 800}]},
+        {"t_ms": 5000, "edge": "tick", "emits": []}
+      ]},
+    {"name": "two-taps-time-out", "about": "Two taps on a button whose only combo is a triple: two single taps when the window closes.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 801, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 800}, {"gesture": "tap1", "t_ms": 800}]}
+      ]},
+    {"name": "press-at-the-end-of-the-window-chains", "about": "A press that begins exactly tap_follow_ms after the last release still chains.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 600, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 700, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 1300, "edge": "up", "button": 1, "emits": [{"gesture": "tap1x3", "t_ms": 1300}]}
+      ]},
+    {"name": "press-one-ms-late-does-not-chain", "about": "One millisecond later the window has closed: the first tap is reported (by the press that came too late) and a new chain starts.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 601, "edge": "down", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 600}]},
+        {"t_ms": 700, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1201, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1200}]}
+      ]},
+    {"name": "hold-fires-while-down", "about": "A hold is reported when the press has lasted hold_ms, not at the release.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 799, "edge": "tick", "emits": []},
+        {"t_ms": 800, "edge": "tick", "emits": [{"gesture": "hold3", "t_ms": 800}]},
+        {"t_ms": 1500, "edge": "up", "button": 3, "emits": []}
+      ]},
+    {"name": "hold-seen-at-the-release", "about": "With no tick in between, the release reports the hold, stamped with the moment it became one.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 900, "edge": "up", "button": 3, "emits": [{"gesture": "hold3", "t_ms": 800}]}
+      ]},
+    {"name": "release-at-exactly-hold-ms-is-a-hold", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 800, "edge": "up", "button": 2, "emits": [{"gesture": "hold2", "t_ms": 800}]}
+      ]},
+    {"name": "release-one-ms-sooner-is-a-tap", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 799, "edge": "up", "button": 2, "emits": [{"gesture": "tap2", "t_ms": 799}]}
+      ]},
+    {"name": "hold-flushes-pending-taps-first", "about": "A hold is never part of a chain: the pending tap is reported first, at the moment of the hold, then the hold.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 300, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 1100, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1100}, {"gesture": "hold1", "t_ms": 1100}]},
+        {"t_ms": 1200, "edge": "up", "button": 1, "emits": []}
+      ]},
+    {"name": "another-button-cuts-a-chain", "about": "Pressing another button ends the chain at that press. Button 2 then reports its own tap at once.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 400, "edge": "down", "button": 2, "emits": [{"gesture": "tap1", "t_ms": 400}, {"gesture": "tap1", "t_ms": 400}]},
+        {"t_ms": 450, "edge": "up", "button": 2, "emits": [{"gesture": "tap2", "t_ms": 450}]}
+      ]},
+    {"name": "another-combo-button-cuts-a-chain", "about": "Button 3 has combos too: it cuts button 1's chain and starts its own.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 3, "emits": [{"gesture": "tap1", "t_ms": 200}]},
+        {"t_ms": 300, "edge": "up", "button": 3, "emits": []},
+        {"t_ms": 801, "edge": "tick", "emits": [{"gesture": "tap3", "t_ms": 800}]}
+      ]},
+    {"name": "tick-while-a-chaining-press-is-down", "about": "The second press began inside the window and is still down when a tick arrives after the window's end. The window is not closed by the clock while the press that continues the chain is down.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 550, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 620, "edge": "tick", "emits": []},
+        {"t_ms": 650, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 700, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 750, "edge": "up", "button": 1, "emits": [{"gesture": "tap1x3", "t_ms": 750}]}
+      ]},
+    {"name": "fourth-tap-starts-a-new-chain", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 50, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 150, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 250, "edge": "up", "button": 1, "emits": [{"gesture": "tap1x3", "t_ms": 250}]},
+        {"t_ms": 300, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 350, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 851, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 850}]}
+      ]},
+    {"name": "cancel-is-not-a-tap", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "cancel", "button": 2, "emits": []},
+        {"t_ms": 2000, "edge": "tick", "emits": []}
+      ]},
+    {"name": "cancel-restarts-the-window", "about": "A cancelled press that had continued a chain: the chain's window starts again at the cancel.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 400, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 550, "edge": "cancel", "button": 1, "emits": []},
+        {"t_ms": 1050, "edge": "tick", "emits": []},
+        {"t_ms": 1051, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1050}]}
+      ]},
+    {"name": "chain-survives-a-cancelled-press", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 400, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 550, "edge": "cancel", "button": 1, "emits": []},
+        {"t_ms": 900, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 1000, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1100, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 1200, "edge": "up", "button": 1, "emits": [{"gesture": "tap1x3", "t_ms": 1200}]}
+      ]},
+    {"name": "cancel-after-a-hold", "about": "The hold was already reported; the cancel adds nothing.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 800, "edge": "tick", "emits": [{"gesture": "hold3", "t_ms": 800}]},
+        {"t_ms": 900, "edge": "cancel", "button": 3, "emits": []},
+        {"t_ms": 3000, "edge": "tick", "emits": []}
+      ]},
+    {"name": "tap-after-a-hold", "about": "A hold leaves no chain behind.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 800, "edge": "tick", "emits": [{"gesture": "hold1", "t_ms": 800}]},
+        {"t_ms": 900, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1000, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 1100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1601, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1600}]}
+      ]},
+    {"name": "window-closes-then-hold", "about": "The window closed before the second press began, so the tap is reported by that press; the press then becomes a hold.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 700, "edge": "down", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 600}]},
+        {"t_ms": 1500, "edge": "tick", "emits": [{"gesture": "hold1", "t_ms": 1500}]},
+        {"t_ms": 1600, "edge": "up", "button": 1, "emits": []}
+      ]},
+    {"name": "overlapping-presses", "about": "Button 2 is down while button 1 is tapped. Button 2's release is a tap with no combos: it ends button 1's chain first.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 50, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 150, "edge": "up", "button": 2, "emits": [{"gesture": "tap1", "t_ms": 150}, {"gesture": "tap2", "t_ms": 150}]}
+      ]},
+    {"name": "window-closes-during-another-press", "about": "Things the clock decides are reported oldest first: button 1's window closed at 700, button 2 became a hold at 800.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 800, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 700}, {"gesture": "hold2", "t_ms": 800}]},
+        {"t_ms": 900, "edge": "up", "button": 2, "emits": []}
+      ]},
+    {"name": "two-holds", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 1000, "edge": "tick", "emits": [{"gesture": "hold1", "t_ms": 800}, {"gesture": "hold3", "t_ms": 900}]},
+        {"t_ms": 1100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1100, "edge": "up", "button": 3, "emits": []}
+      ]},
+    {"name": "repeated-edges-are-ignored", "about": "A down for a button that is down, and an up for one that is not, change nothing.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 50, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": [{"gesture": "tap2", "t_ms": 100}]},
+        {"t_ms": 150, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 160, "edge": "cancel", "button": 2, "emits": []}
+      ]},
+    {"name": "time-must-not-run-backwards", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 100, "edge": "tick", "emits": []},
+        {"t_ms": 50, "edge": "tick", "raises": true}
+      ]},
+    {"name": "button-4-is-refused", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 4, "raises": true}
+      ]},
+    {"name": "double-tap", "about": "Button 2 has a double and a triple: two taps wait for a third, then report a double.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"2": [2, 3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 800, "edge": "tick", "emits": []},
+        {"t_ms": 801, "edge": "tick", "emits": [{"gesture": "tap2x2", "t_ms": 800}]}
+      ]},
+    {"name": "double-grows-into-triple", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"2": [2, 3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 400, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 500, "edge": "up", "button": 2, "emits": [{"gesture": "tap2x3", "t_ms": 500}]}
+      ]},
+    {"name": "single-tap-on-a-double-button", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"2": [2, 3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 601, "edge": "tick", "emits": [{"gesture": "tap2", "t_ms": 600}]}
+      ]},
+    {"name": "double-cut-by-another-button", "about": "A chain that is cut is reported as its combo when its length is one.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"2": [2, 3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 350, "edge": "down", "button": 1, "emits": [{"gesture": "tap2x2", "t_ms": 350}]},
+        {"t_ms": 400, "edge": "up", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 400}]}
+      ]},
+    {"name": "double-flushed-by-a-hold", "about": "", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"2": [2, 3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 400, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 1200, "edge": "tick", "emits": [{"gesture": "tap2x2", "t_ms": 1200}, {"gesture": "hold2", "t_ms": 1200}]},
+        {"t_ms": 1300, "edge": "up", "button": 2, "emits": []}
+      ]},
+    {"name": "double-is-the-longest-combo", "about": "When the longest combo is a double, the second tap reports it at once.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [2]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 1, "emits": [{"gesture": "tap1x2", "t_ms": 300}]},
+        {"t_ms": 400, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 500, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1001, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1000}]}
+      ]},
+    {"name": "no-combos-no-delay", "about": "With no combos anywhere, every tap is reported at its release however fast they come.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 50, "edge": "up", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 50}]},
+        {"t_ms": 100, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 150, "edge": "up", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 150}]},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 250, "edge": "up", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 250}]}
+      ]},
+    {"name": "other-timings", "about": "hold_ms 300 and tap_follow_ms 200.", "config": {"hold_ms": 300, "tap_follow_ms": 200, "combos": {"3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 299, "edge": "up", "button": 3, "emits": []},
+        {"t_ms": 499, "edge": "tick", "emits": []},
+        {"t_ms": 500, "edge": "tick", "emits": [{"gesture": "tap3", "t_ms": 499}]},
+        {"t_ms": 600, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 899, "edge": "tick", "emits": []},
+        {"t_ms": 900, "edge": "tick", "emits": [{"gesture": "hold3", "t_ms": 900}]},
+        {"t_ms": 950, "edge": "up", "button": 3, "emits": []}
+      ]},
+    {"name": "key-complete-presses-chain", "about": "Key events as a device's key source sends them: three complete presses, each read at its release, make a triple tap. An emitted gesture may state hold_ms, how long its press lasted; for a chain that is its last tap.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 3, "down": 0, "hold_ms": 90, "t_ms": 100}, "emits": []},
+        {"t_ms": 400, "edge": "key", "key": {"t": "key", "i": 3, "down": 0, "hold_ms": 80, "t_ms": 400}, "emits": []},
+        {"t_ms": 700, "edge": "key", "key": {"t": "key", "i": 3, "down": 0, "hold_ms": 85, "t_ms": 700}, "emits": [{"gesture": "tap3x3", "t_ms": 700, "hold_ms": 85}]}
+      ]},
+    {"name": "key-late-release-stays-a-tap", "about": "A press beginning is a hint, never a gesture. Button 2's press begins at 1000 and its release line (120 ms long) is not read until 2500, after ticks that ran well past hold_ms: it is still a tap, placed at began + hold_ms.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 1500, "edge": "tick", "emits": []},
+        {"t_ms": 1800, "edge": "tick", "emits": []},
+        {"t_ms": 2400, "edge": "tick", "emits": []},
+        {"t_ms": 2500, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 120, "t_ms": null}, "emits": [{"gesture": "tap2", "t_ms": 1120, "hold_ms": 120}]}
+      ]},
+    {"name": "key-late-release-with-a-stated-time-stays-a-tap", "about": "The same when the late release line carries a release time of its own: the hold_ms it states decides, not when it is read.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 2400, "edge": "tick", "emits": []},
+        {"t_ms": 2500, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 150, "t_ms": 1150}, "emits": []},
+        {"t_ms": 2600, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1650, "hold_ms": 150}]}
+      ]},
+    {"name": "key-lost-release", "about": "A press beginning whose release never comes is a lost press. It yields nothing, however long the engine waits, and the next press on that button is a tap of its own.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 300, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 300}, "emits": []},
+        {"t_ms": 1100, "edge": "tick", "emits": []},
+        {"t_ms": 1101, "edge": "tick", "emits": []},
+        {"t_ms": 4000, "edge": "tick", "emits": []},
+        {"t_ms": 9000, "edge": "tick", "emits": []},
+        {"t_ms": 9500, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 100, "t_ms": 9500}, "emits": [{"gesture": "tap2", "t_ms": 9500, "hold_ms": 100}]},
+        {"t_ms": 20000, "edge": "tick", "emits": []}
+      ]},
+    {"name": "key-lost-release-does-not-swallow-the-next-tap", "about": "The lost press was on a button with a triple tap, with a tap pending. The pending tap is held back only until the lost press could no longer be a tap (began + hold_ms), then reported with the end of its own window. A later press whose beginning was not announced is placed by its own times.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 100}, "emits": []},
+        {"t_ms": 300, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 300}, "emits": []},
+        {"t_ms": 700, "edge": "tick", "emits": []},
+        {"t_ms": 1099, "edge": "tick", "emits": []},
+        {"t_ms": 1100, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 600, "hold_ms": 100}]},
+        {"t_ms": 6000, "edge": "tick", "emits": []},
+        {"t_ms": 7000, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 90, "t_ms": 7000}, "emits": []},
+        {"t_ms": 7501, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 7500, "hold_ms": 90}]}
+      ]},
+    {"name": "key-poll-during-a-held-press-keeps-the-triple-tap", "about": "Presses at 0 to 100, 550 to 650 and 700 to 750, and a poll at 620 while the second press is still held. The press beginning at 550 fell inside the first tap's window, so the poll does not report that tap as a single.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 0}, "emits": []},
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 100}, "emits": []},
+        {"t_ms": 550, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 550}, "emits": []},
+        {"t_ms": 620, "edge": "tick", "emits": []},
+        {"t_ms": 650, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 650}, "emits": []},
+        {"t_ms": 700, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 700}, "emits": []},
+        {"t_ms": 750, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 50, "t_ms": 750}, "emits": [{"gesture": "tap1x3", "t_ms": 750, "hold_ms": 50}]},
+        {"t_ms": 5000, "edge": "tick", "emits": []}
+      ]},
+    {"name": "key-poll-without-the-hint-breaks-the-chain", "about": "The same presses from a key source that sends only complete presses: the poll at 620 has already reported the first tap. This is the limit a press beginning removes.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 100}, "emits": []},
+        {"t_ms": 620, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 600, "hold_ms": 100}]},
+        {"t_ms": 650, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 650}, "emits": []},
+        {"t_ms": 750, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 50, "t_ms": 750}, "emits": []},
+        {"t_ms": 2000, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1250, "hold_ms": 100}, {"gesture": "tap1", "t_ms": 1250, "hold_ms": 50}]}
+      ]},
+    {"name": "key-a-press-that-begins-after-the-window-does-not-hold-it", "about": "A press beginning later than the pending tap's window end does not hold the window open.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 100}, "emits": []},
+        {"t_ms": 601, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 601}, "emits": []},
+        {"t_ms": 650, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 600, "hold_ms": 100}]},
+        {"t_ms": 700, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 99, "t_ms": 700}, "emits": []},
+        {"t_ms": 1201, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1200, "hold_ms": 99}]}
+      ]},
+    {"name": "key-real-hold", "about": "A hold that arrives as key events is a hold by the hold_ms its release states. It is reported when the release is read, stamped hold_ms after it began, and carries the whole press as hold_ms. Ticks while it is down report nothing.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 3, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 1800, "edge": "tick", "emits": []},
+        {"t_ms": 2100, "edge": "tick", "emits": []},
+        {"t_ms": 2200, "edge": "key", "key": {"t": "key", "i": 3, "down": 0, "hold_ms": 1200, "t_ms": 2200}, "emits": [{"gesture": "hold3", "t_ms": 1800, "hold_ms": 1200}]}
+      ]},
+    {"name": "key-hold-ends-a-pending-chain", "about": "Two taps pending on button 1, then a long press of button 1: the taps are reported as singles at the moment the press became a hold, ahead of it.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 100}, "emits": []},
+        {"t_ms": 400, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 60, "t_ms": 400}, "emits": []},
+        {"t_ms": 500, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 500}, "emits": []},
+        {"t_ms": 1500, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 1000, "t_ms": 1500}, "emits": [{"gesture": "tap1", "t_ms": 1300, "hold_ms": 100}, {"gesture": "tap1", "t_ms": 1300, "hold_ms": 60}, {"gesture": "hold1", "t_ms": 1300, "hold_ms": 1000}]}
+      ]},
+    {"name": "key-release-without-hold-ms", "about": "A release that states no hold_ms is measured from its announced beginning.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 1090, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "t_ms": 1090}, "emits": [{"gesture": "tap2", "t_ms": 1090, "hold_ms": 90}]}
+      ]},
+    {"name": "key-event-without-a-time-is-read-now", "about": "A key event with t_ms null happened when it was read.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 400, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 50, "t_ms": null}, "emits": [{"gesture": "tap2", "t_ms": 400, "hold_ms": 50}]}
+      ]},
+    {"name": "edge-gestures-state-hold-ms", "about": "From edges: a tap carries release minus press; a hold that fires while the button is down carries the engine's hold_ms; singles flushed from a chain carry each tap's own.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 70, "edge": "up", "button": 2, "emits": [{"gesture": "tap2", "t_ms": 70, "hold_ms": 70}]},
+        {"t_ms": 100, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 140, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 290, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 1000, "edge": "down", "button": 3, "emits": [{"gesture": "tap1", "t_ms": 790, "hold_ms": 40}, {"gesture": "tap1", "t_ms": 790, "hold_ms": 90}]},
+        {"t_ms": 1900, "edge": "tick", "emits": [{"gesture": "hold3", "t_ms": 1800, "hold_ms": 800}]}
+      ]},
+    {"name": "combos-set-while-a-tap-is-pending", "about": "An event with edge combos replaces the engine's combos while it runs. Button 1 loses its triple tap with one tap pending and its window still open: the next call reports the tap, stamped with that call's time or the end of the window, whichever is earlier.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 150, "edge": "combos", "combos": {"3": [3]}, "emits": []},
+        {"t_ms": 200, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 200, "hold_ms": 100}]},
+        {"t_ms": 300, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 350, "edge": "up", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 350, "hold_ms": 50}]}
+      ]},
+    {"name": "combos-set-while-a-press-is-in-flight", "about": "Button 2 gains a double tap while it is down: the press is not dropped, and its release starts a chain.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 50, "edge": "combos", "combos": {"1": [3], "2": [2], "3": [3]}, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 2, "emits": []},
+        {"t_ms": 300, "edge": "down", "button": 2, "emits": []},
+        {"t_ms": 380, "edge": "up", "button": 2, "emits": [{"gesture": "tap2x2", "t_ms": 380, "hold_ms": 80}]}
+      ]},
+    {"name": "combos-shortened-under-a-pending-chain", "about": "Two taps pending on button 1 when its longest combo becomes a double: the chain is as long as it can get, so the next call reports it as tap1x2.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 300, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 350, "edge": "combos", "combos": {"1": [2]}, "emits": []},
+        {"t_ms": 2000, "edge": "tick", "emits": [{"gesture": "tap1x2", "t_ms": 800, "hold_ms": 100}]}
+      ]},
+    {"name": "key-release-that-does-not-match-its-hint", "about": "Button 1's press is announced at 0 and its release is lost. A release read at 3100 states its own time and length: the press it describes began at 3000, not at 0, so the hint is dropped and the press is placed by its own times. The triple tap that follows is whole.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 0}, "emits": []},
+        {"t_ms": 1000, "edge": "tick", "emits": []},
+        {"t_ms": 3100, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 3100}, "emits": []},
+        {"t_ms": 3300, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 3300}, "emits": []},
+        {"t_ms": 3500, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 3500}, "emits": [{"gesture": "tap1x3", "t_ms": 3500, "hold_ms": 100}]},
+        {"t_ms": 9000, "edge": "tick", "emits": []}
+      ]},
+    {"name": "key-release-without-hold-ms-is-never-a-hold-from-the-hint", "about": "A release that states no hold_ms, read 3100 ms after an announcement: measured from the announcement it would be a hold. It is not: the hint is dropped and the press has no length.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 0}, "emits": []},
+        {"t_ms": 1000, "edge": "tick", "emits": []},
+        {"t_ms": 3100, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "t_ms": 3100}, "emits": [{"gesture": "tap2", "t_ms": 3100, "hold_ms": 0}]}
+      ]},
+    {"name": "key-release-near-its-hint-matches", "about": "A stated release whose press began within PRESS_MATCH_MS (100) of the announcement belongs to it and is placed at the announcement (the first press: 60 ms off). One that began 101 ms off does not: it is a press of its own, at its own times.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 1400, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 200, "t_ms": 1260}, "emits": [{"gesture": "tap2", "t_ms": 1200, "hold_ms": 200}]},
+        {"t_ms": 2000, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 2000}, "emits": []},
+        {"t_ms": 2400, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 200, "t_ms": 2301}, "emits": [{"gesture": "tap2", "t_ms": 2301, "hold_ms": 200}]}
+      ]},
+    {"name": "key-an-older-release-keeps-the-hint", "about": "A release that describes a press from before the announcement is an older press: it is placed by its own times and the hint stays for the press still under way, which is then matched by its own release.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 100}, "emits": []},
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 1010, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 50, "t_ms": 700}, "emits": [{"gesture": "tap1", "t_ms": 600, "hold_ms": 100}, {"gesture": "tap2", "t_ms": 700, "hold_ms": 50}]},
+        {"t_ms": 1100, "edge": "tick", "emits": []},
+        {"t_ms": 1300, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 150, "t_ms": 1150}, "emits": [{"gesture": "tap2", "t_ms": 1150, "hold_ms": 150}]}
+      ]},
+    {"name": "key-unstated-release-from-before-the-hint", "about": "The same with releases that state no time: one whose press must have begun before the announcement does not use it.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 2000, "edge": "key", "key": {"t": "key", "i": 2, "down": 1, "t_ms": 2000}, "emits": []},
+        {"t_ms": 2050, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 600, "t_ms": null}, "emits": [{"gesture": "tap2", "t_ms": 2050, "hold_ms": 600}]},
+        {"t_ms": 2300, "edge": "key", "key": {"t": "key", "i": 2, "down": 0, "hold_ms": 120, "t_ms": null}, "emits": [{"gesture": "tap2", "t_ms": 2120, "hold_ms": 120}]}
+      ]},
+    {"name": "key-edge-clears-a-hint", "about": "A real edge is the truth. After down and up for button 1, an earlier announcement for it is gone, so it no longer holds the chain's window open.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 0, "t_ms": 0}, "emits": []},
+        {"t_ms": 100, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 100}, "emits": []},
+        {"t_ms": 200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 250, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 751, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 750, "hold_ms": 0}, {"gesture": "tap1", "t_ms": 750, "hold_ms": 50}]},
+        {"t_ms": 5000, "edge": "tick", "emits": []}
+      ]},
+    {"name": "key-late-event-does-not-rewind-the-window", "about": "One tap is pending, released at 400. A key event read late describes a tap released at 300. It joins the chain, and the window still ends 500 ms after 400.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"3": [3]}}, "events": [
+        {"t_ms": 350, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 400, "edge": "up", "button": 3, "emits": []},
+        {"t_ms": 450, "edge": "tick", "emits": []},
+        {"t_ms": 460, "edge": "key", "key": {"t": "key", "i": 3, "down": 0, "hold_ms": 50, "t_ms": 300}, "emits": []},
+        {"t_ms": 900, "edge": "tick", "emits": []},
+        {"t_ms": 901, "edge": "tick", "emits": [{"gesture": "tap3", "t_ms": 900, "hold_ms": 50}, {"gesture": "tap3", "t_ms": 900, "hold_ms": 50}]}
+      ]},
+    {"name": "key-late-event-completing-a-chain-is-stamped-with-the-last-release", "about": "Two taps are pending, the last released at 400, and a late key event describes a third released at 300: the triple tap is stamped 400, the latest release in it.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 0, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 100, "edge": "up", "button": 3, "emits": []},
+        {"t_ms": 350, "edge": "down", "button": 3, "emits": []},
+        {"t_ms": 400, "edge": "up", "button": 3, "emits": []},
+        {"t_ms": 450, "edge": "tick", "emits": []},
+        {"t_ms": 460, "edge": "key", "key": {"t": "key", "i": 3, "down": 0, "hold_ms": 50, "t_ms": 300}, "emits": [{"gesture": "tap3x3", "t_ms": 400, "hold_ms": 50}]}
+      ]}
+  ]
+}

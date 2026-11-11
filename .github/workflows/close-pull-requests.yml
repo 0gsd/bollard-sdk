@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Pull requests are closed for now (see CONTRIBUTING.md). This closes any that are opened, with a
+# note. It checks out nothing and runs no code from the pull request.
+name: close pull requests
+on:
+  pull_request_target:
+    types: [opened, reopened]
+permissions:
+  pull-requests: write
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr close "$PR_URL" --comment "Thank you for this. The SDK is not taking pull requests yet, because the specifications behind it are still drafts; CONTRIBUTING.md explains. Please open an issue with what you found or wanted, and it will be read."

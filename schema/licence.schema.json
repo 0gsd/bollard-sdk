@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/licence.schema.json",
+  "title": "Corpus licence block",
+  "description": "The licence block of a corpus manifest, corpus.json \"licence\": format popboll.licence/1 (block version 1). It says what the rights holder allowed. A reader that finds a scope it does not know, a version newer than it understands, or a revoked_at or expires_at in the past must treat every capability as off. A capability that is left out takes its scope's default: full turns all eight on; morpus_only turns store_audio, stream_audio, store_art and export_morpus off; public_domain_midi turns transcode, store_audio, stream_audio and store_art off. Members this schema does not name are allowed and must be kept by writers.",
+  "type": "object",
+  "required": [
+    "scope"
+  ],
+  "properties": {
+    "schema": {
+      "description": "The format name. Writers always write it; a reader accepts a block without it.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "const": "popboll.licence/1"
+        }
+      ]
+    },
+    "version": {
+      "description": "The block version. A reader closes every capability on a version it does not know.",
+      "type": "integer",
+      "const": 1
+    },
+    "scope": {
+      "description": "What kind of grant this is.",
+      "enum": [
+        "full",
+        "morpus_only",
+        "public_domain_midi"
+      ]
+    },
+    "transcode": {
+      "description": "Pop Boll may run the recordings through its transcriber.",
+      "type": "boolean"
+    },
+    "store_audio": {
+      "description": "The recordings may be kept.",
+      "type": "boolean"
+    },
+    "stream_audio": {
+      "description": "The recordings may be played to listeners. Needs store_audio.",
+      "type": "boolean"
+    },
+    "store_art": {
+      "description": "Cover art may be kept and shown.",
+      "type": "boolean"
+    },
+    "store_morpus": {
+      "description": "The derived MIDI and notes may be kept.",
+      "type": "boolean"
+    },
+    "musicians_may_study": {
+      "description": "The virtual musicians may learn from the morpus. Needs store_morpus.",
+      "type": "boolean"
+    },
+    "export_morpus": {
+      "description": "People, not only Pop Boll's engines, may download the morpus. Needs store_morpus.",
+      "type": "boolean"
+    },
+    "device_copies": {
+      "description": "What may be stored may also be copied onto Pop Boll devices.",
+      "type": "boolean"
+    },
+    "granted_at": {
+      "description": "When the grant was made.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "const": ""
+        },
+        {
+          "$ref": "#/$defs/time"
+        }
+      ]
+    },
+    "expires_at": {
+      "description": "When the grant lapses. From then on every capability is off.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "const": ""
+        },
+        {
+          "$ref": "#/$defs/time"
+        }
+      ]
+    },
+    "revoked_at": {
+      "description": "When the grant was withdrawn. From then on every capability is off.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "const": ""
+        },
+        {
+          "$ref": "#/$defs/time"
+        }
+      ]
+    },
+    "audio_destroyed_at": {
+      "description": "When the source recordings were last destroyed (morpus_only).",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "const": ""
+        },
+        {
+          "$ref": "#/$defs/time"
+        }
+      ]
+    },
+    "granted_by": {
+      "description": "Who made the grant: free-form members such as legal_name, band, email.",
+      "type": "object"
+    },
+    "upload_id": {
+      "type": "string"
+    },
+    "statements": {
+      "description": "The affirmations the rights holder agreed to, in the order shown.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/statement"
+      }
+    },
+    "statements_sha256": {
+      "description": "SHA-256 over the statements: for each one, in order, the UTF-8 bytes of key, a NUL byte, text and a newline. Hex, lower case.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "shake_version": {
+      "description": "The version of the artist agreement the statements come from. Absent means 1.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "hosting": {
+      "description": "Where the recordings live: sent to Pop Boll, or hosted by the artist.",
+      "enum": [
+        "popboll",
+        "self"
+      ]
+    },
+    "grants": {
+      "description": "Every consent, oldest first. Append only.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/grant"
+      }
+    },
+    "sources": {
+      "description": "One row per upload whose recordings were destroyed.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "Hard limits: these two scopes never keep or play recordings.",
+      "if": {
+        "required": [
+          "scope"
+        ],
+        "properties": {
+          "scope": {
+            "enum": [
+              "morpus_only",
+              "public_domain_midi"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "store_audio": {
+            "const": false
+          },
+          "stream_audio": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "$comment": "stream_audio needs store_audio. Under full both default to on, so switching store_audio off means writing stream_audio off too.",
+      "if": {
+        "required": [
+          "scope",
+          "store_audio"
+        ],
+        "properties": {
+          "scope": {
+            "const": "full"
+          },
+          "store_audio": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "stream_audio"
+        ],
+        "properties": {
+          "stream_audio": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "$comment": "musicians_may_study needs store_morpus, and defaults to on in every scope.",
+      "if": {
+        "required": [
+          "store_morpus"
+        ],
+        "properties": {
+          "store_morpus": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "musicians_may_study"
+        ],
+        "properties": {
+          "musicians_may_study": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "$comment": "export_morpus needs store_morpus, and defaults to on in these two scopes.",
+      "if": {
+        "required": [
+          "scope",
+          "store_morpus"
+        ],
+        "properties": {
+          "scope": {
+            "enum": [
+              "full",
+              "public_domain_midi"
+            ]
+          },
+          "store_morpus": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "export_morpus"
+        ],
+        "properties": {
+          "export_morpus": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "$comment": "export_morpus needs store_morpus; under morpus_only it defaults to off already.",
+      "if": {
+        "required": [
+          "scope",
+          "store_morpus"
+        ],
+        "properties": {
+          "scope": {
+            "const": "morpus_only"
+          },
+          "store_morpus": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "export_morpus": {
+            "const": false
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "time": {
+      "description": "A UTC time, YYYY-MM-DDTHH:MM:SS with optional fraction and optional Z, or a date alone (read as midnight UTC). No UTC offsets.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])(T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?Z?)?$"
+    },
+    "statement": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "properties": {
+        "upload_id": {
+          "type": "string"
+        },
+        "kind": {
+          "description": "new or addition.",
+          "type": "string"
+        },
+        "at": {
+          "type": "string"
+        },
+        "statements_sha256": {
+          "type": "string"
+        },
+        "shake_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "upload_id": {
+          "type": "string"
+        },
+        "zip_sha256": {
+          "type": "string"
+        },
+        "zip_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "file_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "files_sha256": {
+          "type": "string"
+        },
+        "audio_destroyed_at": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

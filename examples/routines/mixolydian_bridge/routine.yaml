@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# A bollardeck routine. Its "bollawax file" is this folder, or a zip of it.
+name: mixolydian_bridge
+version: 0.1.0
+author: Pop Boll examples
+api: 1
+description: >
+  Every Bridge plays the factory's Mixolydian jam cell (I - bVII - IV - I) instead of the
+  progression the planning summit picked. Nothing else about the plan changes.
+hooks: [on_plan]
+limits:
+  max_ms_per_call: 20

@@ -1,0 +1,22 @@
+[
+  {
+    "button": 1,
+    "state": "on",
+    "role": null
+  },
+  {
+    "button": 2,
+    "state": "on",
+    "role": null
+  },
+  {
+    "button": 3,
+    "state": "on",
+    "role": null
+  },
+  {
+    "button": 1,
+    "state": "off",
+    "role": null
+  }
+]

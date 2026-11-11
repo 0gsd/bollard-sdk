@@ -1,0 +1,16 @@
+{
+  "name": "example_echo",
+  "version": "0.1.0",
+  "author": "An Example Author",
+  "api": 1,
+  "description": "Logs every verdict. Changes nothing.",
+  "hooks": [
+    "on_verdict"
+  ],
+  "order": 100,
+  "limits": {
+    "max_ms_per_call": 20,
+    "max_log_lines": 5
+  },
+  "homepage": "https://example.org/echo"
+}

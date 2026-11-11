@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/cue.schema.json",
+  "title": "Button cue list",
+  "description": "What should be lit for each of the device's three buttons, as the hardware abstraction's Cues.set() takes it (cue model 1, Bollawax 0.2.x). A button is its number, 1 to 3. A valid list has at most one cue per button: a schema cannot say that, so a reader checks it as well and reports a second cue for a button at its \"button\" member, under the name one-per-button. The order of the list means nothing; a normaliser writes button order. A button with no cue is not driven. A reader that must not stop for a bad list (a light loop) normalises instead of refusing, and then keeps the last of two cues for one button. The bollardeck/1 wire names the buttons inner, middle and outer under the key \"btn\", and keeps those words for as long as it is bollardeck/1 (spec/bollardeck.md, 6.2; constants/constants.json, BUTTONS); that form is not this one, and bollardeck.device.cues.to_wire and from_wire translate between the two.",
+  "type": "array",
+  "maxItems": 3,
+  "items": {
+    "$ref": "#/$defs/cue"
+  },
+  "$defs": {
+    "cue": {
+      "type": "object",
+      "required": [
+        "button",
+        "state",
+        "role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "button": {
+          "description": "1 inner (play/pause), 2 middle (online/upload), 3 outer (power).",
+          "type": "integer",
+          "enum": [
+            1,
+            2,
+            3
+          ]
+        },
+        "state": {
+          "description": "pulse breathes at 2 Hz; chase turns once a second.",
+          "enum": [
+            "off",
+            "on",
+            "pulse",
+            "chase"
+          ]
+        },
+        "role": {
+          "description": "What the light stands for; null when it stands for nothing.",
+          "enum": [
+            "a",
+            "b",
+            "c",
+            "live",
+            "go",
+            "warn",
+            null
+          ]
+        }
+      },
+      "if": {
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "const": "off"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "role": {
+            "const": null
+          }
+        }
+      }
+    }
+  }
+}

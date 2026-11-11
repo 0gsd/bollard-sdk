@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bollard-sdk"
+description = "The Bollawax Bollard SDK: build on the Pop Boll platform"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Graham Smith (Pop Boll)" }]
+dynamic = ["version"]
+dependencies = []
+
+[project.urls]
+Homepage = "https://popboll.com/sdk"
+Specification = "https://popboll.com/spec"
+
+[tool.setuptools]
+package-dir = { "" = "python" }
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.setuptools.dynamic]
+version = { attr = "bollardeck._version.__version__" }

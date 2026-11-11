@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/corpus-manifest.schema.json",
+  "title": "Corpus manifest (corpus.json)",
+  "description": "The manifest at the root of a corpus, corpus.json, schema_version 1. It names the corpus, carries its licence block (popboll.licence/1) and its settings: who may see it (visibility, owner_email, access), how long its songs may run (form_cap, form_stats), and where its attested edition is held (attestation). Members this schema does not name are allowed and must be kept by writers.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "number",
+    "slug",
+    "name",
+    "artist",
+    "display_label"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "description": "NNNN-SLUG: the corpus number, four digits, then its slug.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[A-Za-z0-9_]+$"
+    },
+    "number": {
+      "description": "The number in the id.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "slug": {
+      "description": "The slug in the id.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artist": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_label": {
+      "description": "What a small screen shows for this corpus.",
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "source_track_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "morpus_track_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "art": {
+      "description": "Cover art file names, relative to the corpus root.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "license_note": {
+      "description": "A notice to show with the corpus. Free text; not the licence block.",
+      "type": "string"
+    },
+    "consent": {
+      "type": "boolean"
+    },
+    "edition": {
+      "description": "The edition label to show.",
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "pack": {
+      "type": "boolean"
+    },
+    "audio_format": {
+      "description": "\"wbol/1\" once the recordings are packed.",
+      "type": "string"
+    },
+    "licence": {
+      "description": "The licence block. A manifest where it is absent or null has no licence: readers refuse every capability (reason licence_missing) and only say that the corpus is there.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "licence.schema.json"
+        }
+      ]
+    },
+    "license": {
+      "description": "Read as the licence block only when it is an object and there is no \"licence\" member. Writers never write it.",
+      "anyOf": [
+        {
+          "not": {
+            "type": "object"
+          }
+        },
+        {
+          "$ref": "licence.schema.json"
+        }
+      ]
+    },
+    "visibility": {
+      "description": "Who the hub lists the corpus for. Absent means public.",
+      "enum": [
+        "public",
+        "private"
+      ]
+    },
+    "owner_email": {
+      "description": "The owner's address, lower case. Empty when there is none.",
+      "type": "string"
+    },
+    "access": {
+      "description": "Addresses, besides the owner's, that may see a private corpus.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "form_cap": {
+      "$ref": "#/$defs/form_cap"
+    },
+    "form_stats": {
+      "$ref": "#/$defs/form_stats"
+    },
+    "attestation": {
+      "$ref": "#/$defs/attestation"
+    },
+    "midi_sources": {
+      "description": "Where each file of a MIDI-native corpus came from.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/midi_source"
+      }
+    },
+    "midi_source_licences": {
+      "description": "How many files carry each source licence kind.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    }
+  },
+  "$defs": {
+    "form_cap": {
+      "description": "An explicit cap on song length. Optional; no cap when absent.",
+      "type": "object",
+      "properties": {
+        "max_song_sec": {
+          "description": "Songs this corpus inspires never run longer.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "not_longer_than": {
+          "description": "A corpus id: when that corpus is active too, its own target length is the cap.",
+          "type": "string",
+          "pattern": "^[0-9]{4}-[A-Za-z0-9_]+$"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "max_song_sec"
+          ]
+        },
+        {
+          "required": [
+            "not_longer_than"
+          ]
+        }
+      ]
+    },
+    "form_stats": {
+      "description": "Statistics of the corpus's own songs (stats/1). Derived: recomputed by builds, never authored. Only the envelope is fixed here.",
+      "type": "object",
+      "required": [
+        "v"
+      ],
+      "properties": {
+        "v": {
+          "const": "stats/1"
+        },
+        "corpus_id": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[A-Za-z0-9_]+$"
+        },
+        "tracks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duration_sec": {
+          "description": "A distribution over the corpus's tracks.",
+          "type": "object",
+          "properties": {
+            "n": {
+              "type": "number"
+            },
+            "median": {
+              "type": "number"
+            },
+            "mean": {
+              "type": "number"
+            },
+            "p10": {
+              "type": "number"
+            },
+            "p90": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          }
+        },
+        "bpm": {
+          "description": "A distribution over the corpus's tracks.",
+          "type": "object",
+          "properties": {
+            "n": {
+              "type": "number"
+            },
+            "median": {
+              "type": "number"
+            },
+            "mean": {
+              "type": "number"
+            },
+            "p10": {
+              "type": "number"
+            },
+            "p90": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          }
+        },
+        "bars": {
+          "description": "A distribution over the corpus's tracks.",
+          "type": "object",
+          "properties": {
+            "n": {
+              "type": "number"
+            },
+            "median": {
+              "type": "number"
+            },
+            "mean": {
+              "type": "number"
+            },
+            "p10": {
+              "type": "number"
+            },
+            "p90": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          }
+        },
+        "target": {
+          "type": "object"
+        }
+      }
+    },
+    "attestation": {
+      "description": "Where the attested edition of this corpus is held, and the hash a client checks it against.",
+      "type": "object",
+      "required": [
+        "attested",
+        "edition",
+        "manifest_sha256",
+        "keyid"
+      ],
+      "properties": {
+        "attested": {
+          "type": "boolean"
+        },
+        "edition": {
+          "description": "The attestation's UTC date, then the first 12 hex digits of manifest_sha256.",
+          "type": "string",
+          "pattern": "^[0-9]{8}-[0-9a-f]{12}$"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "keyid": {
+          "description": "The first 16 hex digits of the SHA-256 of the two public keys.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        },
+        "locker": {
+          "description": "Where the edition is held.",
+          "type": "string"
+        },
+        "attested_at": {
+          "type": "string"
+        },
+        "held": {
+          "type": "boolean"
+        }
+      }
+    },
+    "midi_source": {
+      "type": "object",
+      "required": [
+        "file",
+        "source_url",
+        "source_licence"
+      ],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "album": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "slugs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_url": {
+          "type": "string"
+        },
+        "source_licence": {
+          "type": "string"
+        },
+        "attribution": {
+          "description": "Required by CC-BY sources.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

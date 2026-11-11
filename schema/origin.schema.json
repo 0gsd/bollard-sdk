@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/origin.schema.json",
+  "title": "Self-hosted corpus discovery file (popboll-corpus.json)",
+  "description": "The discovery file an artist serves at the base of a self-hosted corpus, popboll-corpus.json: format popboll.origin/1. It names the corpus and who agreed to the Pop Boll Shake, points at the manifest of recordings (MANIFEST.tsv) and says how the folder is protected and whether it is live. It never holds the credential. It is not a corpus manifest: an origin has no corpus id and no popboll.licence/1 block until Pop Boll has pulled it. Members this schema does not name are ignored.",
+  "type": "object",
+  "required": [
+    "schema",
+    "corpus",
+    "licence",
+    "files",
+    "auth",
+    "status"
+  ],
+  "properties": {
+    "schema": {
+      "description": "The format name.",
+      "const": "popboll.origin/1"
+    },
+    "corpus": {
+      "description": "What the corpus is and who to write to.",
+      "type": "object",
+      "required": [
+        "name",
+        "artist",
+        "legal_name",
+        "contact_email"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The corpus name Pop Boll shows and credits."
+        },
+        "artist": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The artist or project name."
+        },
+        "legal_name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The person who agreed to the Shake."
+        },
+        "contact_email": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The address the Shake email came from."
+        },
+        "description": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        }
+      }
+    },
+    "licence": {
+      "description": "The agreement the artist accepted. Not a popboll.licence/1 block: Pop Boll writes that from this.",
+      "type": "object",
+      "required": [
+        "shake_version",
+        "shake_file",
+        "scope",
+        "hosting",
+        "accepted_by",
+        "accepted_email",
+        "accepted_at",
+        "statement"
+      ],
+      "properties": {
+        "shake_version": {
+          "description": "The version of the artist agreement.",
+          "type": "integer",
+          "const": 2
+        },
+        "shake_file": {
+          "type": "string",
+          "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f][^\\\\\\u0000-\\u001f\\u007f]*$",
+          "not": {
+            "pattern": "(^|/)\\.\\.(/|$)"
+          },
+          "description": "The filled-in agreement, a path inside the folder."
+        },
+        "scope": {
+          "description": "What was granted. Must match the box ticked in the agreement.",
+          "enum": [
+            "full",
+            "morpus_only"
+          ]
+        },
+        "hosting": {
+          "description": "The artist hosts the recordings.",
+          "const": "self"
+        },
+        "accepted_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "accepted_email": {
+          "type": "string",
+          "minLength": 1
+        },
+        "accepted_at": {
+          "description": "When it was accepted, UTC.",
+          "$ref": "licence.schema.json#/$defs/time"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The words the artist used."
+        }
+      }
+    },
+    "files": {
+      "type": "object",
+      "required": [
+        "manifest"
+      ],
+      "properties": {
+        "manifest": {
+          "type": "string",
+          "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f][^\\\\\\u0000-\\u001f\\u007f]*$",
+          "not": {
+            "pattern": "(^|/)\\.\\.(/|$)"
+          },
+          "description": "The manifest of recordings, normally MANIFEST.tsv."
+        },
+        "art": {
+          "description": "Cover images, paths inside the folder.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f][^\\\\\\u0000-\\u001f\\u007f]*$",
+            "not": {
+              "pattern": "(^|/)\\.\\.(/|$)"
+            }
+          }
+        }
+      }
+    },
+    "auth": {
+      "description": "How the folder is protected. The secret is never written here.",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "basic",
+            "bearer",
+            "none"
+          ]
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "password"
+            ]
+          },
+          {
+            "required": [
+              "token"
+            ]
+          },
+          {
+            "required": [
+              "secret"
+            ]
+          },
+          {
+            "required": [
+              "credential"
+            ]
+          },
+          {
+            "required": [
+              "username"
+            ]
+          }
+        ]
+      }
+    },
+    "status": {
+      "description": "live: pull and list it. paused: hide it, keep everything. revoked: the takedown.",
+      "enum": [
+        "live",
+        "paused",
+        "revoked"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

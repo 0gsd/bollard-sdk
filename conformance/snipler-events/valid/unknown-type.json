@@ -1,0 +1,9 @@
+{
+  "events": [
+    {
+      "type": "shake",
+      "strength": 3,
+      "t_ms": 5
+    }
+  ]
+}

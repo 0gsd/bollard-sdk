@@ -1,0 +1,257 @@
+{
+ "version": 1,
+ "about": "revoked_at and expires_at against the clock. Times are UTC; a date alone is midnight UTC. A corpus read from a local folder, as here, follows the clock exactly.",
+ "manifests": {
+  "revoked": {
+   "schema_version": 1,
+   "id": "9030-REVOKED",
+   "number": 9030,
+   "slug": "REVOKED",
+   "name": "The Placeholders: Revoked",
+   "artist": "The Placeholders",
+   "display_label": "9030-REVOKED",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "revoked_at": "2031-06-01T12:00:00Z"
+   }
+  },
+  "expires": {
+   "schema_version": 1,
+   "id": "9031-EXPIRES",
+   "number": 9031,
+   "slug": "EXPIRES",
+   "name": "The Placeholders: Expires",
+   "artist": "The Placeholders",
+   "display_label": "9031-EXPIRES",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "expires_at": "2031-06-01T12:00:00Z"
+   }
+  },
+  "expires_date_only": {
+   "schema_version": 1,
+   "id": "9032-DATEONLY",
+   "number": 9032,
+   "slug": "DATEONLY",
+   "name": "The Placeholders: Dateonly",
+   "artist": "The Placeholders",
+   "display_label": "9032-DATEONLY",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "expires_at": "2031-06-02"
+   }
+  },
+  "expires_no_z_fraction": {
+   "schema_version": 1,
+   "id": "9033-FRACTION",
+   "number": 9033,
+   "slug": "FRACTION",
+   "name": "The Placeholders: Fraction",
+   "artist": "The Placeholders",
+   "display_label": "9033-FRACTION",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "expires_at": "2031-06-01T12:00:00.500"
+   }
+  },
+  "both": {
+   "schema_version": 1,
+   "id": "9034-BOTH",
+   "number": 9034,
+   "slug": "BOTH",
+   "name": "The Placeholders: Both",
+   "artist": "The Placeholders",
+   "display_label": "9034-BOTH",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "revoked_at": "2031-07-01T00:00:00Z",
+    "expires_at": "2031-06-15T00:00:00Z"
+   }
+  },
+  "empty_times": {
+   "schema_version": 1,
+   "id": "9035-EMPTY",
+   "number": 9035,
+   "slug": "EMPTY",
+   "name": "The Placeholders: Empty",
+   "artist": "The Placeholders",
+   "display_label": "9035-EMPTY",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "revoked_at": "",
+    "expires_at": null
+   }
+  },
+  "revoked_morpus_only": {
+   "schema_version": 1,
+   "id": "9036-REVOKEDMO",
+   "number": 9036,
+   "slug": "REVOKEDMO",
+   "name": "The Placeholders: Revokedmo",
+   "artist": "The Placeholders",
+   "display_label": "9036-REVOKEDMO",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only",
+    "revoked_at": "2031-01-01"
+   }
+  }
+ },
+ "cases": [
+  {
+   "name": "one second before revocation",
+   "manifest": "revoked",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T11:59:59Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "the instant of revocation",
+   "manifest": "revoked",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "revoked"
+   },
+   "why": "Closed from the instant itself."
+  },
+  {
+   "name": "after revocation",
+   "manifest": "revoked",
+   "capability": "stream_audio",
+   "clock": "2031-06-02T00:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "revoked"
+   }
+  },
+  {
+   "name": "revoked, still visible",
+   "manifest": "revoked",
+   "capability": "see",
+   "clock": "2031-06-02T00:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "before expiry",
+   "manifest": "expires",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T11:59:59Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "the instant of expiry",
+   "manifest": "expires",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   }
+  },
+  {
+   "name": "date alone is midnight UTC: before",
+   "manifest": "expires_date_only",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T23:59:59Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "date alone is midnight UTC: at",
+   "manifest": "expires_date_only",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-02T00:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   }
+  },
+  {
+   "name": "no Z is still UTC, fraction kept: before",
+   "manifest": "expires_no_z_fraction",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "no Z is still UTC, fraction kept: after",
+   "manifest": "expires_no_z_fraction",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:01Z",
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   }
+  },
+  {
+   "name": "expiry first, then revocation: between",
+   "manifest": "both",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   }
+  },
+  {
+   "name": "both passed: revoked is reported",
+   "manifest": "both",
+   "capability": "musicians_may_study",
+   "clock": "2031-08-01T00:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "revoked"
+   },
+   "why": "revoked_at is checked before expires_at."
+  },
+  {
+   "name": "empty and null times mean none",
+   "manifest": "empty_times",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "a revoked licence is revoked before it is not_granted",
+   "manifest": "revoked_morpus_only",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "revoked"
+   }
+  }
+ ]
+}

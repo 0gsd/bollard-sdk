@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/snipler-events.schema.json",
+  "title": "Glass Snipler events",
+  "description": "A batch of input events from a renderer to the Glass Snipler, as the public PWHAMSS page (version 0.0.2-draft) describes them. A speculative draft: written from that page alone and not checked against an engine. An event of a type this schema does not know is valid, because the Snipler ignores it.",
+  "type": "object",
+  "required": [
+    "events"
+  ],
+  "properties": {
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    }
+  },
+  "$defs": {
+    "event": {
+      "type": "object",
+      "required": [
+        "type",
+        "t_ms"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "t_ms": {
+          "description": "Milliseconds on the renderer's monotonic clock.",
+          "type": "integer"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "key_down",
+                  "key_up",
+                  "key_pressure"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "key"
+            ],
+            "properties": {
+              "key": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 47
+              },
+              "pressure": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "key_pressure"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "pressure"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "side_down",
+                  "side_up"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "side"
+            ],
+            "properties": {
+              "side": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "mode"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "enum": [
+                  "K",
+                  "P",
+                  "S",
+                  "A"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "knob"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "knob",
+              "delta"
+            ],
+            "properties": {
+              "knob": {
+                "enum": [
+                  "S",
+                  "M",
+                  "L",
+                  "H"
+                ]
+              },
+              "delta": {
+                "description": "Detents; negative turns back.",
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "pad_down",
+                  "pad_move",
+                  "pad_up"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "y": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "touch"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target",
+              "action"
+            ],
+            "properties": {
+              "target": {
+                "type": "string"
+              },
+              "index": {
+                "type": "integer"
+              },
+              "action": {
+                "enum": [
+                  "tap",
+                  "long",
+                  "drag"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "text"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "events": [
+    {
+      "type": "key_pressure",
+      "key": 3,
+      "t_ms": 1
+    }
+  ]
+}

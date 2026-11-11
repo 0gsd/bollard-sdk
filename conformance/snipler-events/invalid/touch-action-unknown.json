@@ -1,0 +1,11 @@
+{
+  "events": [
+    {
+      "type": "touch",
+      "target": "lane",
+      "index": 0,
+      "action": "swipe",
+      "t_ms": 1
+    }
+  ]
+}

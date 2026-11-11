@@ -1,0 +1,189 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Open this file in a browser straight from disk: no server, no build step, nothing fetched
+     from a network. One script tag loads the whole binding from ../../js/. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bollardeck in a page</title>
+<style>
+  :root { color-scheme: light dark; --ink: #1c2230; --soft: #5b6475; --paper: #f6f4ef; --card: #ffffff; --line: #d9d5cb; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #e9ecf3; --soft: #9aa3b5; --paper: #10131a; --card: #181c26; --line: #2c3342; } }
+  body { margin: 0; padding: 24px 16px 48px; background: var(--paper); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; display: grid; gap: 20px; }
+  h1 { font-size: 22px; margin: 0; }
+  h2 { font-size: 16px; margin: 0 0 4px; }
+  p { margin: 0; color: var(--soft); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 14px; }
+  label { display: grid; gap: 4px; font-size: 14px; color: var(--soft); }
+  select { font: inherit; padding: 6px 8px; max-width: 100%; }
+  code, pre { font: 13px/1.5 ui-monospace, Menlo, monospace; }
+  pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+  .buttons { display: flex; gap: 36px; padding: 16px 12px; flex-wrap: wrap; }
+  .btn { position: relative; width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-weight: 600; --cue: #ff6b9a; }
+  .btn::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 4px solid var(--cue); opacity: 0; }
+  .btn[data-cue="on"]::after, .btn[data-cue="pulse"]::after, .btn[data-cue="chase"]::after { opacity: var(--cue-level, 1); }
+  .btn[data-cue="chase"]::after { border-style: dashed; transform: rotate(calc(var(--cue-head, 0) * 40deg)); }
+  .btn[data-cue-role="live"] { --cue: #e0b400; }
+  .btn[data-cue-role="go"] { --cue: #2fae62; }
+  .btn[data-cue-role="warn"] { --cue: #f08a24; }
+  .taps { display: flex; gap: 16px; flex-wrap: wrap; }
+  .taps button { width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--line); background: var(--paper); color: var(--ink);
+                 font: 600 20px system-ui, sans-serif; touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: pointer; }
+  .taps button:active { background: var(--line); }
+  canvas { width: 100%; max-width: 416px; aspect-ratio: 13 / 9.5; border-radius: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>bollardeck in a page</h1>
+    <p>The Bollawax Bollard SDK's browser binding, version <code id="version">?</code>, loaded from disk by one script tag.</p>
+  </header>
+
+  <section>
+    <h2>Button cues</h2>
+    <p>The three buttons have no lamps, so a cue is drawn by each surface its own way. Here it is a ring: steady for <code>on</code>, breathing for <code>pulse</code>, stepping for <code>chase</code>.</p>
+    <label>Cue list
+      <select id="cue-pick">
+        <option value="0">1 pulse (go), 2 on, 3 chase (warn)</option>
+        <option value="1">1 on (live), 3 pulse</option>
+        <option value="2">2 chase</option>
+        <option value="3">no cues</option>
+      </select>
+    </label>
+    <div class="buttons">
+      <div class="btn" id="btn-1">1</div>
+      <div class="btn" id="btn-2">2</div>
+      <div class="btn" id="btn-3">3</div>
+    </div>
+    <pre id="cue-now"></pre>
+  </section>
+
+  <section>
+    <h2>Gestures and the keymap</h2>
+    <p>Tap, triple-tap or hold a button (or use the keys 1, 2, 3). The gesture engine names what you did; the keymap says what it means for the kind of prompt showing. Buttons 1 and 3 have a triple tap, so a single tap on them is reported half a second late.</p>
+    <label>Prompt showing
+      <select id="prompt-pick">
+        <option value="">none</option>
+        <option value="abc">abc: choose A, B or C</option>
+        <option value="spectrum">spectrum: a position from -2 to 2</option>
+        <option value="game">game: takes press and release times itself</option>
+      </select>
+    </label>
+    <div class="taps">
+      <button type="button" id="tap-1">1</button>
+      <button type="button" id="tap-2">2</button>
+      <button type="button" id="tap-3">3</button>
+    </div>
+    <pre id="gesture-log">nothing yet</pre>
+  </section>
+
+  <section>
+    <h2>The LED matrix</h2>
+    <p>13 by 8 lamps and three RGB LEDs. The engine makes the same frame, byte for byte, as the device does for the same inputs.</p>
+    <label>Scene
+      <select id="scene">
+        <option value="0">idle: the breathing heart</option>
+        <option value="1">glyph: boot</option>
+        <option value="2">text: a pairing code</option>
+        <option value="3">corpus: a record and a meter</option>
+        <option value="4">film: a short making-of</option>
+        <option value="5">playback: a drum loop</option>
+      </select>
+    </label>
+    <canvas id="matrix" width="416" height="304"></canvas>
+  </section>
+
+  <section>
+    <h2>Validation</h2>
+    <p>What <code>bollardeck.schema.validate("cue", …)</code> says about a list with a fourth button and an unknown state:</p>
+    <pre id="problems"></pre>
+  </section>
+</main>
+
+<script src="../../js/bollardeck.js"></script>
+<script>
+  // bollardeck.js has loaded its parts by the time this script runs.
+  var B = bollardeck, M = B.matrix;
+  document.getElementById("version").textContent = B.version;
+
+  // ── cues ──
+  var CUE_LISTS = [
+    [{ button: 1, state: "pulse", role: "go" }, { button: 2, state: "on", role: "a" }, { button: 3, state: "chase", role: "warn" }],
+    [{ button: 1, state: "on", role: "live" }, { button: 3, state: "pulse", role: null }],
+    [{ button: 2, state: "chase", role: null }],
+    []
+  ];
+  var cuePick = document.getElementById("cue-pick");
+  var cueNow = document.getElementById("cue-now");
+  var buttons = [1, 2, 3].map(function (n) { return document.getElementById("btn-" + n); });
+  var currentCues = function () { return CUE_LISTS[+cuePick.value] || []; };
+  B.cues.run(buttons, currentCues);                       // sets data-cue, data-cue-role, --cue-level, --cue-head
+  var describe = function () {
+    cueNow.textContent = B.cues.at(currentCues(), 0).map(function (e) {
+      return e.button + ": " + (e.driven ? e.state + (e.role ? " (" + e.role + ")" : "") : "not driven");
+    }).join("\n");
+  };
+  cuePick.addEventListener("change", describe);
+  describe();
+
+  // ── gestures and the keymap ──
+  var promptPick = document.getElementById("prompt-pick");
+  var gestureLog = document.getElementById("gesture-log");
+  var heard = [];
+  var say = function (line) {
+    heard.unshift(line);
+    gestureLog.textContent = heard.slice(0, 6).join("\n");
+  };
+  var promptKind = function () { return promptPick.value || null; };
+  B.gestures.listen([1, 2, 3].map(function (n) { return document.getElementById("tap-" + n); }), function (g) {
+    var r = B.keymap.resolve(g.name, promptKind());
+    var meaning = !r.handled ? "not the keymap's business"
+      : r.kind === "choice" ? "answer the prompt with " + JSON.stringify(r.value)
+      : r.kind === "do" ? "do \"" + r.value + "\""
+      : "taken, and nothing happens";
+    say(g.name + "  ->  " + meaning + (r.source ? "  (" + r.source + ")" : ""));
+  }, {
+    raw: function (button) { return button !== 3 && promptKind() !== null && B.keymap.wantsRaw(promptKind()); },
+    onEdge: function (button, kind, tMs) { say("button " + button + " " + kind + " at " + tMs + " ms  ->  raw, for the game"); }
+  });
+
+  // ── the matrix ──
+  var song = {
+    song_id: "example-song", bpm: 112,
+    drama: { shots: [
+      { kind: "TITLE_CARD", duration_ms: 5000, title: "Hello Bollard" },
+      { kind: "JAM", duration_ms: 4000, actors: { channels: [1, 3, 5, 10, 13] } },
+      { kind: "VOTE", duration_ms: 2500, data: { lamps: [1, 1, 0, 1, 1, 0, 1] } },
+      { kind: "LOCK", duration_ms: 1800 }
+    ] },
+    notes: []
+  };
+  for (var beat = 0; beat < 16; beat++) {
+    var at = beat * 60 / 112;
+    song.notes.push([at, 0.1, 10, beat % 2 ? 38 : 36, 118], [at, 0.4, 3, 40 + beat % 3, 96]);
+    if (beat % 4 === 1) song.notes.push([at, 1.6, 1, 72 + beat % 5, 110], [at, 1.9, 7, 60, 80]);
+  }
+  var filmMs = M.filmReel(song).total, loopS = 16 * 60 / 112;
+  var calm = !!(globalThis.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var SCENES = [
+    function (t) { return M.idle(t, calm); },
+    function (t) { return M.glyph("boot", t, calm); },
+    function (t) { return M.text("PB 4821", t, true, "pairing", 0, calm); },
+    function (t) { return M.corpus(t, 150 + 100 * Math.sin(t / 700), null, calm); },
+    function (t) { return M.film(song, t % filmMs, calm); },
+    function (t) { return M.playback(song, (t / 1000) % loopS, calm); }
+  ];
+  var scene = document.getElementById("scene");
+  M.canvas(document.getElementById("matrix"), { background: "#05070c" }).run(function (now) {
+    return (SCENES[+scene.value] || SCENES[0])(now);
+  });
+
+  // ── validation ──
+  document.getElementById("problems").textContent =
+    B.schema.validate("cue", [{ button: 4, state: "blink", role: null }]).join("\n");
+</script>
+</body>
+</html>

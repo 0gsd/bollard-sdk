@@ -1,0 +1,606 @@
+{
+ "version": 1,
+ "about": "A corpus held in a cache: how the gate treats revocation and expiry when the hub can and cannot be reached. An expiry the device holds is honoured by its own clock, online or not; revocation waits for the next contact. standing.revalidated_at is when the licence block was last confirmed by the hub; standing.reachable is whether the hub answered the last time it was asked. A clock that is set back does not reopen a licence: the gate reads no time earlier than revalidated_at or standing.witnessed_at (the latest time the cache has seen on the device's own clock; absent means none).",
+ "manifests": {
+  "revoked_june": {
+   "schema_version": 1,
+   "id": "9050-REVJUNE",
+   "number": 9050,
+   "slug": "REVJUNE",
+   "name": "The Placeholders: Revjune",
+   "artist": "The Placeholders",
+   "display_label": "9050-REVJUNE",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "revoked_at": "2031-06-10T00:00:00Z"
+   }
+  },
+  "expires_june": {
+   "schema_version": 1,
+   "id": "9051-EXPJUNE",
+   "number": 9051,
+   "slug": "EXPJUNE",
+   "name": "The Placeholders: Expjune",
+   "artist": "The Placeholders",
+   "display_label": "9051-EXPJUNE",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "expires_at": "2031-06-10T00:00:00Z"
+   }
+  },
+  "in_force": {
+   "schema_version": 1,
+   "id": "9052-INFORCE",
+   "number": 9052,
+   "slug": "INFORCE",
+   "name": "The Placeholders: Inforce",
+   "artist": "The Placeholders",
+   "display_label": "9052-INFORCE",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only"
+   }
+  },
+  "both_june": {
+   "schema_version": 1,
+   "id": "9053-BOTHJUNE",
+   "number": 9053,
+   "slug": "BOTHJUNE",
+   "name": "The Placeholders: Bothjune",
+   "artist": "The Placeholders",
+   "display_label": "9053-BOTHJUNE",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "revoked_at": "2031-06-10T00:00:00Z",
+    "expires_at": "2031-06-15T00:00:00Z"
+   }
+  }
+ },
+ "cases": [
+  {
+   "name": "fresh from the hub, in force",
+   "manifest": "in_force",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-01T11:58:00Z",
+    "reachable": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": null,
+    "pending": null
+   }
+  },
+  {
+   "name": "hub unreachable, in force: works, marked unverified",
+   "manifest": "in_force",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-05-20T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-05-20T00:00:00Z",
+    "pending": null
+   },
+   "why": "A cached corpus keeps working offline. The verdict says since when it is unverified."
+  },
+  {
+   "name": "hub unreachable: a refusal is marked unverified too",
+   "manifest": "in_force",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-05-20T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted",
+    "unverified_since": "2031-05-20T00:00:00Z"
+   }
+  },
+  {
+   "name": "revocation date passed while offline: keeps working",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": "revoked"
+   },
+   "why": "The block was last revalidated before the date; the revocation applies when the hub is next reached."
+  },
+  {
+   "name": "the hub is reached again: the revocation applies",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-20T00:00:00Z",
+    "reachable": true
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "revoked",
+    "unverified_since": null
+   }
+  },
+  {
+   "name": "revocation already known when last online: refused offline",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-12T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "revoked",
+    "unverified_since": "2031-06-12T00:00:00Z"
+   },
+   "why": "The device saw the date pass while it could still reach the hub."
+  },
+  {
+   "name": "revalidated at the very instant of revocation: known",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-10T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "revoked"
+   }
+  },
+  {
+   "name": "expiry passed while offline: honoured by the device's own clock",
+   "manifest": "expires_june",
+   "capability": "stream_audio",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   },
+   "why": "A date the device already holds applies online or not. Only news it has not heard waits for the next contact."
+  },
+  {
+   "name": "offline, one second before a held expiry",
+   "manifest": "expires_june",
+   "capability": "stream_audio",
+   "clock": "2031-06-09T23:59:59Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "offline, at the instant of a held expiry",
+   "manifest": "expires_june",
+   "capability": "stream_audio",
+   "clock": "2031-06-10T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   }
+  },
+  {
+   "name": "offline between a held revocation date and a held expiry",
+   "manifest": "both_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-12T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "pending": "revoked"
+   }
+  },
+  {
+   "name": "offline past both: the held expiry closes it",
+   "manifest": "both_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   },
+   "why": "The revocation date would wait for the next contact; the expiry does not."
+  },
+  {
+   "name": "expiry, hub reachable: applies",
+   "manifest": "expires_june",
+   "capability": "stream_audio",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-19T23:58:00Z",
+    "reachable": true
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   }
+  },
+  {
+   "name": "expiry, hub reachable but last check was before the date: still applies",
+   "manifest": "expires_june",
+   "capability": "stream_audio",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": true
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   },
+   "why": "Grace is for an unreachable hub only, not for a check that is merely old."
+  },
+  {
+   "name": "offline before the date: plain allowed, nothing pending",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "a local corpus has no grace",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "local"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "revoked"
+   },
+   "why": "A corpus in a local folder has no hub to wait for: its manifest is the truth."
+  },
+  {
+   "name": "never revalidated and unreachable: no grace",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": null,
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "revoked"
+   }
+  },
+  {
+   "name": "withdrawn by the hub",
+   "manifest": "in_force",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-01T11:58:00Z",
+    "reachable": true,
+    "withdrawn": true
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "withdrawn"
+   },
+   "why": "The hub answered that it no longer serves this corpus to this client."
+  },
+  {
+   "name": "withdrawn: not even visible",
+   "manifest": "in_force",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-01T11:58:00Z",
+    "reachable": true,
+    "withdrawn": true
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "withdrawn"
+   }
+  },
+  {
+   "name": "a held expiry closes every capability offline",
+   "manifest": "expires_june",
+   "capability": "transcode",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired"
+   }
+  },
+  {
+   "name": "a held expiry offline: still visible",
+   "manifest": "expires_june",
+   "capability": "see",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "clock set back after a held expiry was seen to pass: stays closed",
+   "manifest": "expires_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false,
+    "witnessed_at": "2031-06-12T00:00:00Z"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   },
+   "why": "standing.witnessed_at is the latest time the cache has seen on the device's own clock. The gate reads no time earlier than it, or than revalidated_at, so setting the clock back does not reopen an expired licence."
+  },
+  {
+   "name": "clock set back to before the last revalidation, offline",
+   "manifest": "expires_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-12T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired",
+    "unverified_since": "2031-06-12T00:00:00Z",
+    "pending": null
+   },
+   "why": "The hub confirmed the block on 12 June. It cannot be 7 June."
+  },
+  {
+   "name": "clock set back to before the last revalidation, hub reachable",
+   "manifest": "expires_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-12T00:00:00Z",
+    "reachable": true
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired",
+    "unverified_since": null,
+    "pending": null
+   }
+  },
+  {
+   "name": "clock set back, but no clock has yet seen the date: still open",
+   "manifest": "expires_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false,
+    "witnessed_at": "2031-06-08T00:00:00Z"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "the cache saw the very instant of expiry",
+   "manifest": "expires_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false,
+    "witnessed_at": "2031-06-10T00:00:00Z"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "a clock that runs ahead of what was witnessed is believed",
+   "manifest": "expires_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-20T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false,
+    "witnessed_at": "2031-06-12T00:00:00Z"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "expired",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "clock set back, still visible",
+   "manifest": "expires_june",
+   "capability": "see",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false,
+    "witnessed_at": "2031-06-12T00:00:00Z"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "clock set back, nothing to close",
+   "manifest": "in_force",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false,
+    "witnessed_at": "2031-06-12T00:00:00Z"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "a witnessed revocation date offline is still news that waits",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-05T00:00:00Z",
+    "reachable": false,
+    "witnessed_at": "2031-06-12T00:00:00Z"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": "2031-06-05T00:00:00Z",
+    "pending": "revoked"
+   },
+   "why": "The floor moves the time, not the rule: a revoked_at that passed while the hub was unreachable keeps the corpus working, pending, whatever the clock now says."
+  },
+  {
+   "name": "clock set back to before a revalidation that knew of the revocation",
+   "manifest": "revoked_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "hub",
+    "revalidated_at": "2031-06-12T00:00:00Z",
+    "reachable": false
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "revoked",
+    "unverified_since": "2031-06-12T00:00:00Z",
+    "pending": null
+   }
+  },
+  {
+   "name": "a local corpus has no floor: its clock is the caller's to keep",
+   "manifest": "expires_june",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-07T00:00:00Z",
+   "standing": {
+    "source": "local",
+    "revalidated_at": null,
+    "reachable": true,
+    "witnessed_at": "2031-06-12T00:00:00Z"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "unverified_since": null,
+    "pending": null
+   },
+   "why": "witnessed_at means something only for a cache. A corpus in a local folder follows the clock exactly."
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "9001-PLACEHOLDERS",
+  "number": 9001,
+  "slug": "PLACEHOLDERS",
+  "name": "The Placeholders: Collected Examples",
+  "artist": "The Placeholders",
+  "display_label": "9001-PLACEHOLDERS",
+  "mrph5_count": 3,
+  "future_member": [
+    1,
+    2,
+    3
+  ]
+}

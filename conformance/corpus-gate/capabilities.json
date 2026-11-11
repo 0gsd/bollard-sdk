@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "about": "The capability names the gate knows: the eight in the licence schema, study as a short name, and see. Also what the gate does with a clock it cannot read.",
+ "manifests": {
+  "full": {
+   "schema_version": 1,
+   "id": "9060-CAPS",
+   "number": 9060,
+   "slug": "CAPS",
+   "name": "The Placeholders: Caps",
+   "artist": "The Placeholders",
+   "display_label": "9060-CAPS",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   }
+  }
+ },
+ "cases": [
+  {
+   "name": "study is musicians_may_study",
+   "manifest": "full",
+   "capability": "study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed",
+    "capability_answered": "musicians_may_study"
+   }
+  },
+  {
+   "name": "unknown capability",
+   "manifest": "full",
+   "capability": "remix",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "unknown_capability"
+   }
+  },
+  {
+   "name": "capability names are exact",
+   "manifest": "full",
+   "capability": "Study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "unknown_capability"
+   }
+  },
+  {
+   "name": "empty capability",
+   "manifest": "full",
+   "capability": "",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "unknown_capability"
+   }
+  },
+  {
+   "name": "a capability is a string",
+   "manifest": "full",
+   "capability": 7,
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "unknown_capability"
+   }
+  },
+  {
+   "name": "a clock with a UTC offset is refused",
+   "manifest": "full",
+   "capability": "study",
+   "clock": "2031-06-01T12:00:00+09:00",
+   "expect": {
+    "allowed": false,
+    "reason": "bad_clock"
+   },
+   "why": "Times are UTC only; an offset is not silently dropped."
+  },
+  {
+   "name": "a clock that is not a time",
+   "manifest": "full",
+   "capability": "see",
+   "clock": "noon",
+   "expect": {
+    "allowed": false,
+    "reason": "bad_clock"
+   }
+  },
+  {
+   "name": "visibility is not a capability name",
+   "manifest": "full",
+   "capability": "visibility",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "unknown_capability"
+   },
+   "why": "The visibility question is asked as see."
+  }
+ ]
+}

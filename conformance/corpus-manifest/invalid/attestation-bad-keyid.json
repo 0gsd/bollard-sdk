@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "id": "9001-PLACEHOLDERS",
+  "number": 9001,
+  "slug": "PLACEHOLDERS",
+  "name": "The Placeholders: Collected Examples",
+  "artist": "The Placeholders",
+  "display_label": "9001-PLACEHOLDERS",
+  "description": "A made-up corpus for the conformance vectors.",
+  "created_at": "2031-02-03T04:05:06Z",
+  "source_track_count": 3,
+  "morpus_track_count": 3,
+  "art": [
+    "art/example-cover.png"
+  ],
+  "license_note": "Example notice: used with the permission of The Placeholders.",
+  "consent": true,
+  "edition": "PB 9001: Placeholders Edition",
+  "metadata": {
+    "melody_mode": "example"
+  },
+  "pack": true,
+  "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "transcode": true,
+    "store_audio": true,
+    "stream_audio": true,
+    "store_art": true,
+    "store_morpus": true,
+    "musicians_may_study": true,
+    "export_morpus": true,
+    "device_copies": true,
+    "granted_at": "2031-02-03T04:05:06.000Z",
+    "granted_by": {
+      "legal_name": "Ada Example",
+      "band": "The Placeholders",
+      "email": "ada@example.org"
+    },
+    "upload_id": "u20310203040506feedc0de",
+    "statements": [
+      {
+        "key": "identity",
+        "text": "I am Ada Example and I am authorized to act for The Placeholders"
+      },
+      {
+        "key": "rights",
+        "text": "An example rights statement"
+      }
+    ],
+    "statements_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "shake_version": 2,
+    "hosting": "popboll",
+    "grants": [
+      {
+        "upload_id": "u20310203040506feedc0de",
+        "kind": "new",
+        "at": "2031-02-03T04:05:06.000Z",
+        "statements_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "shake_version": 2
+      }
+    ],
+    "sources": []
+  },
+  "visibility": "private",
+  "owner_email": "ada@example.org",
+  "access": [
+    "grace@example.org"
+  ],
+  "form_stats": {
+    "v": "stats/1",
+    "corpus_id": "9001-PLACEHOLDERS",
+    "tracks": 3,
+    "duration_sec": {
+      "n": 3,
+      "median": 180.0,
+      "mean": 181.5,
+      "p10": 150.0,
+      "p90": 210.0,
+      "min": 149.0,
+      "max": 215.5
+    },
+    "target": {
+      "song_sec": 180.0
+    }
+  },
+  "attestation": {
+    "attested": true,
+    "edition": "20310203-0123456789ab",
+    "manifest_sha256": "0123456789abdddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "keyid": "NOTAKEY",
+    "locker": "gs://example.locker/attested/9001-PLACEHOLDERS/20310203-0123456789ab/",
+    "attested_at": "2031-02-03T06:00:00Z",
+    "held": true
+  }
+}

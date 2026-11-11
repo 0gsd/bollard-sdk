@@ -1,0 +1,10 @@
+{
+  "events": [
+    {
+      "type": "knob",
+      "knob": "S",
+      "delta": 0.5,
+      "t_ms": 1
+    }
+  ]
+}

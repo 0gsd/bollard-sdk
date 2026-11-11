@@ -1,0 +1,11 @@
+{
+  "git_sha": "0123abc",
+  "built_at": "2031-02-03T04:05:06Z",
+  "image": "example/bollawax-appliance",
+  "tag": "9.8.7",
+  "tarball": "bollawax-appliance_9.8.7_arm64.tar.gz",
+  "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "size_bytes": 123456789,
+  "image_size_bytes": 234567890,
+  "published_at": "2031-02-03T05:00:00Z"
+}

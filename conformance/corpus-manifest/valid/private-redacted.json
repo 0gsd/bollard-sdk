@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "9046-REDACTED",
+  "number": 9046,
+  "slug": "REDACTED",
+  "name": "The Placeholders: Redacted",
+  "artist": "The Placeholders",
+  "display_label": "9046-REDACTED",
+  "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "granted_at": "2031-01-01T00:00:00Z",
+    "statements_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "visibility": "private"
+}

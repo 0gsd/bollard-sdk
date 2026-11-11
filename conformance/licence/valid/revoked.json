@@ -1,0 +1,44 @@
+{
+  "schema": "popboll.licence/1",
+  "version": 1,
+  "scope": "full",
+  "transcode": true,
+  "store_audio": true,
+  "stream_audio": true,
+  "store_art": true,
+  "store_morpus": true,
+  "musicians_may_study": true,
+  "export_morpus": true,
+  "device_copies": true,
+  "granted_at": "2031-02-03T04:05:06.000Z",
+  "granted_by": {
+    "legal_name": "Ada Example",
+    "band": "The Placeholders",
+    "email": "ada@example.org"
+  },
+  "upload_id": "u20310203040506feedc0de",
+  "statements": [
+    {
+      "key": "identity",
+      "text": "I am Ada Example and I am authorized to act for The Placeholders"
+    },
+    {
+      "key": "rights",
+      "text": "An example rights statement"
+    }
+  ],
+  "statements_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "shake_version": 2,
+  "hosting": "popboll",
+  "grants": [
+    {
+      "upload_id": "u20310203040506feedc0de",
+      "kind": "new",
+      "at": "2031-02-03T04:05:06.000Z",
+      "statements_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "shake_version": 2
+    }
+  ],
+  "sources": [],
+  "revoked_at": "2031-06-01T00:00:00Z"
+}

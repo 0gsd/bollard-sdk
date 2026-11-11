@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "9001-PLACEHOLDERS",
+  "number": 9001,
+  "slug": "PLACEHOLDERS",
+  "name": "The Placeholders: Collected Examples",
+  "artist": "The Placeholders",
+  "display_label": "9001-PLACEHOLDERS",
+  "midi_sources": [
+    {
+      "file": "example/prelude.mid",
+      "source_url": "https://example.org/midi/prelude.mid"
+    }
+  ]
+}

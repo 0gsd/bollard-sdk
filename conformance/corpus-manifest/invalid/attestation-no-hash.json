@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "id": "9001-PLACEHOLDERS",
+  "number": 9001,
+  "slug": "PLACEHOLDERS",
+  "name": "The Placeholders: Collected Examples",
+  "artist": "The Placeholders",
+  "display_label": "9001-PLACEHOLDERS",
+  "attestation": {
+    "attested": true,
+    "edition": "20310203-0123456789ab",
+    "keyid": "0123456789abcdef"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "popboll.makers/1",
+  "updated": "2026-11-10",
+  "about": "The maker codes in Pop Boll device serials, PB####-<MAKER>-<hardware id>. Published at https://popboll.com/makers. tools/generate.py packages this file as bollardeck.device._makers; read it through bollardeck.device.identity.",
+  "makers": [
+    {
+      "code": "UNOQ",
+      "name": "Pop Boll (Arduino UNO Q boards)",
+      "kind": "first-party",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "A Bolltridge cart built on the Arduino UNO Q. Every serial from before the registry existed carries it."
+    },
+    {
+      "code": "PI5",
+      "name": "Pop Boll (Raspberry Pi 5 / Compute Module 5 boards)",
+      "kind": "first-party",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "A Bolltridge cart built on a Raspberry Pi (Compute Module 5). The only code with a digit; third-party codes are letters only."
+    },
+    {
+      "code": "SIM",
+      "name": "The simulator",
+      "kind": "reserved",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "A dev machine, a VM or a container. Never a shipped device."
+    },
+    {
+      "code": "WEB",
+      "name": "Virtual Bolls on popboll.com",
+      "kind": "reserved",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "Used in virtual serials (VPB0007-WEB-...). Not a physical device."
+    },
+    {
+      "code": "CLOUD",
+      "name": "Cloud test devices",
+      "kind": "reserved",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "Used in virtual serials (VPB0007-CLOUD-...). Not a physical device."
+    },
+    {
+      "code": "PEER",
+      "name": "Test peers",
+      "kind": "reserved",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "The USB swap and jam test peer (PB0002-PEER-99887766). Not a physical device."
+    },
+    {
+      "code": "USB",
+      "name": "Test peers over USB",
+      "kind": "reserved",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "The appliance's USB swap test peer (PB0002-USB-PEER-774411). Not a physical device."
+    },
+    {
+      "code": "ACME",
+      "name": "Documentation example",
+      "kind": "reserved",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "An example of an admitted maker on these pages. Never assigned."
+    },
+    {
+      "code": "EVIL",
+      "name": "Documentation example",
+      "kind": "reserved",
+      "registered": "2026-11-09",
+      "contact": null,
+      "notes": "An example of a refused maker on these pages. Never assigned."
+    }
+  ]
+}

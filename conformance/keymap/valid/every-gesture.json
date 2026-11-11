@@ -1,0 +1,19 @@
+{
+  "v": 2,
+  "prompt": {},
+  "idle": {
+    "tap1": "act_tap1",
+    "tap2": "act_tap2",
+    "tap3": "act_tap3",
+    "tap1x2": "act_tap1x2",
+    "tap2x2": "act_tap2x2",
+    "tap3x2": "act_tap3x2",
+    "tap1x3": "act_tap1x3",
+    "tap2x3": "act_tap2x3",
+    "tap3x3": "act_tap3x3",
+    "hold1": "act_hold1",
+    "hold2": "act_hold2",
+    "hold3": "act_hold3"
+  },
+  "always": {}
+}

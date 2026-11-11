@@ -1,0 +1,15 @@
+{
+  "version": "9.8.7",
+  "git_sha": "0123abc",
+  "built_at": "2031-02-03T04:05:06Z",
+  "image": "example/bollawax-boll",
+  "tag": "9.8.7",
+  "profile": "boll",
+  "aliases": [
+    "example/bollawax-appliance"
+  ],
+  "arches": {},
+  "published_at": "2031-02-03T05:00:00Z",
+  "licence": "https://example.org/device-licence",
+  "notices": "/NOTICES.md"
+}

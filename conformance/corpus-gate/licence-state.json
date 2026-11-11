@@ -1,0 +1,503 @@
+{
+ "version": 1,
+ "about": "Which licence block a manifest carries, and the manifests that are refused whole.",
+ "manifests": {
+  "no_licence_member": {
+   "schema_version": 1,
+   "id": "9010-NONE",
+   "number": 9010,
+   "slug": "NONE",
+   "name": "The Placeholders: None",
+   "artist": "The Placeholders",
+   "display_label": "9010-NONE"
+  },
+  "licence_null": {
+   "schema_version": 1,
+   "id": "9011-NULL",
+   "number": 9011,
+   "slug": "NULL",
+   "name": "The Placeholders: Null",
+   "artist": "The Placeholders",
+   "display_label": "9011-NULL",
+   "licence": null
+  },
+  "alias_only": {
+   "schema_version": 1,
+   "id": "9012-ALIAS",
+   "number": 9012,
+   "slug": "ALIAS",
+   "name": "The Placeholders: Alias",
+   "artist": "The Placeholders",
+   "display_label": "9012-ALIAS",
+   "license": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only"
+   }
+  },
+  "null_and_alias": {
+   "schema_version": 1,
+   "id": "9013-NULLALIAS",
+   "number": 9013,
+   "slug": "NULLALIAS",
+   "name": "The Placeholders: Nullalias",
+   "artist": "The Placeholders",
+   "display_label": "9013-NULLALIAS",
+   "licence": null,
+   "license": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only"
+   }
+  },
+  "both_same": {
+   "schema_version": 1,
+   "id": "9014-BOTHSAME",
+   "number": 9014,
+   "slug": "BOTHSAME",
+   "name": "The Placeholders: Bothsame",
+   "artist": "The Placeholders",
+   "display_label": "9014-BOTHSAME",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   },
+   "license": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   }
+  },
+  "both_differ": {
+   "schema_version": 1,
+   "id": "9015-BOTHDIFFER",
+   "number": 9015,
+   "slug": "BOTHDIFFER",
+   "name": "The Placeholders: Bothdiffer",
+   "artist": "The Placeholders",
+   "display_label": "9015-BOTHDIFFER",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only"
+   },
+   "license": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   }
+  },
+  "alias_is_a_note": {
+   "schema_version": 1,
+   "id": "9016-NOTE",
+   "number": 9016,
+   "slug": "NOTE",
+   "name": "The Placeholders: Note",
+   "artist": "The Placeholders",
+   "display_label": "9016-NOTE",
+   "license": "CC BY 4.0"
+  },
+  "licence_and_note": {
+   "schema_version": 1,
+   "id": "9017-BLOCKNOTE",
+   "number": 9017,
+   "slug": "BLOCKNOTE",
+   "name": "The Placeholders: Blocknote",
+   "artist": "The Placeholders",
+   "display_label": "9017-BLOCKNOTE",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   },
+   "license": "see the sleeve"
+  },
+  "unknown_scope": {
+   "schema_version": 1,
+   "id": "9018-FUTURESCOPE",
+   "number": 9018,
+   "slug": "FUTURESCOPE",
+   "name": "The Placeholders: Futurescope",
+   "artist": "The Placeholders",
+   "display_label": "9018-FUTURESCOPE",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "stream_only"
+   }
+  },
+  "newer_version": {
+   "schema_version": 1,
+   "id": "9019-FUTUREVER",
+   "number": 9019,
+   "slug": "FUTUREVER",
+   "name": "The Placeholders: Futurever",
+   "artist": "The Placeholders",
+   "display_label": "9019-FUTUREVER",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 2,
+    "scope": "full"
+   }
+  },
+  "alias_invalid": {
+   "schema_version": 1,
+   "id": "9020-BADALIAS",
+   "number": 9020,
+   "slug": "BADALIAS",
+   "name": "The Placeholders: Badalias",
+   "artist": "The Placeholders",
+   "display_label": "9020-BADALIAS",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   },
+   "license": {
+    "scope": "morpus_only",
+    "store_audio": true
+   }
+  },
+  "licence_a_string": {
+   "schema_version": 1,
+   "id": "9021-STRING",
+   "number": 9021,
+   "slug": "STRING",
+   "name": "The Placeholders: String",
+   "artist": "The Placeholders",
+   "display_label": "9021-STRING",
+   "licence": "full"
+  },
+  "schema_version_2": {
+   "schema_version": 2,
+   "id": "9022-V2",
+   "number": 9022,
+   "slug": "V2",
+   "name": "The Placeholders: V2",
+   "artist": "The Placeholders",
+   "display_label": "9022-V2",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   }
+  },
+  "id_does_not_match": {
+   "schema_version": 1,
+   "id": "9099-MISMATCH",
+   "number": 9023,
+   "slug": "MISMATCH",
+   "name": "The Placeholders: Mismatch",
+   "artist": "The Placeholders",
+   "display_label": "9099-MISMATCH",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   }
+  },
+  "visibility_unknown": {
+   "schema_version": 1,
+   "id": "9024-UNLISTED",
+   "number": 9024,
+   "slug": "UNLISTED",
+   "name": "The Placeholders: Unlisted",
+   "artist": "The Placeholders",
+   "display_label": "9024-UNLISTED",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   },
+   "visibility": "unlisted"
+  },
+  "thirtieth_of_february": {
+   "schema_version": 1,
+   "id": "9025-FEB30",
+   "number": 9025,
+   "slug": "FEB30",
+   "name": "The Placeholders: Feb30",
+   "artist": "The Placeholders",
+   "display_label": "9025-FEB30",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "expires_at": "2040-02-30"
+   }
+  },
+  "hard_limit_broken": {
+   "schema_version": 1,
+   "id": "9026-HARDLIMIT",
+   "number": 9026,
+   "slug": "HARDLIMIT",
+   "name": "The Placeholders: Hardlimit",
+   "artist": "The Placeholders",
+   "display_label": "9026-HARDLIMIT",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only",
+    "stream_audio": true
+   }
+  },
+  "unknown_scope_and_more": {
+   "schema_version": 2,
+   "id": "9027-TWOTHINGS",
+   "number": 9027,
+   "slug": "TWOTHINGS",
+   "name": "The Placeholders: Twothings",
+   "artist": "The Placeholders",
+   "display_label": "9027-TWOTHINGS",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "stream_only"
+   }
+  }
+ },
+ "cases": [
+  {
+   "name": "no licence member allows nothing",
+   "manifest": "no_licence_member",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "licence_missing"
+   },
+   "why": "A missing licence block is refused: a corpus with no stated licence is not assumed to be open."
+  },
+  {
+   "name": "no licence member: every capability",
+   "manifest": "no_licence_member",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "licence_missing"
+   }
+  },
+  {
+   "name": "licence null allows nothing",
+   "manifest": "licence_null",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "licence_missing"
+   },
+   "why": "A null licence block is a missing one. It is not scope full."
+  },
+  {
+   "name": "no licence, still visible",
+   "manifest": "no_licence_member",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   },
+   "why": "see asks about visibility only, so a client can list the corpus and say why it cannot be used."
+  },
+  {
+   "name": "alias alone is the licence",
+   "manifest": "alias_only",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "alias alone is read as written",
+   "manifest": "alias_only",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "null licence does not hide the alias",
+   "manifest": "null_and_alias",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   },
+   "why": "When licence is null the valid block under license is honoured."
+  },
+  {
+   "name": "null licence, alias limits apply",
+   "manifest": "null_and_alias",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "both spellings, same block",
+   "manifest": "both_same",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "both spellings, different blocks",
+   "manifest": "both_differ",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "licence_ambiguous"
+   },
+   "why": "Two different blocks: refused whole, even for a capability both would allow."
+  },
+  {
+   "name": "a license that is a string is a note",
+   "manifest": "alias_is_a_note",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "licence_missing"
+   }
+  },
+  {
+   "name": "a block plus a note",
+   "manifest": "licence_and_note",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "unknown scope",
+   "manifest": "unknown_scope",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "unknown_scope"
+   }
+  },
+  {
+   "name": "newer version",
+   "manifest": "newer_version",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "newer_version"
+   }
+  },
+  {
+   "name": "invalid alias beside a valid licence",
+   "manifest": "alias_invalid",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "manifest_invalid"
+   },
+   "why": "A block under license must be a valid licence even when licence is present."
+  },
+  {
+   "name": "licence is a string",
+   "manifest": "licence_a_string",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "manifest_invalid"
+   }
+  },
+  {
+   "name": "schema_version 2",
+   "manifest": "schema_version_2",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "manifest_invalid"
+   }
+  },
+  {
+   "name": "id is not number and slug",
+   "manifest": "id_does_not_match",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "manifest_invalid"
+   },
+   "why": "The schema cannot say this; the reader checks it."
+  },
+  {
+   "name": "unknown visibility",
+   "manifest": "visibility_unknown",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "manifest_invalid"
+   },
+   "why": "An unknown setting refuses the manifest; it is not read as private or public."
+  },
+  {
+   "name": "30 February",
+   "manifest": "thirtieth_of_february",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "licence_invalid"
+   },
+   "why": "The schema's pattern accepts it; it is not a moment, so the block is closed."
+  },
+  {
+   "name": "30 February, still visible",
+   "manifest": "thirtieth_of_february",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "hard limit broken in the block",
+   "manifest": "hard_limit_broken",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "manifest_invalid"
+   },
+   "why": "An inconsistent block is not partly read."
+  },
+  {
+   "name": "unknown scope and another fault",
+   "manifest": "unknown_scope_and_more",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "manifest_invalid"
+   },
+   "why": "unknown_scope is reported only when it is the manifest's only fault."
+  }
+ ]
+}

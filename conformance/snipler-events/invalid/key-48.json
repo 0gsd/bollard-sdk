@@ -1,0 +1,10 @@
+{
+  "events": [
+    {
+      "type": "key_down",
+      "key": 48,
+      "pressure": 0.5,
+      "t_ms": 1
+    }
+  ]
+}

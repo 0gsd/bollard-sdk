@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/routine-manifest.schema.json",
+  "title": "Routine manifest (routine.yaml)",
+  "description": "The manifest of a bollardeck routine, routine.yaml, routine API version 1 (api: 1). The file is YAML; this schema describes the document it parses to. Members this schema does not name are ignored by the loader.",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "author",
+    "hooks"
+  ],
+  "properties": {
+    "name": {
+      "description": "Unique on the device.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]{1,63}$"
+    },
+    "version": {
+      "description": "The routine's own version. A string: quote it in YAML if it would read as a number.",
+      "type": "string",
+      "pattern": "[^ \\t\\r\\n]"
+    },
+    "author": {
+      "type": "string",
+      "pattern": "[^ \\t\\r\\n]"
+    },
+    "api": {
+      "description": "The routine API version. Absent means 1.",
+      "type": "integer",
+      "const": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "hooks": {
+      "description": "The hooks routine.py defines. Each must be a function there.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "on_plan",
+          "on_part_candidate",
+          "on_verdict",
+          "on_overdub",
+          "on_export",
+          "on_drama"
+        ]
+      }
+    },
+    "order": {
+      "description": "Lower runs first. Absent means 100.",
+      "type": "integer"
+    },
+    "limits": {
+      "description": "Tighter limits than the hard caps. A value above a hard cap is read as the cap.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_ms_per_call": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_directives_per_verdict": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_notes_factor": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_overdub_notes_per_part": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_export_bytes": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_added_shots": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_log_lines": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

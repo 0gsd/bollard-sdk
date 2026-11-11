@@ -1,0 +1,27 @@
+{
+  "attribution": "Pop Boll, by Graham Smith, CC BY 4.0",
+  "licence": "CC-BY-4.0",
+  "pages": {
+    "bollard.md": {
+      "bytes": 77665,
+      "sha256": "1cb0445ba3c0be44746011ff6d51d7d9c546251ed208b6fbd9fc62071397088e"
+    },
+    "bollardeck.md": {
+      "bytes": 64815,
+      "sha256": "b9ba660b499024ac65b25472f4eb0bf726c438e40e15742a6a6400b264f04b7c"
+    },
+    "index.md": {
+      "bytes": 17479,
+      "sha256": "96b3394c116c75d386afee95e5e9959729b0a2aaf05f8ba690339f570bd6eb44"
+    },
+    "popsniplish.md": {
+      "bytes": 46337,
+      "sha256": "2829c98809208a12314f91328ce608e63c56c569454bc35330004ad5c7d941b7"
+    }
+  },
+  "published_at": "https://popboll.com/spec",
+  "schema": "bollard-sdk.spec-sources/1",
+  "source_commit": "17d6753460f1e8bfff3b29f9703f412b87b54883",
+  "source_path": "docs/public/spec",
+  "source_repository": "popbollard"
+}

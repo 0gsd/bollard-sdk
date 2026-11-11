@@ -1,0 +1,13 @@
+{
+  "schema": "popboll.licence/1",
+  "version": 1,
+  "scope": "public_domain_midi",
+  "transcode": false,
+  "store_audio": false,
+  "stream_audio": false,
+  "store_art": false,
+  "store_morpus": true,
+  "musicians_may_study": true,
+  "export_morpus": true,
+  "device_copies": true
+}

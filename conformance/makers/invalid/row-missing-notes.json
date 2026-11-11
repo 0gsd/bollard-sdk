@@ -1,0 +1,14 @@
+{
+  "schema": "popboll.makers/1",
+  "updated": "2031-02-03",
+  "about": "An example registry.",
+  "makers": [
+    {
+      "code": "ACME",
+      "name": "An example maker",
+      "kind": "third-party",
+      "registered": "2031-02-03",
+      "contact": "makers@example.org"
+    }
+  ]
+}

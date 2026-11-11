@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/keymap.schema.json",
+  "title": "Engagement keymap",
+  "description": "What each button gesture means, keymap version 2 (\"v\": 2). Gestures are named tap<button>, tap<button>x<count> for a chain of 2 or 3 taps, and hold<button>, with the button as a number 1 to 3 (constants/constants.json, GESTURES). \"always\" applies whether or not a prompt is showing and is looked at first; \"prompt\" applies while a prompt is showing and gives one meaning per kind of prompt; \"idle\" applies when no prompt is showing. A meaning says what it is: {\"choice\": x} answers the prompt, {\"do\": name} is a verb, null takes the gesture and does nothing. A gesture a map does not name is not the keymap's business. Version 1 wrote a prompt meaning as a bare string or number and left the reader to know which strings were verbs; it is not accepted.",
+  "type": "object",
+  "required": [
+    "v",
+    "prompt",
+    "idle",
+    "always"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 2
+    },
+    "doc": {
+      "description": "A note for people. Readers ignore it.",
+      "type": "string"
+    },
+    "prompt": {
+      "description": "Gesture to its meaning for each kind of prompt.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tap1": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap2": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap3": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap1x2": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap2x2": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap3x2": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap1x3": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap2x3": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "tap3x3": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "hold1": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "hold2": {
+          "$ref": "#/$defs/by_kind"
+        },
+        "hold3": {
+          "$ref": "#/$defs/by_kind"
+        }
+      }
+    },
+    "idle": {
+      "description": "Gesture to verb when no prompt is showing.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tap1": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap1x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap1x3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2x3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3x3": {
+          "$ref": "#/$defs/action"
+        },
+        "hold1": {
+          "$ref": "#/$defs/action"
+        },
+        "hold2": {
+          "$ref": "#/$defs/action"
+        },
+        "hold3": {
+          "$ref": "#/$defs/action"
+        }
+      }
+    },
+    "always": {
+      "description": "Gesture to verb in both states. It wins over the other two maps.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tap1": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap1x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap1x3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2x3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3x3": {
+          "$ref": "#/$defs/action"
+        },
+        "hold1": {
+          "$ref": "#/$defs/action"
+        },
+        "hold2": {
+          "$ref": "#/$defs/action"
+        },
+        "hold3": {
+          "$ref": "#/$defs/action"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "action": {
+      "description": "A verb: the name of something the device does.",
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,31}$"
+    },
+    "choice": {
+      "description": "Answer the prompt with this value: an option's key, or a position on a spectrum.",
+      "type": "object",
+      "required": [
+        "choice"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "choice": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        }
+      }
+    },
+    "do": {
+      "description": "A verb. \"raw\" means this kind of prompt takes press and release times itself, not gestures.",
+      "type": "object",
+      "required": [
+        "do"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "do": {
+          "$ref": "#/$defs/action"
+        }
+      }
+    },
+    "by_kind": {
+      "description": "One member per kind of prompt (abc, spectrum, game today): a choice, a verb, or null (the gesture is taken and does nothing).",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/choice"
+          },
+          {
+            "$ref": "#/$defs/do"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    }
+  }
+}

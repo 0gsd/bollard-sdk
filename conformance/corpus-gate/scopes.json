@@ -1,0 +1,459 @@
+{
+ "version": 1,
+ "about": "What each scope grants, capability by capability, and how explicit flags change it. Every licence here is in force at the clock given.",
+ "manifests": {
+  "full": {
+   "schema_version": 1,
+   "id": "9001-FULL",
+   "number": 9001,
+   "slug": "FULL",
+   "name": "The Placeholders: Full",
+   "artist": "The Placeholders",
+   "display_label": "9001-FULL",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   }
+  },
+  "morpus_only": {
+   "schema_version": 1,
+   "id": "9002-MORPUSONLY",
+   "number": 9002,
+   "slug": "MORPUSONLY",
+   "name": "The Placeholders: Morpusonly",
+   "artist": "The Placeholders",
+   "display_label": "9002-MORPUSONLY",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only"
+   }
+  },
+  "public_domain_midi": {
+   "schema_version": 1,
+   "id": "9003-PDMIDI",
+   "number": 9003,
+   "slug": "PDMIDI",
+   "name": "The Placeholders: Pdmidi",
+   "artist": "The Placeholders",
+   "display_label": "9003-PDMIDI",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "public_domain_midi"
+   }
+  },
+  "full_no_export": {
+   "schema_version": 1,
+   "id": "9004-NOEXPORT",
+   "number": 9004,
+   "slug": "NOEXPORT",
+   "name": "The Placeholders: Noexport",
+   "artist": "The Placeholders",
+   "display_label": "9004-NOEXPORT",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "export_morpus": false
+   }
+  },
+  "full_no_audio": {
+   "schema_version": 1,
+   "id": "9005-NOAUDIO",
+   "number": 9005,
+   "slug": "NOAUDIO",
+   "name": "The Placeholders: Noaudio",
+   "artist": "The Placeholders",
+   "display_label": "9005-NOAUDIO",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "store_audio": false,
+    "stream_audio": false
+   }
+  },
+  "morpus_only_with_art": {
+   "schema_version": 1,
+   "id": "9006-WITHART",
+   "number": 9006,
+   "slug": "WITHART",
+   "name": "The Placeholders: Withart",
+   "artist": "The Placeholders",
+   "display_label": "9006-WITHART",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only",
+    "store_art": true
+   }
+  },
+  "full_no_morpus": {
+   "schema_version": 1,
+   "id": "9007-NOMORPUS",
+   "number": 9007,
+   "slug": "NOMORPUS",
+   "name": "The Placeholders: Nomorpus",
+   "artist": "The Placeholders",
+   "display_label": "9007-NOMORPUS",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "store_morpus": false,
+    "musicians_may_study": false,
+    "export_morpus": false
+   }
+  },
+  "scope_alone_no_schema_member": {
+   "schema_version": 1,
+   "id": "9008-BARE",
+   "number": 9008,
+   "slug": "BARE",
+   "name": "The Placeholders: Bare",
+   "artist": "The Placeholders",
+   "display_label": "9008-BARE",
+   "licence": {
+    "scope": "full"
+   }
+  }
+ },
+ "cases": [
+  {
+   "name": "full/transcode",
+   "manifest": "full",
+   "capability": "transcode",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full/store_audio",
+   "manifest": "full",
+   "capability": "store_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full/stream_audio",
+   "manifest": "full",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full/store_art",
+   "manifest": "full",
+   "capability": "store_art",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full/store_morpus",
+   "manifest": "full",
+   "capability": "store_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full/musicians_may_study",
+   "manifest": "full",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full/export_morpus",
+   "manifest": "full",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full/device_copies",
+   "manifest": "full",
+   "capability": "device_copies",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "morpus_only/transcode",
+   "manifest": "morpus_only",
+   "capability": "transcode",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "morpus_only/store_audio",
+   "manifest": "morpus_only",
+   "capability": "store_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "morpus_only/stream_audio",
+   "manifest": "morpus_only",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "morpus_only/store_art",
+   "manifest": "morpus_only",
+   "capability": "store_art",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "morpus_only/store_morpus",
+   "manifest": "morpus_only",
+   "capability": "store_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "morpus_only/musicians_may_study",
+   "manifest": "morpus_only",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "morpus_only/export_morpus",
+   "manifest": "morpus_only",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "morpus_only/device_copies",
+   "manifest": "morpus_only",
+   "capability": "device_copies",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "public_domain_midi/transcode",
+   "manifest": "public_domain_midi",
+   "capability": "transcode",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "public_domain_midi/store_audio",
+   "manifest": "public_domain_midi",
+   "capability": "store_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "public_domain_midi/stream_audio",
+   "manifest": "public_domain_midi",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "public_domain_midi/store_art",
+   "manifest": "public_domain_midi",
+   "capability": "store_art",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "public_domain_midi/store_morpus",
+   "manifest": "public_domain_midi",
+   "capability": "store_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "public_domain_midi/musicians_may_study",
+   "manifest": "public_domain_midi",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "public_domain_midi/export_morpus",
+   "manifest": "public_domain_midi",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "public_domain_midi/device_copies",
+   "manifest": "public_domain_midi",
+   "capability": "device_copies",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full_no_export/export_morpus",
+   "manifest": "full_no_export",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   },
+   "why": "An explicit false wins over the scope's default."
+  },
+  {
+   "name": "full_no_export/study",
+   "manifest": "full_no_export",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   },
+   "why": "Switching export off leaves study on."
+  },
+  {
+   "name": "full_no_audio/stream_audio",
+   "manifest": "full_no_audio",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "full_no_audio/store_art",
+   "manifest": "full_no_audio",
+   "capability": "store_art",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "morpus_only_with_art/store_art",
+   "manifest": "morpus_only_with_art",
+   "capability": "store_art",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   },
+   "why": "An explicit true wins over the scope's default where the scope has no hard limit."
+  },
+  {
+   "name": "morpus_only_with_art/store_audio",
+   "manifest": "morpus_only_with_art",
+   "capability": "store_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "full_no_morpus/study",
+   "manifest": "full_no_morpus",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "full_no_morpus/device_copies",
+   "manifest": "full_no_morpus",
+   "capability": "device_copies",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "scope_alone/stream_audio",
+   "manifest": "scope_alone_no_schema_member",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   },
+   "why": "A block is read without its schema and version members."
+  }
+ ]
+}

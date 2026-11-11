@@ -1,0 +1,13 @@
+{
+  "schema": "popboll.makers/1",
+  "makers": [
+    {
+      "code": "SIM",
+      "name": "An example maker",
+      "kind": "reserved",
+      "registered": "2031-02-03",
+      "contact": null,
+      "notes": ""
+    }
+  ]
+}

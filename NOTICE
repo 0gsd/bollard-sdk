@@ -1,0 +1,11 @@
+Bollawax Bollard SDK
+Copyright 2026 Graham Smith ("Pop Boll")
+
+Code in this repository is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The specification pages under spec/ are "Pop Boll, by Graham Smith, CC BY 4.0"
+(see LICENSES/CC-BY-4.0.txt): unchanged copies of the pages published at
+https://popboll.com/spec, with their checksums in spec/SOURCES.json.
+
+Bollawax, Bollard, Bolltridge, Pop Boll and Glass Snipler are names of Pop Boll. The licences
+above do not grant trademark rights; see https://popboll.com/trademarks.

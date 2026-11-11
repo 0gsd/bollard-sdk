@@ -1,0 +1,597 @@
+{
+ "version": 1,
+ "about": "visibility, owner_email and access for a given identity. A private corpus refuses every capability to anyone who is not its owner, on its access list, or the platform's own engine. The last two manifests are one corpus as a hub holds it (private_whole) and as the hub gives it to a caller that holds the read token and names nobody (private_redacted: no owner_email, access or license_note, and no granted_by or statements in the licence). The redacted one fits the schema and is judged exactly as the whole one for the platform's engine and for nobody. It cannot be judged for a named person, whose name is not in it; the hub never sends it to one.",
+ "manifests": {
+  "private": {
+   "schema_version": 1,
+   "id": "9040-PRIVATE",
+   "number": 9040,
+   "slug": "PRIVATE",
+   "name": "The Placeholders: Private",
+   "artist": "The Placeholders",
+   "display_label": "9040-PRIVATE",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   },
+   "visibility": "private",
+   "owner_email": "Ada@Example.org",
+   "access": [
+    "grace@example.org",
+    " Linus@Example.ORG "
+   ]
+  },
+  "public": {
+   "schema_version": 1,
+   "id": "9041-PUBLIC",
+   "number": 9041,
+   "slug": "PUBLIC",
+   "name": "The Placeholders: Public",
+   "artist": "The Placeholders",
+   "display_label": "9041-PUBLIC",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   },
+   "visibility": "public",
+   "owner_email": "ada@example.org"
+  },
+  "unstated": {
+   "schema_version": 1,
+   "id": "9042-UNSTATED",
+   "number": 9042,
+   "slug": "UNSTATED",
+   "name": "The Placeholders: Unstated",
+   "artist": "The Placeholders",
+   "display_label": "9042-UNSTATED",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   }
+  },
+  "private_no_people": {
+   "schema_version": 1,
+   "id": "9043-NOBODY",
+   "number": 9043,
+   "slug": "NOBODY",
+   "name": "The Placeholders: Nobody",
+   "artist": "The Placeholders",
+   "display_label": "9043-NOBODY",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full"
+   },
+   "visibility": "private"
+  },
+  "private_no_licence": {
+   "schema_version": 1,
+   "id": "9044-PRIVNOLIC",
+   "number": 9044,
+   "slug": "PRIVNOLIC",
+   "name": "The Placeholders: Privnolic",
+   "artist": "The Placeholders",
+   "display_label": "9044-PRIVNOLIC",
+   "visibility": "private",
+   "owner_email": "Ada@Example.org",
+   "access": [
+    "grace@example.org",
+    " Linus@Example.ORG "
+   ]
+  },
+  "private_morpus_only": {
+   "schema_version": 1,
+   "id": "9045-PRIVMO",
+   "number": 9045,
+   "slug": "PRIVMO",
+   "name": "The Placeholders: Privmo",
+   "artist": "The Placeholders",
+   "display_label": "9045-PRIVMO",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "morpus_only"
+   },
+   "visibility": "private",
+   "owner_email": "Ada@Example.org",
+   "access": [
+    "grace@example.org",
+    " Linus@Example.ORG "
+   ]
+  },
+  "private_whole": {
+   "schema_version": 1,
+   "id": "9046-REDACTED",
+   "number": 9046,
+   "slug": "REDACTED",
+   "name": "The Placeholders: Redacted",
+   "artist": "The Placeholders",
+   "display_label": "9046-REDACTED",
+   "license_note": "Used with the permission of Ada Example.",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "granted_at": "2031-01-01T00:00:00Z",
+    "granted_by": {
+     "legal_name": "Ada Example",
+     "email": "ada@example.org"
+    },
+    "statements": [
+     {
+      "key": "mine",
+      "text": "I am Ada Example and these recordings are mine."
+     }
+    ],
+    "statements_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+   },
+   "visibility": "private",
+   "owner_email": "ada@example.org",
+   "access": [
+    "grace@example.org"
+   ]
+  },
+  "private_redacted": {
+   "schema_version": 1,
+   "id": "9046-REDACTED",
+   "number": 9046,
+   "slug": "REDACTED",
+   "name": "The Placeholders: Redacted",
+   "artist": "The Placeholders",
+   "display_label": "9046-REDACTED",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "granted_at": "2031-01-01T00:00:00Z",
+    "statements_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+   },
+   "visibility": "private"
+  }
+ },
+ "cases": [
+  {
+   "name": "owner studies",
+   "manifest": "private",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "ada@example.org"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   },
+   "why": "Addresses are compared trimmed and lower-cased."
+  },
+  {
+   "name": "owner, other case",
+   "manifest": "private",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "ADA@EXAMPLE.ORG "
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "member on the access list",
+   "manifest": "private",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "grace@example.org"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "member written with spaces and capitals in the manifest",
+   "manifest": "private",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "linus@example.org"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "stranger cannot see",
+   "manifest": "private",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "mallory@example.org"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "stranger cannot study",
+   "manifest": "private",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "mallory@example.org"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   },
+   "why": "Visibility is checked for every capability, before the licence."
+  },
+  {
+   "name": "nobody in particular",
+   "manifest": "private",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "empty address",
+   "manifest": "private",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": ""
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "the platform's own engine",
+   "manifest": "private",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "a device is not a person",
+   "manifest": "private",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "device": "PBOLL-EXM-0001",
+    "player": "example-player"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "public: anyone",
+   "manifest": "public",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "public: a stranger",
+   "manifest": "public",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "mallory@example.org"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "visibility not stated is public",
+   "manifest": "unstated",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "private with no owner and no list",
+   "manifest": "private_no_people",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "ada@example.org"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "private with no owner: the engine still may",
+   "manifest": "private_no_people",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "private and unlicensed: a stranger learns nothing",
+   "manifest": "private_no_licence",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "mallory@example.org"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "private and unlicensed: the owner is told why",
+   "manifest": "private_no_licence",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "ada@example.org"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "licence_missing"
+   }
+  },
+  {
+   "name": "a member is still bound by the licence",
+   "manifest": "private_morpus_only",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "grace@example.org"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "whole, the engine, see",
+   "manifest": "private_whole",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   },
+   "why": "The gate's answer does not depend on the members a hub takes out. That the engine is given only what study needs for a private corpus is the hub's doing: it answers 404 for tracks, audio, art and bundles to a caller that names nobody."
+  },
+  {
+   "name": "redacted, the engine, see",
+   "manifest": "private_redacted",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "whole, the engine, musicians_may_study",
+   "manifest": "private_whole",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "redacted, the engine, musicians_may_study",
+   "manifest": "private_redacted",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "whole, the engine, stream_audio",
+   "manifest": "private_whole",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "redacted, the engine, stream_audio",
+   "manifest": "private_redacted",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "whole, the engine, export_morpus",
+   "manifest": "private_whole",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "redacted, the engine, export_morpus",
+   "manifest": "private_redacted",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "service": true
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "whole, nobody, see",
+   "manifest": "private_whole",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "redacted, nobody, see",
+   "manifest": "private_redacted",
+   "capability": "see",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "whole, nobody, musicians_may_study",
+   "manifest": "private_whole",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "redacted, nobody, musicians_may_study",
+   "manifest": "private_redacted",
+   "capability": "musicians_may_study",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "whole, nobody, stream_audio",
+   "manifest": "private_whole",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "redacted, nobody, stream_audio",
+   "manifest": "private_redacted",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "whole, nobody, export_morpus",
+   "manifest": "private_whole",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "redacted, nobody, export_morpus",
+   "manifest": "private_redacted",
+   "capability": "export_morpus",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   }
+  },
+  {
+   "name": "whole, the owner streams",
+   "manifest": "private_whole",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "ada@example.org"
+   },
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "redacted, a named person: the names are not there to check",
+   "manifest": "private_redacted",
+   "capability": "stream_audio",
+   "clock": "2031-06-01T12:00:00Z",
+   "identity": {
+    "email": "ada@example.org"
+   },
+   "expect": {
+    "allowed": false,
+    "reason": "not_visible"
+   },
+   "why": "A hub sends the redacted manifest only to a caller that names nobody. A client that acts for a person asks the hub in that person's name (X-Pop-For) and is given the whole manifest."
+  }
+ ]
+}

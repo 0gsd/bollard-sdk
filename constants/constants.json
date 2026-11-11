@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "about": "Values the Python and JavaScript bindings must agree on. This file is the only place they are written; tools/generate.py writes python/bollardeck/constants.py and js/bollardeck.constants.js from it, and the constants block inside js/bollardeck.js.",
+  "constants": {
+    "HOLD_MS": {
+      "value": 800,
+      "about": "A press this long or longer is a hold, not a tap."
+    },
+    "TAP_FOLLOW_MS": {
+      "value": 500,
+      "about": "Taps on one button chain when the next press begins within this long of the last release."
+    },
+    "PRESS_MATCH_MS": {
+      "value": 100,
+      "about": "A release that states its own time belongs to an announced press when the press it describes began within this long of the announcement."
+    },
+    "PRESS_LOST_MS": {
+      "value": 5000,
+      "about": "A press a key source announced is forgotten when its release has not come after this long."
+    },
+    "TAP_CHAIN_MAX": {
+      "value": 3,
+      "about": "The longest chain of taps that is one gesture: a triple. A fourth tap starts a new chain."
+    },
+    "CUE_STATES": {
+      "value": ["off", "on", "pulse", "chase"],
+      "about": "The states a button cue can be in."
+    },
+    "CUE_ROLES": {
+      "value": ["a", "b", "c", "live", "go", "warn"],
+      "about": "What a lit button can stand for. A cue may also carry no role (null)."
+    },
+    "PULSE_PERIOD_MS": {
+      "value": 500,
+      "about": "One breath of a pulse cue: 2 Hz."
+    },
+    "CHASE_PERIOD_MS": {
+      "value": 1000,
+      "about": "One turn of a chase cue."
+    },
+    "PULSE_FLOOR": {
+      "value": 0.35,
+      "about": "How bright a pulse cue is at its dimmest, where full is 1."
+    },
+    "CHASE_TAIL": {
+      "value": 0.25,
+      "about": "How bright the lamps behind a chase cue's head are, where the head is 1."
+    },
+    "CHASE_STEPS": {
+      "value": 3,
+      "about": "The lamps in a button's arc: a chase cue's head visits each once per turn."
+    },
+    "BUTTON_NUMBERS": {
+      "value": [1, 2, 3],
+      "about": "The three buttons. A button is its number everywhere on the SDK's surface: cues, key events, gesture names."
+    },
+    "BUTTONS": {
+      "value": [
+        {"button": 1, "label": "inner", "wire": "inner", "id": "BTN_1_PLAY_PAUSE", "job": "play/pause"},
+        {"button": 2, "label": "middle", "wire": "middle", "id": "BTN_2_ONLINE_UPLOAD", "job": "online/upload"},
+        {"button": 3, "label": "outer", "wire": "outer", "id": "BTN_3_POWER", "job": "power"}
+      ],
+      "about": "One row per button. \"button\" is the one vocabulary (1, 2, 3). \"label\" is a name for people and describes the Boll's medallion only. \"wire\" is the word the bollardeck/1 wire uses for the button under \"btn\" (spec/bollardeck.md, 6.2), and \"id\" is its wire id; both are for translating at the wire, stay for as long as the wire is bollardeck/1, and are not a second vocabulary."
+    },
+    "GESTURES": {
+      "value": ["tap1", "tap2", "tap3", "tap1x2", "tap2x2", "tap3x2", "tap1x3", "tap2x3", "tap3x3", "hold1", "hold2", "hold3"],
+      "about": "Every gesture name: tap<button> for one tap, tap<button>x<count> for a chain of 2 or 3 taps, hold<button> for a hold."
+    },
+    "PROMPT_KINDS": {
+      "value": ["abc", "spectrum", "game"],
+      "about": "The kinds of prompt the keymap gives meanings for."
+    },
+    "KEYMAP": {
+      "value": {
+        "v": 2,
+        "prompt": {
+          "tap1": {"abc": {"choice": "A"}, "spectrum": {"choice": -1}, "game": {"do": "raw"}},
+          "tap2": {"abc": {"choice": "B"}, "spectrum": {"choice": 0}, "game": {"do": "raw"}},
+          "tap3": {"abc": {"choice": "C"}, "spectrum": {"choice": 1}, "game": {"do": "raw"}},
+          "tap1x3": {"abc": {"choice": "A"}, "spectrum": {"choice": -2}, "game": {"do": "raw"}},
+          "tap3x3": {"abc": {"choice": "C"}, "spectrum": {"choice": 2}, "game": {"do": "raw"}},
+          "hold1": {"abc": {"do": "replay"}, "spectrum": {"do": "replay"}, "game": null},
+          "hold2": {"abc": {"do": "pass"}, "spectrum": {"do": "pass"}, "game": {"do": "forfeit"}}
+        },
+        "idle": {"tap1": "skip_to_frontier", "tap1x3": "leave_us_alone"},
+        "always": {"hold3": "power"}
+      },
+      "about": "The engagement keymap, version 2: what each gesture means. \"prompt\" applies while a prompt is showing and gives one meaning per kind of prompt: {\"choice\": x} answers the prompt with x, {\"do\": name} is a verb (\"raw\": this kind wants press and release times, not gestures), null takes the gesture and does nothing. \"idle\" (no prompt showing) and \"always\" (both, and first) map a gesture to a verb. It fits schema/keymap.schema.json."
+    }
+  }
+}

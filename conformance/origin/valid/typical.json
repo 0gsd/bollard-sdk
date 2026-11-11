@@ -1,0 +1,32 @@
+{
+  "schema": "popboll.origin/1",
+  "corpus": {
+    "name": "The Placeholders: Home Recordings",
+    "artist": "The Placeholders",
+    "legal_name": "Ada Example",
+    "contact_email": "ada@example.org",
+    "description": "Two made-up albums.",
+    "website": "https://placeholders.example"
+  },
+  "licence": {
+    "shake_version": 2,
+    "shake_file": "POP_BOLL_SHAKE_V2_EXAMPLE.md",
+    "scope": "full",
+    "hosting": "self",
+    "accepted_by": "Ada Example",
+    "accepted_email": "ada@example.org",
+    "accepted_at": "2031-02-03T04:05:06Z",
+    "statement": "An example statement of agreement."
+  },
+  "files": {
+    "manifest": "MANIFEST.tsv",
+    "art": [
+      "art/example-cover.jpg"
+    ]
+  },
+  "auth": {
+    "type": "basic"
+  },
+  "status": "live",
+  "notes": "A made-up origin for the conformance vectors."
+}

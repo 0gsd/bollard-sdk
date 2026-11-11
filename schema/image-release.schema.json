@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/image-release.schema.json",
+  "title": "Image release record (latest.json)",
+  "description": "The record that names the newest Bollawax image, latest.json (image release record 1; it carries no version member of its own). Two shapes are in use. The 0.1.x record names one arm64 image at the top level. The per-profile record, since Bollawax 0.2.0, adds profile, aliases and arches, with one image per architecture; a device takes its own architecture's members over the top-level ones. A record must name an image one way or the other.",
+  "type": "object",
+  "required": [
+    "version"
+  ],
+  "properties": {
+    "version": {
+      "description": "The Bollawax version of the image.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+    },
+    "git_sha": {
+      "type": "string"
+    },
+    "built_at": {
+      "type": "string"
+    },
+    "published_at": {
+      "description": "When the record became the latest.",
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "tarball": {
+      "description": "The image's file name. It carries the version and ends in the architecture.",
+      "type": "string",
+      "pattern": "^bollawax-[a-z][a-z0-9]*_[0-9A-Za-z.-]+_arm64\\.tar\\.gz$"
+    },
+    "sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "size_bytes": {
+      "$ref": "#/$defs/size"
+    },
+    "image_size_bytes": {
+      "$ref": "#/$defs/size"
+    },
+    "profile": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]{0,15}$"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "arches": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "arm64": {
+          "type": "object",
+          "required": [
+            "tarball",
+            "sha256",
+            "size_bytes"
+          ],
+          "properties": {
+            "tarball": {
+              "description": "The image's file name. It carries the version and ends in the architecture.",
+              "type": "string",
+              "pattern": "^bollawax-[a-z][a-z0-9]*_[0-9A-Za-z.-]+_arm64\\.tar\\.gz$"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "size_bytes": {
+              "$ref": "#/$defs/size"
+            },
+            "image_size_bytes": {
+              "$ref": "#/$defs/size"
+            }
+          }
+        },
+        "amd64": {
+          "type": "object",
+          "required": [
+            "tarball",
+            "sha256",
+            "size_bytes"
+          ],
+          "properties": {
+            "tarball": {
+              "description": "The image's file name. It carries the version and ends in the architecture.",
+              "type": "string",
+              "pattern": "^bollawax-[a-z][a-z0-9]*_[0-9A-Za-z.-]+_amd64\\.tar\\.gz$"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "size_bytes": {
+              "$ref": "#/$defs/size"
+            },
+            "image_size_bytes": {
+              "$ref": "#/$defs/size"
+            }
+          }
+        }
+      }
+    },
+    "licence": {
+      "description": "Where the licence of the image is published.",
+      "type": "string"
+    },
+    "notices": {
+      "description": "Where the image keeps its third-party notices.",
+      "type": "string"
+    },
+    "signature": {
+      "description": "Reserved. Read by devices; its format is not specified yet.",
+      "type": "string"
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "arches"
+      ]
+    },
+    {
+      "required": [
+        "tarball",
+        "sha256",
+        "size_bytes"
+      ]
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "description": "SHA-256 of the image file. Hex, lower case.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "size": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/device-identity.schema.json",
+  "title": "Device identity (device_identity.json)",
+  "description": "The identity a device keeps in its data directory, device_identity.json, schema_version 1. A serial reads PB<number>-<maker>-<hardware id>; the maker code comes from the maker registry (popboll.makers/1). Only \"serial\" is needed to read the file; a writer writes every member except provisioned_at, which is added when the device is given its number.",
+  "type": "object",
+  "required": [
+    "serial"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "serial": {
+      "$ref": "#/$defs/serial"
+    },
+    "number": {
+      "description": "The unit's number; 0 until it is provisioned.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "maker": {
+      "description": "The serial's maker code; empty when the serial does not parse.",
+      "type": "string"
+    },
+    "hardware_id": {
+      "type": "string"
+    },
+    "source": {
+      "description": "Where the identity came from.",
+      "type": "string",
+      "pattern": "^(env|file|random|hardware:.+)$"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "provisioned_at": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "serial": {
+      "description": "Any serial in the field, virtual ones (VPB...) and old test serials included.",
+      "type": "string",
+      "pattern": "^V?PB[0-9]{4,6}-[A-Za-z0-9]+-.+$"
+    },
+    "device_serial": {
+      "description": "A physical device's serial, strictly. Its maker code must also be registered as first-party or third-party, which a schema cannot check.",
+      "type": "string",
+      "pattern": "^PB[0-9]{4,6}-[A-Z][A-Z0-9]{2,5}-[A-Za-z0-9]{1,32}$"
+    },
+    "maker_code": {
+      "description": "3 to 6 upper-case letters or digits, starting with a letter.",
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]{2,5}$"
+    }
+  }
+}

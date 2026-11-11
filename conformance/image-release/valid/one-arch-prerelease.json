@@ -1,0 +1,11 @@
+{
+  "version": "9.9.0-rc.1",
+  "profile": "snipler",
+  "arches": {
+    "arm64": {
+      "tarball": "bollawax-snipler_9.9.0-rc.1_arm64.tar.gz",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "size_bytes": 1
+    }
+  }
+}

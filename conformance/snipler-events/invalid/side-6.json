@@ -1,0 +1,9 @@
+{
+  "events": [
+    {
+      "type": "side_down",
+      "side": 6,
+      "t_ms": 1
+    }
+  ]
+}

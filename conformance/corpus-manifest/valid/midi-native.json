@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "9001-PLACEHOLDERS",
+  "number": 9001,
+  "slug": "PLACEHOLDERS",
+  "name": "The Placeholders: Collected Examples",
+  "artist": "The Placeholders",
+  "display_label": "9001-PLACEHOLDERS",
+  "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "public_domain_midi"
+  },
+  "midi_sources": [
+    {
+      "file": "example/prelude.mid",
+      "album": "Example Suite",
+      "title": "Prelude",
+      "slugs": [
+        "example_suite",
+        "prelude"
+      ],
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "bytes": 2048,
+      "source_url": "https://example.org/midi/prelude.mid",
+      "source_licence": "CC-BY 4.0",
+      "attribution": "Sequenced by A. N. Example"
+    }
+  ],
+  "midi_source_licences": {
+    "CC-BY": 1
+  }
+}

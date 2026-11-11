@@ -1,0 +1,16 @@
+{
+  "v": 2,
+  "prompt": {
+    "tap1": {
+      "quiz": {
+        "choice": null
+      }
+    }
+  },
+  "idle": {
+    "tap2x2": "wave"
+  },
+  "always": {
+    "hold3": "sleep"
+  }
+}

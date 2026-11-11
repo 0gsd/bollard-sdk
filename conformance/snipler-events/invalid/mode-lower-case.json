@@ -1,0 +1,9 @@
+{
+  "events": [
+    {
+      "type": "mode",
+      "mode": "s",
+      "t_ms": 1
+    }
+  ]
+}

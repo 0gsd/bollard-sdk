@@ -1,0 +1,33 @@
+{
+  "v": 2,
+  "prompt": {
+    "tap1": {
+      "quiz": {
+        "choice": "first"
+      },
+      "slider": {
+        "choice": -1
+      }
+    },
+    "tap3": {
+      "quiz": {
+        "choice": "third"
+      },
+      "slider": {
+        "choice": 1.5
+      }
+    },
+    "hold1": {
+      "quiz": {
+        "do": "again"
+      },
+      "slider": null
+    }
+  },
+  "idle": {
+    "tap4": "wave"
+  },
+  "always": {
+    "hold3": "sleep"
+  }
+}
