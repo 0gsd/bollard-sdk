@@ -155,8 +155,8 @@ test("every resolver case: the keymap's answer is the vector's", () => {
   for (const group of resolve.groups) {
     for (const c of group.cases) {
       count += 1;
-      const r = K.resolve(c.gesture, c.prompt, group.keymap);
-      const where = group.name + ": " + c.gesture + " during " + c.prompt;
+      const r = K.resolve(c.gesture, c.prompt, group.keymap, c.context);
+      const where = group.name + ": " + c.gesture + " during " + c.prompt + (c.context ? " in " + c.context : "");
       assert.deepEqual({ source: r.source, kind: r.kind, value: r.value }, c.expect, where);
       assert.equal(r.handled, c.expect.source !== null, where);
       assert.equal(r.action, c.expect.kind === "do" ? c.expect.value : null, where);
@@ -167,6 +167,9 @@ test("every resolver case: the keymap's answer is the vector's", () => {
   assert.ok(count >= 77);
   for (const e of resolve.errors) assert.throws(() => K.resolve(e.gesture, null), RangeError, e.about);
   for (const e of resolve.bad_keymaps) assert.throws(() => K.resolve(e.gesture, e.prompt, e.keymap), RangeError, e.about);
+  for (const e of resolve.bad_contexts) assert.throws(() => K.resolve(e.gesture, null, null, e.context), RangeError, e.about);
+  assert.deepEqual(K.combos(null, ["pocket"]), { 1: [2, 3], 2: [2], 3: [2, 3] }, "a pocket engine gets the double taps");
+  assert.deepEqual(K.combos(), { 1: [3], 3: [3] }, "no context: the combos are what they were");
   assert.deepEqual(K.resolve("tap1", undefined), K.resolve("tap1", null), "no prompt is no prompt, however it is said");
 });
 

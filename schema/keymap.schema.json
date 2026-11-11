@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://popboll.com/sdk/schema/keymap.schema.json",
   "title": "Engagement keymap",
-  "description": "What each button gesture means, keymap version 2 (\"v\": 2). Gestures are named tap<button>, tap<button>x<count> for a chain of 2 or 3 taps, and hold<button>, with the button as a number 1 to 3 (constants/constants.json, GESTURES). \"always\" applies whether or not a prompt is showing and is looked at first; \"prompt\" applies while a prompt is showing and gives one meaning per kind of prompt; \"idle\" applies when no prompt is showing. A meaning says what it is: {\"choice\": x} answers the prompt, {\"do\": name} is a verb, null takes the gesture and does nothing. A gesture a map does not name is not the keymap's business. Version 1 wrote a prompt meaning as a bare string or number and left the reader to know which strings were verbs; it is not accepted.",
+  "description": "What each button gesture means, keymap version 2 (\"v\": 2). Gestures are named tap<button>, tap<button>x<count> for a chain of 2 or 3 taps, and hold<button>, with the button as a number 1 to 3 (constants/constants.json, GESTURES). \"always\" applies whether or not a prompt is showing and is looked at first; \"prompt\" applies while a prompt is showing and gives one meaning per kind of prompt; \"idle\" applies when no prompt is showing. \"pocket\" (optional) applies when no prompt is showing and the reader says the device is in the pocket context (a cart with no dock); it is looked at before \"idle\". A meaning says what it is: {\"choice\": x} answers the prompt, {\"do\": name} is a verb, null takes the gesture and does nothing. A gesture a map does not name is not the keymap's business. Version 1 wrote a prompt meaning as a bare string or number and left the reader to know which strings were verbs; it is not accepted.",
   "type": "object",
   "required": [
     "v",
@@ -108,6 +108,49 @@
     },
     "always": {
       "description": "Gesture to verb in both states. It wins over the other two maps.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tap1": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap1x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3x2": {
+          "$ref": "#/$defs/action"
+        },
+        "tap1x3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap2x3": {
+          "$ref": "#/$defs/action"
+        },
+        "tap3x3": {
+          "$ref": "#/$defs/action"
+        },
+        "hold1": {
+          "$ref": "#/$defs/action"
+        },
+        "hold2": {
+          "$ref": "#/$defs/action"
+        },
+        "hold3": {
+          "$ref": "#/$defs/action"
+        }
+      }
+    },
+    "pocket": {
+      "description": "Optional. Gesture to a player verb when no prompt is showing and the device is in the pocket context. Looked at before idle; always still wins.",
       "type": "object",
       "additionalProperties": false,
       "properties": {

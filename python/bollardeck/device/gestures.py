@@ -125,11 +125,14 @@ def parse_gesture(name: str) -> Tuple[str, int, int]:
     return m.group(1), int(m.group(2)), int(m.group(3) or 1)
 
 
-def combos_from_keymap(keymap: Mapping[str, Any]) -> Dict[int, Tuple[int, ...]]:
+def combos_from_keymap(keymap: Mapping[str, Any], contexts: Iterable[str] = ()) -> Dict[int, Tuple[int, ...]]:
     """The chain lengths a keymap gives a meaning to, per button: the combos an engine needs so
-    that every gesture the keymap names can happen. {1: (3,), 3: (3,)} for the platform's keymap."""
+    that every gesture the keymap names can happen. {1: (3,), 3: (3,)} for the platform's keymap.
+    `contexts` adds the maps of those device contexts ("pocket"): an engine for a cart in a pocket
+    is made with `combos_from_keymap(KEYMAP, ("pocket",))`, which gives every button a double tap;
+    with no contexts the answer is what it was before contexts existed."""
     found: Dict[int, set] = {}
-    for section in ("prompt", "idle", "always"):
+    for section in ("prompt", "idle", "always") + tuple(contexts):
         for name in (keymap.get(section) or {}):
             m = _NAME_RE.match(name)
             if m and m.group(1) == "tap" and m.group(3):

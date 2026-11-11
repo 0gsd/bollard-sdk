@@ -1,0 +1,33 @@
+{
+  "v": 1,
+  "serial": "PB0042-UNOQ-a1b2c3d4",
+  "maker": "UNOQ",
+  "edition": "9001-PLACEHOLDER",
+  "role": "pocket",
+  "computer": false,
+  "power": {
+    "source": "pack",
+    "percent": 64,
+    "charging": false,
+    "pack": {
+      "present": true,
+      "wh": 7.5
+    }
+  },
+  "route": "bt",
+  "routes": [
+    "jack",
+    "bt"
+  ],
+  "ports": [
+    "bollport",
+    "side"
+  ],
+  "image": {
+    "version": "0.2.5"
+  },
+  "carrier": {
+    "rev": "A",
+    "foot": true
+  }
+}

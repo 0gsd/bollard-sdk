@@ -20,6 +20,9 @@ A board module (or any object with these attributes) exports:
     Power(sysfs)    battery and mains                   -> the Power protocol
     Storage()       where data and corpora live         -> the Storage protocol
     Cues()          button cues                         -> the Cues protocol
+    FilePlayer()    audio files from an offset          -> the FilePlayer protocol      (optional, SDK 0.2.0)
+    AudioRoutes()   where sound goes: dock, jack, ...   -> the AudioRoutes protocol     (optional, SDK 0.2.0)
+    Bluetooth()     headsets and speakers               -> the Bluetooth protocol       (optional, SDK 0.2.0)
     matrix_transport()   the board's own matrix transport when nobody said which, or None for off
     render_matrix(frames)  the bytes this board's matrix renderer emits for [(t_ms, frame), ...]
 
@@ -27,7 +30,10 @@ Anything a module leaves out is taken from the simulator, one subsystem at a tim
 
 `HAL_API` is the version of this interface: the protocol method names and signatures, the key
 event and cue shapes, and the attribute list above. It goes up when a change would break a board
-module written for the version before.
+module written for the version before. The three subsystems marked SDK 0.2.0 were added without a new
+version: a board module written before them simply lacks them and gets the simulator's, and
+`PowerState` gained two fields with defaults, so `PowerState(ac_online, percent, voltage_mv)`
+means what it always did.
 """
 from __future__ import annotations
 
@@ -35,11 +41,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional, Protocol, Sequence
 
-from ...constants import BUTTON_NUMBERS, CHASE_PERIOD_MS, CUE_ROLES, CUE_STATES, PULSE_PERIOD_MS
+from ...constants import (AUDIO_ROUTES, BUTTON_NUMBERS, CHASE_PERIOD_MS, CUE_ROLES, CUE_STATES, POWER_SOURCES,
+                          PULSE_PERIOD_MS)
 from ..cues import Cue, cue_line, normalise as normalise_cue_list
 
 __all__ = ["HAL_API", "KeyEvent", "PowerState", "Handle", "Keys", "Matrix", "AudioOut", "Display", "Power",
-           "Storage", "Cue", "Cues", "MAKER_CODES", "DEFAULT_MAKER_CODE", "maker_code_for", "BUTTONS",
+           "Storage", "Cue", "Cues", "FilePlayer", "AudioRoutes", "Route", "Bluetooth", "BtDevice", "AUDIO_ROUTES",
+           "POWER_SOURCES", "MAKER_CODES", "DEFAULT_MAKER_CODE", "maker_code_for", "BUTTONS",
            "parse_key_line", "key_line", "KEY_DOWN_WORD", "normalise_cue_list", "cue_line", "NullHandle", "frames_hex",
            "CUE_STATES", "CUE_ROLES", "PULSE_PERIOD_MS", "CHASE_PERIOD_MS"]
 
@@ -56,9 +64,17 @@ KeyEvent = Dict[str, Any]
 
 @dataclass(frozen=True)
 class PowerState:
+    """What a board's power looks like now. `ac_online` is True when outside power is present (mains,
+    a dock, a USB charger or computer); `percent` and `voltage_mv` describe the battery. Added in
+    SDK 0.2.0, with defaults so the three-field form means what it always did: `source` (one of
+    `POWER_SOURCES`: where the power comes from now, "unknown" when the board cannot tell) and
+    `charging` (True while the battery charges, False when it does not, None when there is no
+    battery or the board cannot tell)."""
     ac_online: bool
     percent: float
     voltage_mv: int
+    source: str = "unknown"
+    charging: Optional[bool] = None
 
 
 class Handle(Protocol):
@@ -86,6 +102,60 @@ class Display(Protocol):
 
 class Power(Protocol):
     def read(self) -> PowerState: ...
+
+
+class FilePlayer(Protocol):
+    """Audio files (SDK 0.2.0). play_file starts `path` `offset_ms` into it on the current route and
+    returns at once with a Handle; a pause is stop() and a later play_file at the paused offset.
+    can_play says whether this board can decode the file at all (by its content or its name)."""
+    def play_file(self, path: Path, offset_ms: int = 0) -> Handle: ...
+    def can_play(self, path: Path) -> bool: ...
+
+
+@dataclass(frozen=True)
+class Route:
+    """One place sound can go (SDK 0.2.0): `kind` is one of `AUDIO_ROUTES`; `label` is for people
+    ("Bose QC35", "Pop Boll"); `device` is the board's own name for it (an ALSA or PipeWire sink,
+    a Bluetooth address), opaque to programs."""
+    kind: str
+    label: str = ""
+    device: str = ""
+
+
+class AudioRoutes(Protocol):
+    """Where the board's sound goes (SDK 0.2.0).
+    available() lists the routes that could play now; current() is the kind playing now ("none"
+    when none); select(kind) makes that route current and returns the kind now current (ValueError
+    for a kind that is not available); volume and set_volume are 0..100 for a route (the current
+    one when kind is None)."""
+    def available(self) -> List[Route]: ...
+    def current(self) -> str: ...
+    def select(self, kind: str) -> str: ...
+    def volume(self, kind: Optional[str] = None) -> int: ...
+    def set_volume(self, level: int, kind: Optional[str] = None) -> int: ...
+
+
+@dataclass(frozen=True)
+class BtDevice:
+    """A Bluetooth device the board knows (SDK 0.2.0). `kind` is "audio" for headphones and speakers
+    (an A2DP sink), "other" for anything else."""
+    address: str
+    name: str = ""
+    paired: bool = False
+    connected: bool = False
+    kind: str = "audio"
+
+
+class Bluetooth(Protocol):
+    """Headsets and speakers (SDK 0.2.0). The board is the audio source; pair() opens a window of
+    `seconds` in which it looks for a headset in pairing mode and pairs with it; pairing_until is
+    when that window closes (t_ms, None when closed). Time enters as t_ms, never from the clock."""
+    def devices(self) -> List[BtDevice]: ...
+    def pair(self, seconds: int = 60, t_ms: int = 0) -> None: ...
+    def pairing_until(self) -> Optional[int]: ...
+    def connect(self, address: str) -> bool: ...
+    def disconnect(self, address: str) -> None: ...
+    def forget(self, address: str) -> None: ...
 
 
 class Storage(Protocol):

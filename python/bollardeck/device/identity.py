@@ -2,7 +2,7 @@
 """
 bollardeck.device.identity: device serials and the maker registry.
 
-Every device has a serial like `PB0007-UNOQ-2822080200`:
+Every device has a serial like `PB0007-UNOQ-0123456789`:
 
     PB{number:04d}-{maker}-{hardware_id}
 
@@ -12,11 +12,11 @@ devices carry `VPB...` serials.
 
     from bollardeck.device import identity
 
-    identity.parse("PB0007-UNOQ-2822080200")
-    # Serial(virtual=False, number=7, maker="UNOQ", hardware_id="2822080200")
-    identity.format_serial(7, "2822080200", "UNOQ")        # "PB0007-UNOQ-2822080200"
+    identity.parse("PB0007-UNOQ-0123456789")
+    # Serial(virtual=False, number=7, maker="UNOQ", hardware_id="0123456789")
+    identity.format_serial(7, "0123456789", "UNOQ")        # "PB0007-UNOQ-0123456789"
     identity.validate_serial("PB0007-ACME-1234ABCD")       # ["maker code 'ACME' is reserved (...)"]
-    identity.is_device_serial("PB0007-UNOQ-2822080200")    # True
+    identity.is_device_serial("PB0007-UNOQ-0123456789")    # True
     identity.label_for(7)                                  # "PBOLL #0007"
 
     me = identity.read_identity("/popbollard/data")        # this device's own identity file, or None
@@ -77,7 +77,7 @@ MAX_NUMBER = 999999
 
 MAKER_CODE_RE = re.compile(r"^[A-Z][A-Z0-9]{2,5}\Z")           # any code in a serial
 THIRD_PARTY_CODE_RE = re.compile(r"^[A-Z]{3,6}\Z")             # a code the registry gives a third party
-# PB0007-UNOQ-2822080200, VPB0007-WEB-pb-k3x9qa, VPB0007-CLOUD-LILDOCKER, PB0002-PEER-99887766
+# PB0007-UNOQ-0123456789, VPB0007-WEB-pb-k3x9qa, VPB0007-CLOUD-LILDOCKER, PB0002-PEER-99887766
 SERIAL_RE = re.compile(r"^(V?)PB(\d{4,6})-([A-Za-z0-9]+)-(.+)\Z", re.ASCII)
 # A physical device's serial, strictly.
 DEVICE_SERIAL_RE = re.compile(r"^PB(\d{4,6})-([A-Z][A-Z0-9]{2,5})-([A-Za-z0-9]{1,32})\Z", re.ASCII)

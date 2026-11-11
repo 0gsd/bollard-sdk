@@ -12,7 +12,9 @@
     "image-release": "schema/image-release.schema.json",
     "snipler-events": "schema/snipler-events.schema.json",
     "snipler-frame": "schema/snipler-frame.schema.json",
-    "keymap": "schema/keymap.schema.json"
+    "keymap": "schema/keymap.schema.json",
+    "dock-descriptor": "schema/dock-descriptor.schema.json",
+    "cart-descriptor": "schema/cart-descriptor.schema.json"
   },
   "vectors": [
     {"schema": "corpus-manifest", "file": "corpus-manifest/valid/form-cap.json", "valid": true, "reason": "An explicit song-length cap that follows another corpus."},
@@ -217,6 +219,27 @@
     {"schema": "keymap", "file": "keymap/invalid/do-a-number.json", "valid": false, "reason": "A verb is a name.", "at": "/prompt/tap1/quiz"},
     {"schema": "keymap", "file": "keymap/invalid/prompt-flat.json", "valid": false, "reason": "A prompt entry is an object by kind, not one meaning.", "at": "/prompt/tap1"},
     {"schema": "keymap", "file": "keymap/invalid/action-with-space.json", "valid": false, "reason": "A verb has no spaces.", "at": "/always/hold3"},
-    {"schema": "keymap", "file": "keymap/invalid/extra-member.json", "valid": false, "reason": "No members beyond v, doc, prompt, idle and always.", "at": "/game"}
+    {"schema": "keymap", "file": "keymap/invalid/extra-member.json", "valid": false, "reason": "No members beyond v, doc, prompt, idle and always.", "at": "/game"},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/valid/boll.json", "valid": true, "reason": "A Pop Boll speaker dock with one slot, its battery, a charge budget, inputs, lights and audio."},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/valid/snipler.json", "valid": true, "reason": "A Glass Snipler with a guest slot, a Control Layer code and MIDI."},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/valid/minimal.json", "valid": true, "reason": "Only the version and the class: a dock that says no more allows 5 W of charging."},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/valid/none.json", "valid": true, "reason": "Nothing on the Bollport: the cart's own record of pocket mode."},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/valid/plain.json", "valid": true, "reason": "A hub or screen that sent no descriptor: the cart's own record of TV mode."},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/invalid/no-class.json", "valid": false, "reason": "class is required.", "at": ""},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/invalid/class-unknown.json", "valid": false, "reason": "class is speaker, screen, none or plain.", "at": "/class"},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/invalid/none-with-a-model.json", "valid": false, "reason": "none and plain carry no other member.", "at": "/model"},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/invalid/charge-negative.json", "valid": false, "reason": "charge_w is zero or more.", "at": "/charge_w"},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/invalid/slot-role.json", "valid": false, "reason": "a slot is primary or guest.", "at": "/slots/0/role"},
+    {"schema": "dock-descriptor", "file": "dock-descriptor/invalid/version-2.json", "valid": false, "reason": "This is version 1.", "at": "/v"},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/valid/pocket.json", "valid": true, "reason": "A cart in a pocket on its pack, playing to Bluetooth, every member."},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/valid/docked-and-linked.json", "valid": true, "reason": "Primary in a dock, charging, a computer linked on the side port."},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/valid/minimal.json", "valid": true, "reason": "Only the version, the serial and the role."},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/valid/no-gauge.json", "valid": true, "reason": "A cart that cannot read a battery says unknown and null, not a made-up percent."},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/invalid/no-role.json", "valid": false, "reason": "role is required.", "at": ""},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/invalid/role-unknown.json", "valid": false, "reason": "role is one of the cart roles.", "at": "/role"},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/invalid/serial.json", "valid": false, "reason": "a serial reads PB<number>-<maker>-<hardware id>.", "at": "/serial"},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/invalid/route-unknown.json", "valid": false, "reason": "route is one of the audio routes.", "at": "/route"},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/invalid/power-source.json", "valid": false, "reason": "power.source is one of the power sources.", "at": "/power/source"},
+    {"schema": "cart-descriptor", "file": "cart-descriptor/invalid/percent-over.json", "valid": false, "reason": "a percent is at most 100.", "at": "/power/percent"}
   ]
 }

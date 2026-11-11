@@ -4,12 +4,15 @@ bollardeck.device.hal: the hardware abstraction layer, interface version 1 (`HAL
 
     from bollardeck.device import hal
 
-    board = hal.current()            # detected once: $BOLLAWAX_HAL > the device-tree model > sim
+    board = hal.current()            # detected once: $BOLLAWAX_HAL > the device-tree model (none: the router's socket) > sim
     board.name                       # "sim" on a dev machine
     board.maker_code                 # the maker code in this board's serials ("SIM")
     for ev in board.keys(stream).events(): ...     # a complete press, or ("down": 1) a press beginning
     board.cues().set([{"button": 1, "state": "on", "role": "a"}])
-    board.power().read()             # PowerState(ac_online, percent, voltage_mv)
+    board.power().read()             # PowerState(ac_online, percent, voltage_mv, source, charging)
+    board.files().play_file(path, offset_ms=0)     # SDK 0.2.0: a file from an offset, on the current route
+    board.routes().available()       # SDK 0.2.0: [Route("jack"), Route("bt", ...)]; current(), select(kind)
+    board.bluetooth().pair(60, t_ms) # SDK 0.2.0: look for a headset in pairing mode for 60 s
     board.storage().data_dir()
     hal.describe()                   # "sim", or "unoq (power->sim)" after a fallback
 
@@ -57,14 +60,16 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Union
 
 from . import base, detection, sim
-from .base import (HAL_API, AudioOut, Cues, Display, Keys, KeyEvent, Matrix, Power, PowerState, Storage,
-                   key_line, normalise_cue_list, parse_key_line)
+from .base import (HAL_API, AUDIO_ROUTES, POWER_SOURCES, AudioOut, AudioRoutes, Bluetooth, BtDevice, Cues,
+                   Display, FilePlayer, Keys, KeyEvent, Matrix, Power, PowerState, Route, Storage, key_line,
+                   normalise_cue_list, parse_key_line)
 from .detection import BUILTIN, DEVICE_TREE_MODEL, ENV_VAR
 
 __all__ = ["HAL_API", "Board", "Family", "board", "current", "describe", "detect", "maker_code", "reset",
            "register", "unregister", "registered", "known", "KNOWN", "families", "base", "detection", "sim",
            "AudioOut", "Cues", "Display", "Keys", "KeyEvent", "Matrix", "Power", "PowerState", "Storage",
-           "normalise_cue_list", "parse_key_line", "key_line"]
+           "normalise_cue_list", "parse_key_line", "key_line", "FilePlayer", "AudioRoutes", "Route", "Bluetooth",
+           "BtDevice", "AUDIO_ROUTES", "POWER_SOURCES"]
 
 logger = logging.getLogger("bollardeck.hal")
 _LOCK = threading.RLock()
@@ -231,6 +236,18 @@ class Board:
 
     def cues(self) -> Cues:
         return self._use("cues", lambda: self.module.Cues(), sim.FileCues)
+
+    # SDK 0.2.0: optional subsystems. A board module written before them lacks them and gets the
+    # simulator's (logged once, shown in describe()). Each call makes a new object: keep the one
+    # you got when it holds state (routes, Bluetooth).
+    def files(self) -> FilePlayer:
+        return self._use("files", lambda: self.module.FilePlayer(), sim.NullFiles)
+
+    def routes(self) -> AudioRoutes:
+        return self._use("routes", lambda: self.module.AudioRoutes(), sim.SimRoutes)
+
+    def bluetooth(self) -> Bluetooth:
+        return self._use("bluetooth", lambda: self.module.Bluetooth(), sim.SimBluetooth)
 
     def describe(self) -> str:
         if not self.fallbacks:

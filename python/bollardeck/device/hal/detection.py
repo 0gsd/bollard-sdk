@@ -4,8 +4,11 @@ bollardeck.device.hal.detection: which board family this is.
 
     family = $BOLLAWAX_HAL, when it names a known or registered family
            | the first registered family whose own rule accepts /proc/device-tree/model
+           | with no model at all (a container: Docker hides /sys/firmware), the Arduino
+             router's Unix socket at $ARDUINO_ROUTER_SOCKET (default
+             /var/run/arduino-router.sock)                 -> unoq
            | from the model, by the built-in rules:
-                 "Arduino UNO Q*"                          -> unoq
+                 "Arduino UNO Q*" | "Arduino SA,Imola*"    -> unoq
                  "Raspberry Pi 5*" | "*Compute Module 5*"  -> pi5
            | sim
 
@@ -17,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import os
+import stat
 from pathlib import Path
 from typing import Callable, Iterable, Mapping, Optional, Tuple
 
@@ -26,6 +30,9 @@ BUILTIN = ("unoq", "pi5", "sim")              # families the built-in rules can 
 KNOWN = BUILTIN                               # the name this tuple has always had
 ENV_VAR = "BOLLAWAX_HAL"
 DEVICE_TREE_MODEL = Path("/proc/device-tree/model")
+ROUTER_SOCKET_ENV = "ARDUINO_ROUTER_SOCKET"
+ROUTER_SOCKET = Path("/var/run/arduino-router.sock")
+UNOQ_MODELS = ("Arduino UNO Q", "Arduino SA,Imola")   # the second is what the board's device tree says
 
 Rule = Tuple[str, Callable[[str], bool]]      # (family name, does this model string belong to it)
 
@@ -38,10 +45,23 @@ def model_string(path: Path = DEVICE_TREE_MODEL) -> str:
         return ""
 
 
+def router_socket(env: Optional[Mapping[str, str]] = None) -> bool:
+    """Whether the Arduino router's socket ($ARDUINO_ROUTER_SOCKET, else its default path) is a Unix socket
+    here: the evidence of a Uno Q that a container can see. A tcp:// address or a plain file is not."""
+    env = os.environ if env is None else env
+    path = (env.get(ROUTER_SOCKET_ENV) or "").strip() or str(ROUTER_SOCKET)
+    if "://" in path:
+        return False
+    try:
+        return stat.S_ISSOCK(os.stat(path).st_mode)
+    except (OSError, ValueError):
+        return False
+
+
 def from_model(model: str) -> str:
     """The built-in rules alone."""
     m = (model or "").strip()
-    if m.startswith("Arduino UNO Q"):
+    if m.startswith(UNOQ_MODELS):
         return "unoq"
     if m.startswith("Raspberry Pi 5") or "Compute Module 5" in m:
         return "pi5"
@@ -67,4 +87,6 @@ def detect(env: Optional[Mapping[str, str]] = None, model_path: Path = DEVICE_TR
                 return name
         except Exception as exc:  # noqa: BLE001 - a broken rule must not stop a device booting
             logger.warning("hal %s: its detection rule failed (%s: %s); skipped", name, type(exc).__name__, exc)
+    if not model and router_socket(env):
+        return "unoq"
     return from_model(model)

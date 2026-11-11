@@ -442,8 +442,9 @@ class Keymap(unittest.TestCase):
         doc = vectors("gestures/resolve.json")
         for group in doc["groups"]:
             for case in group["cases"]:
-                with self.subTest(group=group["name"], gesture=case["gesture"], prompt=case["prompt"]):
-                    got = keymap.resolve(case["gesture"], case["prompt"], group["keymap"])
+                with self.subTest(group=group["name"], gesture=case["gesture"], prompt=case["prompt"],
+                                  context=case.get("context")):
+                    got = keymap.resolve(case["gesture"], case["prompt"], group["keymap"], context=case.get("context"))
                     self.assertEqual(got.to_dict(), case["expect"])
                     self.assertEqual(got.handled, case["expect"]["source"] is not None)
                     self.assertEqual(got.action, got.value if got.kind == "do" else None)
@@ -456,6 +457,37 @@ class Keymap(unittest.TestCase):
             with self.assertRaises(ValueError, msg=bad["about"]):
                 keymap.resolve(bad["gesture"], bad["prompt"], bad["keymap"])
             self.assertTrue(keymap.problems(bad["keymap"]), bad["about"])
+        for bad in doc["bad_contexts"]:
+            with self.assertRaises(ValueError, msg=bad["about"]):
+                keymap.resolve(bad["gesture"], context=bad["context"])
+
+    def test_the_pocket_context_adds_and_changes_nothing_else(self):
+        # SDK 0.2.0: a context is optional; with none, every answer is what it was before.
+        self.assertEqual(keymap.CONTEXTS, ("pocket",))
+        for g in constants.GESTURES:
+            for p in (None,) + tuple(constants.PROMPT_KINDS):
+                without = dict(constants.KEYMAP)
+                without.pop("pocket")
+                self.assertEqual(keymap.resolve(g, p).to_dict(), keymap.resolve(g, p, without).to_dict(), (g, p))
+        self.assertEqual(keymap.resolve("tap2", context="pocket").action, "whats_on")
+        self.assertEqual(keymap.resolve("tap2").source, None)
+        self.assertEqual(keymap.resolve("hold3", context="pocket").source, "always")
+        self.assertEqual(keymap.resolve("tap1", "abc", context="pocket").choice, "A")
+        self.assertEqual(keymap.resolve("tap1x3", context="pocket").to_dict(),
+                         {"source": "idle", "kind": "do", "value": "leave_us_alone"})
+        verbs = set(constants.KEYMAP["pocket"].values())
+        self.assertLessEqual(verbs, set(constants.POCKET_VERBS))
+        self.assertEqual(keymap.problems(constants.KEYMAP), [])
+
+    def test_combos_are_unchanged_without_a_context(self):
+        from bollardeck.device import gestures
+        self.assertEqual(gestures.DEFAULT_COMBOS, {1: (3,), 3: (3,)})
+        self.assertEqual(gestures.combos_from_keymap(constants.KEYMAP, ("pocket",)), {1: (2, 3), 2: (2,), 3: (2, 3)})
+
+    def test_a_pocket_entry_under_always_is_a_problem(self):
+        doc = {"v": 2, "prompt": {}, "idle": {}, "always": {"hold3": "power"}, "pocket": {"hold3": "stop"}}
+        self.assertEqual(len(keymap.problems(doc)), 1)
+        self.assertIn("/pocket/hold3", keymap.problems(doc)[0])
 
     def test_the_platform_group_is_the_constant_and_covers_everything(self):
         group = vectors("gestures/resolve.json")["groups"][0]
@@ -550,6 +582,34 @@ class Hal(Quiet):
             self.assertEqual(json.loads(frames.read_text()), {"b": 2, "v": 1})
             self.assertEqual(sim.render_matrix([(0, b"\x01\x02"), (40, b"\xff")]), b"0 0102\n40 ff\n")
             self.assertEqual(base.frames_hex([(0, b"\x01\x02")]), ["0102"])
+
+    def test_a_uno_q_by_its_board_model_or_its_router_socket(self):
+        """A Uno Q's device tree says "Arduino SA,Imola"; inside a container there is no device-tree model at all,
+        and the Arduino router's Unix socket is the board's evidence there. A model naming another board still
+        decides, and $BOLLAWAX_HAL still wins."""
+        import socket
+        with tempfile.TemporaryDirectory() as folder, tempfile.TemporaryDirectory(prefix="r", dir="/tmp") as short:
+            model = pathlib.Path(folder) / "model"
+            model.write_bytes(b"Arduino SA,Imola\x00")
+            self.assertEqual(hal.detect(env={}, model_path=model), "unoq")
+            nothing = pathlib.Path(folder) / "none"
+            path = pathlib.Path(short) / "router.sock"
+            router = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            router.bind(str(path))
+            try:
+                with_socket = {"ARDUINO_ROUTER_SOCKET": str(path)}
+                self.assertEqual(hal.detect(env=with_socket, model_path=nothing), "unoq")
+                model.write_bytes(b"Raspberry Pi 5 Model B Rev 1.0\x00")
+                self.assertEqual(hal.detect(env=with_socket, model_path=model), "pi5")
+                self.assertEqual(hal.detect(env=dict(with_socket, BOLLAWAX_HAL="sim"), model_path=nothing), "sim")
+            finally:
+                router.close()
+            path.unlink()                                              # no socket there any more
+            plain = pathlib.Path(short) / "plain"
+            plain.write_text("")
+            for not_a_socket in (str(path), str(plain), "tcp://127.0.0.1:9"):
+                self.assertEqual(hal.detect(env={"ARDUINO_ROUTER_SOCKET": not_a_socket}, model_path=nothing), "sim",
+                                 not_a_socket)
 
     def test_detection_order(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -710,7 +770,7 @@ class Hal(Quiet):
 
 class Identity(Quiet):
     def test_parse_and_format(self):
-        self.assertEqual(identity.parse("PB0007-UNOQ-2822080200"), identity.Serial(False, 7, "UNOQ", "2822080200"))
+        self.assertEqual(identity.parse("PB0007-UNOQ-0123456789"), identity.Serial(False, 7, "UNOQ", "0123456789"))
         self.assertEqual(identity.parse(" VPB0007-web-pb-k3x9qa "), identity.Serial(True, 7, "WEB", "pb-k3x9qa"))
         self.assertEqual(identity.parse_serial("PB0002-USB-PEER-774411"), (2, "PEER-774411"))
         for bad in ("", None, "PB007-UNOQ-1", "XB0007-UNOQ-1", "PB0007-UNOQ-", "PB0007--1", "PB0007-UNOQ-1\n2"):
@@ -720,19 +780,19 @@ class Identity(Quiet):
         self.assertEqual((identity.number_from_serial("VPB0042-WEB-x"), identity.song_id_prefix("VPB0042-WEB-x")), (42, "pb0042"))
         self.assertEqual(identity.song_id_prefix(None), "pb0000")
         self.assertEqual((identity.label_for(7), identity.label_for(0)), ("PBOLL #0007", "PBOLL #????"))
-        self.assertEqual(identity.format_serial(7, "2822080200", "unoq"), "PB0007-UNOQ-2822080200")
+        self.assertEqual(identity.format_serial(7, "0123456789", "unoq"), "PB0007-UNOQ-0123456789")
         self.assertEqual(identity.format_serial(123456, "ab-c", "WEB", virtual=True), "VPB123456-WEB-ab-c")
         for number, hw, maker in ((-1, "A1", "UNOQ"), (1000000, "A1", "UNOQ"), (True, "A1", "UNOQ"), (1, "", "UNOQ"),
                                   (1, " A1", "UNOQ"), (1, "A1", "x"), (1, "A1", ""), (1, "A1", "TOOLONGX"), (1.5, "A1", "UNOQ")):
             with self.assertRaises(ValueError, msg=repr((number, hw, maker))):
                 identity.format_serial(number, hw, maker)
-        for number, hw, maker in ((0, "0", "PI5"), (9999, "2822080200", "UNOQ"), (10000, "Ab9", "ACME")):
+        for number, hw, maker in ((0, "0", "PI5"), (9999, "0123456789", "UNOQ"), (10000, "Ab9", "ACME")):
             serial = identity.format_serial(number, hw, maker)
             self.assertEqual(identity.parse(serial), identity.Serial(False, number, maker, hw))
 
     def test_the_module_and_the_schema_use_the_same_patterns(self):
         defs = schema.load("device-identity")["$defs"]
-        samples = ["PB0007-UNOQ-2822080200", "VPB0007-WEB-pb-k3x9qa", "PB0002-USB-PEER-774411", "PB0001-acme-1",
+        samples = ["PB0007-UNOQ-0123456789", "VPB0007-WEB-pb-k3x9qa", "PB0002-USB-PEER-774411", "PB0001-acme-1",
                    "PB0007-PI5-AB12", "PB007-UNOQ-1", "PB0007-UNOQ-", "pb0007-UNOQ-1", "PB1234567-UNOQ-1",
                    "PB0007-AB-1", "PB0007-ABCDEFG-1", "PB0007-1AB-1", "PB0007-UNOQ-" + "A" * 33, "PB0007-UNOQ-1\n"]
         for text in samples:
@@ -745,7 +805,7 @@ class Identity(Quiet):
         self.assertIn("serial", defs)
 
     def test_validate_serial(self):
-        self.assertEqual(identity.validate_serial("PB0007-UNOQ-2822080200"), [])
+        self.assertEqual(identity.validate_serial("PB0007-UNOQ-0123456789"), [])
         self.assertTrue(identity.is_device_serial("PB0042-PI5-AB12CD"))
         cases = {"VPB0007-WEB-pb-k3x9qa": "virtual", "PB0007-ACME-1234ABCD": "reserved", "PB0007-SIM-1234": "reserved",
                  "PB0007-ZZZZ-1234": "not in the registry", "PB0007-unoq-1234": "maker code must be",
@@ -813,13 +873,13 @@ class Identity(Quiet):
             self.assertEqual(identity.known_serial(data, env={}), "")
             self.assertIsNone(identity.identity_path(None, env={}))
             self.assertIsNone(identity.read_identity(None, env={}))
-            doc = {"schema_version": 1, "serial": "PB0007-UNOQ-2822080200", "number": 7, "maker": "UNOQ",
-                   "hardware_id": "2822080200", "source": "hardware:/proc/device-tree/serial-number",
+            doc = {"schema_version": 1, "serial": "PB0007-UNOQ-0123456789", "number": 7, "maker": "UNOQ",
+                   "hardware_id": "0123456789", "source": "hardware:/proc/device-tree/serial-number",
                    "created_at": "2026-11-06T12:00:00Z"}
             (data / "device_identity.json").write_text(json.dumps(doc))
             me = identity.read_identity(data)
             self.assertEqual((me.serial, me.number, me.label, me.hardware_id, me.source, me.maker),
-                             ("PB0007-UNOQ-2822080200", 7, "PBOLL #0007", "2822080200", "file", "UNOQ"))
+                             ("PB0007-UNOQ-0123456789", 7, "PBOLL #0007", "0123456789", "file", "UNOQ"))
             self.assertEqual(me.to_dict()["maker"], "UNOQ")
             self.assertEqual(identity.read_identity(data / "device_identity.json"), me)
             self.assertEqual(identity.read_identity(None, env={"POPBOLLARD_DATA_DIR": folder}), me)
@@ -863,10 +923,12 @@ class Identity(Quiet):
 # ── the dock placeholder, the docs, the example ──────────────────────────────────────────
 
 class Rest(unittest.TestCase):
-    def test_the_dock_is_a_placeholder_that_says_what_it_waits_on(self):
+    def test_the_dock_protocol_still_waits_and_says_on_what(self):
+        # SDK 0.2.0: the descriptor values arrived (tests/test_cart.py); the Dock protocol
+        # itself still waits for Bollard v2 and the bollardeck rewrite.
         self.assertFalse(dock.AVAILABLE)
         self.assertEqual(len(dock.WAITS_ON), 2)
-        self.assertEqual(dock.__all__, ["AVAILABLE", "WAITS_ON"])
+        self.assertEqual(dock.__all__[:2], ["AVAILABLE", "WAITS_ON"])
         self.assertIn("Bollard v2", dock.__doc__)
         self.assertFalse(hasattr(dock, "Dock"))
 

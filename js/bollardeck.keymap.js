@@ -8,6 +8,7 @@
  *   bollardeck.keymap.resolve("tap1", "abc")    // {source: "prompt", kind: "choice", value: "A", ...}
  *   bollardeck.keymap.resolve("hold1", "abc")   // {source: "prompt", kind: "do", value: "replay", ...}
  *   bollardeck.keymap.resolve("tap2")           // no prompt showing: the idle map, or no answer
+ *   bollardeck.keymap.resolve("tap2", null, null, "pocket")   // {source: "pocket", kind: "do", value: "whats_on", ...}
  *
  * The rule:
  *  1. If `always` names the gesture, that verb is the answer, prompt or no prompt.
@@ -15,14 +16,18 @@
  *     member for this kind of prompt, that member is the answer: {choice: x} answers the prompt,
  *     {do: name} is a verb, null takes the gesture and does nothing. `idle` is never consulted
  *     while a prompt is showing.
- *  3. Otherwise, with no prompt showing: if `idle` names the gesture, that verb is the answer.
- *  4. Otherwise there is no answer (source null): the gesture is not the keymap's business.
+ *  3. Otherwise, with no prompt showing and a context given ("pocket": a cart with no dock): if
+ *     the keymap's map for that context names the gesture, that verb is the answer.
+ *  4. Otherwise, with no prompt showing: if `idle` names the gesture, that verb is the answer.
+ *  5. Otherwise there is no answer (source null): the gesture is not the keymap's business.
  *
  * An answer is {source, kind, value, handled, action, choice}. `source` is "always", "prompt",
- * "idle" or null; `kind` is "choice", "do" or null; `handled` is true for rules 1 to 3; `action`
+ * "pocket", "idle" or null; `kind` is "choice", "do" or null; `handled` is true for rules 1 to 4; `action`
  * is the verb's name when kind is "do", else null; `choice` is the value when kind is "choice",
  * else null (check `kind`: a choice may be 0). A name that is not a gesture, a keymap that is
- * not version 2, and a prompt meaning that is a bare value all throw a RangeError.
+ * not version 2, a context that is not one of KEYMAP_CONTEXTS, and a prompt meaning that is a
+ * bare value all throw a RangeError. With no context given the answer is what it was before
+ * contexts existed.
  * isGesture(name) says whether a name is a gesture, for a caller that routes other names
  * through the same code and does not want to catch.
  */
@@ -61,8 +66,11 @@
   }
 
   // What `gesture` means while a prompt of kind `prompt` is showing (null or absent: no prompt).
-  function resolve(gesture, prompt, keymap) {
+  function resolve(gesture, prompt, keymap, context) {
     var names = constant("GESTURES");
+    if (context !== undefined && context !== null && (typeof context !== "string" || constant("KEYMAP_CONTEXTS").indexOf(context) < 0)) {
+      throw new RangeError(JSON.stringify(context) + " is not a keymap context (one of " + constant("KEYMAP_CONTEXTS").join(", ") + ")");
+    }
     if (!isGesture(gesture)) {
       throw new RangeError(JSON.stringify(gesture) + " is not a gesture name (one of " + names.join(", ") + ")");
     }
@@ -78,6 +86,10 @@
         return meaning("prompt", byKind[prompt]);
       }
       return answer(null, null, null);
+    }
+    if (context !== undefined && context !== null) {
+      var byContext = map(keymap, context);
+      if (has(byContext, gesture)) return answer(context, "do", byContext[gesture]);
     }
     var idle = map(keymap, "idle");
     if (has(idle, gesture)) return answer("idle", "do", idle[gesture]);
@@ -101,7 +113,7 @@
     if (!bollardeck.schema) throw new Error("bollardeck.keymap: checking a keymap needs bollardeck.schema (load bollardeck.schema.js)");
     var out = bollardeck.schema.validate("keymap", keymap).map(function (p) { return (p.pointer || "(document)") + ": " + p.message; });
     if (isObject(keymap) && isObject(keymap.always)) {
-      ["prompt", "idle"].forEach(function (section) {
+      ["prompt", "idle"].concat(constant("KEYMAP_CONTEXTS")).forEach(function (section) {
         Object.keys(map(keymap, section)).forEach(function (name) {
           if (has(keymap.always, name)) out.push("/" + section + "/" + name + ": always names this gesture too, so this entry never applies");
         });
@@ -110,9 +122,10 @@
     return out;
   }
 
-  // The combos an engine needs for this keymap (bollardeck.gestures.combosFromKeymap).
-  function combos(keymap) {
-    return bollardeck.gestures.combosFromKeymap(keymap === undefined || keymap === null ? constant("KEYMAP") : keymap);
+  // The combos an engine needs for this keymap (bollardeck.gestures.combosFromKeymap); `contexts`
+  // (e.g. ["pocket"]) adds those contexts' maps.
+  function combos(keymap, contexts) {
+    return bollardeck.gestures.combosFromKeymap(keymap === undefined || keymap === null ? constant("KEYMAP") : keymap, contexts);
   }
 
   var api = { RAW: RAW, VERSION: VERSION, isGesture: isGesture, resolve: resolve, wantsRaw: wantsRaw, problems: problems, combos: combos };

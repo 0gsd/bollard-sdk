@@ -1,0 +1,10 @@
+{
+  "v": 1,
+  "class": "screen",
+  "slots": [
+    {
+      "index": 0,
+      "role": "host"
+    }
+  ]
+}

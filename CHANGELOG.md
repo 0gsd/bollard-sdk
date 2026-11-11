@@ -1,7 +1,50 @@
 # Changelog
 
-What each version of the Bollawax Bollard SDK added and changed. The SDK has its own version
-(`sdk-v<version>` tags); it is not the Bollawax image version.
+What each version of the Bollawax Bollard SDK added and changed. The SDK has its own version, and
+its tags are the version number (`0.1.0`, `0.2.0`); it is not the Bollawax image version.
+
+## 0.2.0 (2026-11-11)
+
+Additions for a cart: a handheld player that plays on its own and in a dock. Bollawax 0.2.5 is built
+on it. **Additive only**: no existing vector or schema changes meaning, `PowerState` above all, and
+with no context named every keymap answer and the default combos are what they were in 0.1.0. No cart
+exists yet: the cart's additions are tested against the simulated board, not on hardware.
+
+- **Detection finds a Uno Q by its board model and inside a container.** The built-in rule also takes the
+  model `Arduino SA,Imola`, which the board's device tree says. With no device-tree model at all (a
+  container: Docker hides `/sys/firmware`), a Unix socket at `$ARDUINO_ROUTER_SOCKET` (default
+  `/var/run/arduino-router.sock`) means `unoq`; a `tcp://` address or a plain file does not. A model naming
+  another board still decides, registered families' rules still come first, and `$BOLLAWAX_HAL` still
+  wins. `detection.router_socket(env)`, constants `ROUTER_SOCKET_ENV`, `ROUTER_SOCKET`, `UNOQ_MODELS`.
+- **Keymap: an optional `pocket` context.** A keymap may carry a `pocket` map (player verbs for a cart
+  with no dock), looked at before `idle` when no prompt is showing and the caller names the context:
+  `keymap.resolve(gesture, prompt=None, keymap=KEYMAP, context=None)`, JS `resolve(g, p, keymap,
+  context)`. `combos_from_keymap(keymap, contexts=())` and JS `combosFromKeymap(keymap, contexts)`,
+  `keymap.combos(keymap, contexts)`. Constants `KEYMAP_CONTEXTS`, `POCKET_VERBS`; the platform `KEYMAP`
+  gains its `pocket` map. With no context every answer and the default combos are what they were.
+- **`PowerState.source` and `PowerState.charging`**, with defaults ("unknown", None): the three-field
+  form means what it did. Constant `POWER_SOURCES`.
+- **Optional hal subsystems**: `FilePlayer` (`play_file(path, offset_ms) -> Handle`, `can_play`),
+  `AudioRoutes` with `Route` (`available`, `current`, `select`, `volume`, `set_volume`), `Bluetooth`
+  with `BtDevice` (`devices`, `pair`, `pairing_until`, `connect`, `disconnect`, `forget`);
+  `Board.files()`, `Board.routes()`, `Board.bluetooth()`. A board module without them gets the
+  simulator's (`sim.NullFiles`, `sim.SimRoutes` from `$BOLLAWAX_SIM_ROUTES`, `sim.SimBluetooth`).
+  `HAL_API` stays 1. Constant `AUDIO_ROUTES`.
+- **Descriptors**: schemas `dock-descriptor` (version 1, a draft for Bollard v2, with the cart-made
+  classes `none` and `plain` and the charge budget `charge_w`) and `cart-descriptor` (version 1), with
+  vectors. `device.dock` gains `NO_DOCK`, `PLAIN`, `problems`, `charge_budget_w`, `role_for`,
+  `is_dock`; `AVAILABLE` stays False (the `Dock` protocol still waits for Bollard v2).
+  New `device.cart` (`problems`, `ROLES`). Constant `CART_ROLES`.
+- **Decoders for `play_file`**: `device.decode`, standard library only. A registry (`register`,
+  `unregister`, `decoders`, `for_path`) asked newest first, so a program can add a container of its
+  own; built-ins `webm-opus` (a small Matroska reader, `webm_packets`, with libopus through ctypes),
+  `sndfile` (libsndfile through ctypes: MP3, FLAC, Ogg, WAV, AIFF) and `faad` (the program, for AAC in
+  MP4/M4A or ADTS). Each reports `available()` False where its library or program is missing.
+- **Decoders: one error type, and faad that cannot hang `open`**:
+  `decode.DecodeError` (a `ValueError`) for every damaged or unreadable file, from any
+  decoder, in `open` or in `read` (a short field, which raised `struct.error`, included); faad gets the
+  file's absolute path, has `FAAD_HEADER_S` (10 s) to begin its WAV before it is stopped, and reaches a
+  raw ADTS offset on the first `read` rather than inside `open`.
 
 ## 0.1.0 (2026-11-10)
 
@@ -106,8 +149,8 @@ pinned it, before 0.1.0.
 - **Changed:** `Corpus.may(now=...)` judges at `now` and does nothing else. Revalidation runs on
   the corpus's own clock; asking about another time writes nothing and asks nobody.
 - `HubClient.corpus_gate()` (JS `hub.corpusGate()`): the hub's `corpus_gate` in `/api/version`.
-- The corpus-manifest schema's description of `licence` says a missing block is refused (Q16).
-- Vectors: Q22 redaction (18 gate cases, one schema vector), the clock set back (11 cases).
+- The corpus-manifest schema's description of `licence` says a missing block is refused.
+- Vectors: redaction (18 gate cases, one schema vector), the clock set back (11 cases).
 
 #### Matrix
 

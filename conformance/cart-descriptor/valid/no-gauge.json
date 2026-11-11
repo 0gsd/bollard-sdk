@@ -1,0 +1,11 @@
+{
+  "v": 1,
+  "serial": "PB0007-UNOQ-ffee",
+  "role": "primary",
+  "power": {
+    "source": "unknown",
+    "percent": null,
+    "charging": null
+  },
+  "carrier": null
+}

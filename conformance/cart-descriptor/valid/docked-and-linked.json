@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "serial": "PB0042-UNOQ-a1b2c3d4",
+  "role": "primary",
+  "computer": true,
+  "power": {
+    "source": "dock",
+    "percent": 80,
+    "charging": true
+  },
+  "route": "dock"
+}

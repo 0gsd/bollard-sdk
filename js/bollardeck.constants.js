@@ -57,8 +57,27 @@
     // showing and gives one meaning per kind of prompt: {"choice": x} answers the prompt with x,
     // {"do": name} is a verb ("raw": this kind wants press and release times, not gestures), null
     // takes the gesture and does nothing. "idle" (no prompt showing) and "always" (both, and first)
-    // map a gesture to a verb. It fits schema/keymap.schema.json.
-    KEYMAP: {"v": 2, "prompt": {"tap1": {"abc": {"choice": "A"}, "spectrum": {"choice": -1}, "game": {"do": "raw"}}, "tap2": {"abc": {"choice": "B"}, "spectrum": {"choice": 0}, "game": {"do": "raw"}}, "tap3": {"abc": {"choice": "C"}, "spectrum": {"choice": 1}, "game": {"do": "raw"}}, "tap1x3": {"abc": {"choice": "A"}, "spectrum": {"choice": -2}, "game": {"do": "raw"}}, "tap3x3": {"abc": {"choice": "C"}, "spectrum": {"choice": 2}, "game": {"do": "raw"}}, "hold1": {"abc": {"do": "replay"}, "spectrum": {"do": "replay"}, "game": null}, "hold2": {"abc": {"do": "pass"}, "spectrum": {"do": "pass"}, "game": {"do": "forfeit"}}}, "idle": {"tap1": "skip_to_frontier", "tap1x3": "leave_us_alone"}, "always": {"hold3": "power"}},
+    // map a gesture to a verb. "pocket" (optional) maps a gesture to a player verb when no prompt
+    // is showing and the device is in the pocket context (a cart with no dock), and is looked at
+    // before "idle". It fits schema/keymap.schema.json.
+    KEYMAP: {"v": 2, "prompt": {"tap1": {"abc": {"choice": "A"}, "spectrum": {"choice": -1}, "game": {"do": "raw"}}, "tap2": {"abc": {"choice": "B"}, "spectrum": {"choice": 0}, "game": {"do": "raw"}}, "tap3": {"abc": {"choice": "C"}, "spectrum": {"choice": 1}, "game": {"do": "raw"}}, "tap1x3": {"abc": {"choice": "A"}, "spectrum": {"choice": -2}, "game": {"do": "raw"}}, "tap3x3": {"abc": {"choice": "C"}, "spectrum": {"choice": 2}, "game": {"do": "raw"}}, "hold1": {"abc": {"do": "replay"}, "spectrum": {"do": "replay"}, "game": null}, "hold2": {"abc": {"do": "pass"}, "spectrum": {"do": "pass"}, "game": {"do": "forfeit"}}}, "idle": {"tap1": "skip_to_frontier", "tap1x3": "leave_us_alone"}, "always": {"hold3": "power"}, "pocket": {"tap1": "play_pause", "hold1": "stop", "tap1x2": "volume_down", "tap2": "whats_on", "tap2x2": "prev", "hold2": "share", "tap3": "next", "tap3x2": "volume_up"}},
+    // The device contexts a keymap may give meanings for besides idle; a resolver is told the
+    // context, and with none given only prompt, idle and always apply.
+    KEYMAP_CONTEXTS: ["pocket"],
+    // Where a cart's sound can go: the dock's audio, the headphone jack, a Bluetooth headset or
+    // speaker, USB-C headphones on the side port, or nowhere. One route plays at a time.
+    AUDIO_ROUTES: ["dock", "jack", "bt", "usb", "none"],
+    // Where a device's power comes from now: a mains adapter, a dock's Bollport, a USB-C charger or
+    // computer on a side port, its own battery pack, or a board that cannot tell.
+    POWER_SOURCES: ["mains", "dock", "usb", "pack", "unknown"],
+    // The role a cart picks from what is on its Bollport (spec v0.3 §5.3): host and brain of a
+    // dock, a guest under another cart, a screen or hub with no dock descriptor, nothing at all
+    // (pocket), or off. A computer on either port is an overlay, not a role.
+    CART_ROLES: ["primary", "guest", "tv", "pocket", "off"],
+    // The player verbs of the pocket context: what a player (Pompa on a cart) does for each.
+    // whats_on shows the title, the audio route and the battery; share queues a share until the
+    // device is online.
+    POCKET_VERBS: ["play_pause", "stop", "next", "prev", "volume_up", "volume_down", "whats_on", "share"],
   });
   if (typeof module === "object" && module.exports) {
     module.exports = constants;

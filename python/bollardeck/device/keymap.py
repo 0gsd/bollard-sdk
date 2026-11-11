@@ -15,6 +15,7 @@ gesture and what the device is showing, what is meant?
     keymap.resolve("hold1", prompt="game")       # Resolution("prompt", None,     None): taken, does nothing
     keymap.resolve("hold3", prompt="abc")        # Resolution("always", "do",     "power")
     keymap.resolve("tap2")                       # Resolution(None,     None,     None): not the keymap's
+    keymap.resolve("tap2", context="pocket")     # Resolution("pocket", "do",     "whats_on")
 
 ## What a meaning is
 
@@ -32,18 +33,23 @@ not run them through the gesture engine.
 
 ## The rule
 
-`resolve(gesture, prompt=None, keymap=KEYMAP)`; `prompt` is the kind of prompt showing, or None
-when none is.
+`resolve(gesture, prompt=None, keymap=KEYMAP, context=None)`; `prompt` is the kind of prompt
+showing, or None when none is; `context` is the device context, one of `CONTEXTS` ("pocket": a
+cart with no dock), or None.
 
 1. If `always` names the gesture, that verb is the answer, whatever is showing.
 2. Otherwise, while a prompt is showing: if `prompt` names the gesture and that entry has a
    member for this kind of prompt, that member is the answer (a choice, a verb, or nothing).
    `idle` is never consulted while a prompt is showing.
-3. Otherwise, with no prompt showing: if `idle` names the gesture, that verb is the answer.
-4. Otherwise there is no answer (`source` None). The gesture is not the keymap's business and
+3. Otherwise, with no prompt showing and a context given: if the keymap's map for that context
+   (`pocket`, optional) names the gesture, that verb is the answer.
+4. Otherwise, with no prompt showing: if `idle` names the gesture, that verb is the answer.
+5. Otherwise there is no answer (`source` None). The gesture is not the keymap's business and
    the device's ordinary controls may act on it.
 
-`Resolution.handled` is True for 1 to 3. The vectors are `conformance/gestures/resolve.json`.
+`Resolution.handled` is True for 1 to 4. The vectors are `conformance/gestures/resolve.json`.
+A keymap without a `pocket` map, and every call that gives no context, behave exactly as before
+the context existed.
 """
 from __future__ import annotations
 
@@ -51,18 +57,19 @@ import json
 from typing import Any, Dict, List, Mapping, NamedTuple, Optional
 
 from .. import schema as _schema
-from ..constants import GESTURES, KEYMAP, PROMPT_KINDS
+from ..constants import GESTURES, KEYMAP, KEYMAP_CONTEXTS, POCKET_VERBS, PROMPT_KINDS
 from .gestures import combos_from_keymap
 
 __all__ = ["Resolution", "resolve", "is_gesture", "wants_raw", "problems", "combos_from_keymap", "dumps", "KEYMAP",
-           "PROMPT_KINDS", "RAW", "VERSION"]
+           "PROMPT_KINDS", "RAW", "VERSION", "CONTEXTS", "POCKET_VERBS"]
 
 RAW = "raw"
 VERSION = 2
+CONTEXTS = tuple(KEYMAP_CONTEXTS)
 
 
 class Resolution(NamedTuple):
-    """`source` is "always", "prompt", "idle" or None. `kind` is "choice" (answer the prompt with
+    """`source` is "always", "prompt", "pocket", "idle" or None. `kind` is "choice" (answer the prompt with
     `value`), "do" (`value` is a verb's name) or None (nothing happens)."""
     source: Optional[str]
     kind: Optional[str]
@@ -106,10 +113,14 @@ def is_gesture(name: Any) -> bool:
     return isinstance(name, str) and name in GESTURES
 
 
-def resolve(gesture: str, prompt: Optional[str] = None, keymap: Mapping[str, Any] = KEYMAP) -> Resolution:
-    """What `gesture` means while a prompt of kind `prompt` is showing (None: no prompt). See the
-    module docstring for the rule. Raises ValueError for a name that is not a gesture, and for a
-    keymap that is not version 2."""
+def resolve(gesture: str, prompt: Optional[str] = None, keymap: Mapping[str, Any] = KEYMAP,
+            context: Optional[str] = None) -> Resolution:
+    """What `gesture` means while a prompt of kind `prompt` is showing (None: no prompt), in device
+    context `context` (None, or one of `CONTEXTS`). See the module docstring for the rule. Raises
+    ValueError for a name that is not a gesture, a context that is not one, and a keymap that is
+    not version 2."""
+    if context is not None and context not in CONTEXTS:
+        raise ValueError("%r is not a keymap context (one of %s)" % (context, ", ".join(CONTEXTS)))
     if not is_gesture(gesture):
         raise ValueError("%r is not a gesture name (one of %s)" % (gesture, ", ".join(GESTURES)))
     if keymap.get("v") != VERSION:
@@ -122,6 +133,10 @@ def resolve(gesture: str, prompt: Optional[str] = None, keymap: Mapping[str, Any
         if isinstance(by_kind, Mapping) and prompt in by_kind:
             return _meaning("prompt", by_kind[prompt])
         return Resolution(None, None, None)
+    if context is not None:
+        by_context = keymap.get(context) or {}
+        if gesture in by_context:
+            return Resolution(context, "do", by_context[gesture])
     idle = keymap.get("idle") or {}
     if gesture in idle:
         return Resolution("idle", "do", idle[gesture])
@@ -140,7 +155,7 @@ def problems(keymap: Any) -> List[str]:
     gesture that `always` names and another map names too (the other entry could never apply)."""
     out = ["%s: %s" % (p.pointer or "(document)", p.message) for p in _schema.validate("keymap", keymap)]
     if isinstance(keymap, dict) and isinstance(keymap.get("always"), dict):
-        for section in ("prompt", "idle"):
+        for section in ("prompt", "idle") + CONTEXTS:
             block = keymap.get(section)
             for name in (block if isinstance(block, dict) else {}):
                 if name in keymap["always"]:

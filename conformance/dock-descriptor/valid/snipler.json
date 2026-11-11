@@ -1,0 +1,50 @@
+{
+  "v": 1,
+  "class": "screen",
+  "model": "SNIPLER-A",
+  "serial": "SA0001",
+  "fw": "0.1.0",
+  "slots": [
+    {
+      "index": 0,
+      "role": "primary",
+      "occupied": true,
+      "pd": {
+        "volts": [
+          5,
+          9,
+          15
+        ],
+        "amps": 3
+      }
+    },
+    {
+      "index": 1,
+      "role": "guest",
+      "occupied": false,
+      "pd": {
+        "volts": [
+          5,
+          9
+        ],
+        "amps": 3
+      }
+    }
+  ],
+  "layer": "K",
+  "battery": null,
+  "inputs": [
+    "eject",
+    "power"
+  ],
+  "audio": {
+    "outputs": [
+      "line",
+      "phones"
+    ]
+  },
+  "midi": {
+    "in": true,
+    "out": true
+  }
+}

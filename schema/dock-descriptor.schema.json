@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/dock-descriptor.schema.json",
+  "title": "Dock descriptor (draft for Bollard v2)",
+  "description": "What a dock tells a cart about itself, version 1 (\"v\": 1), carried as the bollardeck hello of the dock's microcontroller. A dock sends class \"speaker\" or \"screen\". Two classes are never sent by a dock: the cart makes them for itself, so that every place it can be has one shape: \"none\" (nothing on the Bollport: pocket mode) and \"plain\" (a hub or screen that sent no descriptor: TV mode); they carry no other member. charge_w is the power the cart may draw to charge its own battery (rule P4); a dock that leaves it out allows 5 W. This is a draft that Bollard v2 will make normative.",
+  "type": "object",
+  "required": [
+    "v",
+    "class"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "class": {
+      "type": "string",
+      "enum": [
+        "speaker",
+        "screen",
+        "none",
+        "plain"
+      ]
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "serial": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fw": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/slot"
+      }
+    },
+    "layer": {
+      "description": "The Glass Snipler's Control Layer code from its Hall switches; \"none\" is tablet mode.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,16}$"
+    },
+    "battery": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/battery"
+        }
+      ]
+    },
+    "charge_w": {
+      "type": "number",
+      "minimum": 0
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "buttons",
+          "encoder",
+          "eject",
+          "power"
+        ]
+      }
+    },
+    "lights": {
+      "type": "object",
+      "required": [
+        "count"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "layout": {
+          "type": "string"
+        }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "properties": {
+        "device": {
+          "type": "string"
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "midi": {
+      "type": "object",
+      "properties": {
+        "in": {
+          "type": "boolean"
+        },
+        "out": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "if": {
+    "required": [
+      "class"
+    ],
+    "properties": {
+      "class": {
+        "enum": [
+          "none",
+          "plain"
+        ]
+      }
+    }
+  },
+  "then": {
+    "additionalProperties": false,
+    "properties": {
+      "v": true,
+      "class": true
+    }
+  },
+  "$defs": {
+    "slot": {
+      "type": "object",
+      "required": [
+        "index",
+        "role"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "guest"
+          ]
+        },
+        "occupied": {
+          "type": "boolean"
+        },
+        "pd": {
+          "type": "object",
+          "required": [
+            "volts",
+            "amps"
+          ],
+          "properties": {
+            "volts": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "amps": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      }
+    },
+    "battery": {
+      "type": "object",
+      "required": [
+        "percent"
+      ],
+      "properties": {
+        "percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "charging": {
+          "type": "boolean"
+        },
+        "wh": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  }
+}

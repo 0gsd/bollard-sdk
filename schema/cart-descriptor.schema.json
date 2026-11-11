@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/cart-descriptor.schema.json",
+  "title": "Cart self-descriptor",
+  "description": "What a cart says about itself, version 1 (\"v\": 1): to a dock or a primary cart in its bollardeck hello, to the SOS console, and to a player on the cart. role is one of the cart roles (constants CART_ROLES); computer is true while a computer is linked on either port, an overlay on the role. power.source is one of POWER_SOURCES; route and routes are AUDIO_ROUTES. Members not named here are allowed and ignored by readers.",
+  "type": "object",
+  "required": [
+    "v",
+    "serial",
+    "role"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "serial": {
+      "type": "string",
+      "pattern": "^V?PB[0-9]{4,6}-[A-Za-z0-9]+-.+$"
+    },
+    "maker": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]{2,8}$"
+    },
+    "edition": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[A-Za-z0-9_]+$"
+        }
+      ]
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "primary",
+        "guest",
+        "tv",
+        "pocket",
+        "off"
+      ]
+    },
+    "computer": {
+      "type": "boolean"
+    },
+    "power": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "mains",
+            "dock",
+            "usb",
+            "pack",
+            "unknown"
+          ]
+        },
+        "percent": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          ]
+        },
+        "charging": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "pack": {
+          "type": "object",
+          "required": [
+            "present"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "wh": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      }
+    },
+    "route": {
+      "type": "string",
+      "enum": [
+        "dock",
+        "jack",
+        "bt",
+        "usb",
+        "none"
+      ]
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "dock",
+          "jack",
+          "bt",
+          "usb",
+          "none"
+        ]
+      }
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "bollport",
+          "side"
+        ]
+      }
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "carrier": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "rev": {
+              "type": "string",
+              "minLength": 1
+            },
+            "foot": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

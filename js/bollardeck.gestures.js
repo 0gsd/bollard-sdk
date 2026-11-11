@@ -95,9 +95,11 @@
 
   // The chain lengths a keymap gives a meaning to, per button: the combos an engine needs so
   // that every gesture the keymap names can happen. {1: [3], 3: [3]} for the platform's keymap.
-  function combosFromKeymap(keymap) {
+  // `contexts` (e.g. ["pocket"]) adds those device contexts' maps; without it the answer is what
+  // it was before contexts existed.
+  function combosFromKeymap(keymap, contexts) {
     var found = {};
-    ["prompt", "idle", "always"].forEach(function (section) {
+    ["prompt", "idle", "always"].concat(Array.isArray(contexts) ? contexts : []).forEach(function (section) {
       var block = keymap && keymap[section];
       Object.keys(isObject(block) ? block : {}).forEach(function (name) {
         var m = NAME_RE.exec(name);

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """The SDK's version and what it speaks. The single source: js/, c/ and the tag are checked against it."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 # Wire and format versions this SDK speaks. Keys are the names the specifications use.
 SPEAKS = {

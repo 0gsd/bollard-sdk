@@ -827,14 +827,14 @@ Every format has a JSON Schema in the SDK, identified as `https://popboll.com/sd
 ### 17.3 What is planned and not available
 
 - **The deck service:** dock sessions, `hello` and `welcome`, grants (reads free, writes by the owner's consent on the device).
-- **Sign-in,** planned for Bollawax 0.2.5. Until it exists, a person's name sent to the hub is self-declared (§19.3).
+- **Sign-in,** planned; no version promised yet. Until it exists, a person's name sent to the hub is self-declared (§19.3).
 - **A sandbox** for third-party apps on the cart and in the browser, through the same client.
 - **A signed registry** at bollawax.org with an affirmation step, and sideloading in hacker mode (both in §21).
 - **The Glass Snipler's capability boundary:** third-party code asks the deck for Snipler capabilities and never imports the engine, which stays closed.
 - **Signed releases and layers.**
 - **A C header.** `bollardeck.h` will carry the descriptor structs and message names.
 
-Sign-in is planned for Bollawax 0.2.5. No version or date is promised for the others.
+No version or date is promised yet for any of these, sign-in included.
 
 ## 18. Buttons, gestures, cues and the keymap
 
@@ -932,7 +932,7 @@ The gate fails closed. `REASONS` is the full list; the rules that surprise peopl
 
 - **The read token alone is for study only.** For a corpus that is not public, a caller that presents only the token gets the morpus and a manifest with the people's addresses removed. Track lists, audio, art and bundles are not found.
 - **A named person gets more.** `acting_for=` names the person a request is for. It travels in the `X-Pop-For` header and never in a URL, and that person's copy is cached apart from everyone else's.
-- **Names are self-declared for now.** The hub believes the name it is given until sign-in exists (planned for Bollawax 0.2.5, §17.3). Do not build anything that depends on the name being proved.
+- **Names are self-declared for now.** The hub believes the name it is given until sign-in exists (planned, no version promised yet; §17.3). Do not build anything that depends on the name being proved.
 
 ### 19.4 Attestation and self-hosted corpora
 
@@ -950,7 +950,7 @@ The bollardeck text for the cart is not written. This section records what is de
 - **At most two carts in one dock.** The cart in the first slot is the brain. A second cart is a guest: a USB device of the first, lending its corpora and its computing, and showing nothing of its own.
 - **The serial belongs to the cart.** A dock has a model and a serial of its own in its descriptor and no device serial.
 
-Pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor arrive with Bollawax 0.2.5. This section is the cart as Bollawax 0.2.4 specifies it.
+Bollawax 0.2.5 carries the cart's software for pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor. No cart exists yet, and none of it is verified on hardware. This section still describes the cart as Bollawax 0.2.4 specifies it.
 
 Not written: who sends `hello` first between a cart and its dock, the link between two carts, the guest's `hello` and how its secure element proves its licences, and the events for a dock's encoder and EJECT button.
 
@@ -964,7 +964,7 @@ The plan is a signed registry at bollawax.org for routines, dock plugins and thi
 - **Automated checks.** Routines are loaded with the static checks and run under the guard on fixture songs, and are rejected if they fail, break a limit or touch the guard.
 - **Signing.** What passes is signed, and a device verifies the signature before it installs anything.
 - **Sideloading and hacker mode.** Hacker mode is the owner's switch on one device they own, so a developer can build and test there before publishing. It is turned on at the device itself and confirmed there; it cannot be set over bollardeck, over the network or by a routine, and the device shows that it is on. While it is on, that device accepts unsigned work, labelled as unsigned. Every other rule still holds: corpus rules, consents, and no corpus files or credentials to third-party code. Unsigned work is never distributed. How the switch is thrown on a cart and its docks is not written.
-- **What a developer accepts:** the SDK's Apache-2.0 licence, the [Bollawax Device Licence](/device-licence) for images, and a short use grant for the Glass Snipler's fetched files. There is no sign-up agreement. The use grant is not published yet.
+- **What a developer accepts:** the SDK's Apache-2.0 licence, the [Bollawax Device Licence](/device-licence) for images, and the [Snipler Use Grant](/snipler-use-grant) for the Glass Snipler's fetched files. There is no sign-up agreement.
 
 The packaging format, the label names and the review steps will be published with the registry.
 
