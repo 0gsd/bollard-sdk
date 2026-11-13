@@ -59,5 +59,18 @@ The device runs that same module, so there is one engine in Python and its twin 
 Running the vectors needs none of that: they are plain JSON.
 
 To add a vector, write its `name`, `call` and `args` by hand, then pin. Add only a vector the
-Python engine and the JavaScript engine answer the same way. Where they do not
-(text that is not a string, a number written in non-ASCII digits), there is no vector.
+Python engine and the JavaScript engine answer the same way. Where they do not, there is no
+vector, and the difference is listed here.
+
+## Known differences between the two engines
+
+Each is an input no platform format produces; each was checked on both engines (SDK 0.3.0).
+
+- **A number written in non-ASCII digits** (`"٣"`): Python reads it as 3, as the device does
+  (`float()`); JavaScript reads it as no number and takes the default.
+- **A name or text that is not a string** (a list, `null`, `1.0`): Python writes `str(value)`
+  (`"[1]"`, `"None"`, `"1.0"`), JavaScript `String(value)` (`"1"`, `""`, `"1"`).
+- **A bad hex frame**: `from_hex` raises `ValueError`, `fromHex` throws `RangeError`, each
+  language's own error for a bad argument.
+
+No longer a difference: `dj_crossfader`'s third argument (`loaded`) exists in both.

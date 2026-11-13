@@ -297,8 +297,14 @@ class Revalidation(HubCase):
         self.clock.advance(11)
         self.assertEqual(c.may("study").reason, "manifest_invalid")
         self.assertEqual(c.name, "The Placeholders: Placeholders", "metadata stays the last good manifest's")
-        with self.assertRaises(ManifestRefused):
+        with self.assertRaises(ManifestRefused) as caught:
             self.client().corpus(CID)
+        # The manifest that was refused comes with the refusal, as the caller's own plain copy.
+        got = caught.exception.manifest
+        self.assertEqual(got, json.loads(json.dumps(manifest(visibility="unlisted"))))
+        got["visibility"] = "changed"
+        self.assertEqual(self.hub.corpora[CID]["manifest"]["visibility"], "unlisted")
+        self.assertIsNone(ManifestRefused("manifest_invalid", ("x",)).manifest)
         self.hub.corpora[CID]["manifest"] = manifest(9002, "SWAPPED")
         self.clock.advance(11)
         self.assertEqual(c.may("study").reason, "manifest_invalid")
@@ -650,9 +656,36 @@ class ActingFor(HubCase):
             self.client(acting_for="mallory@example.org").corpus(self.PRIVATE)
         self.assertEqual((caught.exception.reason, caught.exception.status), ("not_served", 404))
 
-    def test_a_person_s_copy_is_cached_apart_from_the_engine_s(self):
+    def test_a_person_s_copy_is_held_in_memory_and_never_written(self):
         engine = self.client().corpus(self.PRIVATE)
-        ada = self.client(acting_for="ada@example.org").corpus(self.PRIVATE)
+        client = self.client(acting_for="ada@example.org")
+        ada = client.corpus(self.PRIVATE)
+        self.assertEqual(engine.root, self.cache / self.PRIVATE)
+        self.assertIsNone(ada.root)
+        self.assertIn("owner_email", ada.manifest())
+        self.assertEqual(len(client.listing()), 1)
+        written = [p for p in self.cache.rglob("*") if p.is_file()]
+        self.assertTrue(written)
+        for path in written:                      # nothing on disk names a person
+            text = path.read_bytes()
+            for word in (b"ada@", b"grace@", b"owner_email", b"Ada Example"):
+                self.assertNotIn(word, text, path)
+        self.assertFalse((self.cache / ".for").exists())
+        # The same client revalidates by ETag from memory, and answers from memory when the hub is down.
+        self.clock.advance(400)
+        self.assertIn("owner_email", client.corpus(self.PRIVATE).manifest())
+        self.assertTrue(any(k == "if-none-match" for k in self.hub.requests[-1][1]), self.hub.requests[-1])
+        self.hub.fail = 503
+        self.assertIn("owner_email", client.corpus(self.PRIVATE).manifest())
+        self.assertEqual(len(client.listing()), 1)
+        # A new client has nothing for the person, and the engine still has its redacted copy.
+        with self.assertRaises(CorpusUnavailable):
+            self.client(acting_for="ada@example.org").corpus(self.PRIVATE)
+        self.assertNotIn("owner_email", self.client().corpus(self.PRIVATE).manifest())
+
+    def test_keep_for_person_caches_a_person_s_copy_apart_from_the_engine_s(self):
+        engine = self.client().corpus(self.PRIVATE)
+        ada = self.client(acting_for="ada@example.org", keep_for_person=True).corpus(self.PRIVATE)
         self.assertEqual(engine.root, self.cache / self.PRIVATE)
         self.assertEqual(ada.root.parent.parent, self.cache / ".for")
         self.assertNotIn("ada", str(ada.root))
@@ -660,9 +693,9 @@ class ActingFor(HubCase):
         self.assertIn("owner_email", json.loads((ada.root / "corpus.json").read_text()))
         self.hub.fail = 503                       # offline, each still gets its own
         self.assertNotIn("owner_email", self.client().corpus(self.PRIVATE).manifest())
-        self.assertIn("owner_email", self.client(acting_for="ada@example.org").corpus(self.PRIVATE).manifest())
+        self.assertIn("owner_email", self.client(acting_for="ada@example.org", keep_for_person=True).corpus(self.PRIVATE).manifest())
         with self.assertRaises(CorpusUnavailable):
-            self.client(acting_for="grace@example.org").corpus(self.PRIVATE)
+            self.client(acting_for="grace@example.org", keep_for_person=True).corpus(self.PRIVATE)
 
     def test_a_name_that_cannot_be_a_header_is_refused(self):
         for bad in ("ada@example.org\r\nX-Evil: 1", "a b@example.org", "ädä@example.org", "x" * 400):
@@ -800,6 +833,168 @@ class Relay(HubCase):
             self.assertEqual(got.status, 416)
         with c.open_audio("one.mp3", v, byte_range=(None, 4)) as fh:
             self.assertEqual(fh.read(), b"6789")
+
+
+class ArtRelay(HubCase):
+    """Corpus.open_art_ranged: cover art streamed with the source's status and headers, for a relay."""
+
+    def setUp(self):
+        super().setUp()
+        self.hub.add(manifest(), audio={"one.mp3": b"0123456789"}, art={"cover.png": b"PNG-made-up!"},
+                     tracks={"tracks": [{"file": "one.mp3", "art": "cover.png"}]})
+        self.c = self.client().corpus(CID)
+        self.v = self.c.may("store_art")
+
+    def test_whole_ranged_suffix_and_past_the_end(self):
+        for kw, sent, status, body, content_range in [
+                (dict(), None, 200, b"PNG-made-up!", None),
+                (dict(byte_range=(0, 2)), "bytes=0-2", 206, b"PNG", "bytes 0-2/12"),
+                (dict(range_header="bytes=-3"), "bytes=-3", 206, b"up!", "bytes 9-11/12"),
+                (dict(range_header="bytes=99-"), "bytes=99-", 416, b"", "bytes */12")]:
+            with self.subTest(kw):
+                with self.c.open_art_ranged("cover.png", self.v, **kw) as got:
+                    self.assertEqual((got.status, got.read(), got.headers.get("Content-Range")), (status, body, content_range))
+                    if status != 416:
+                        self.assertEqual(got.headers["Content-Type"], "image/png")
+                        self.assertEqual(got.headers["Content-Length"], str(len(body)))
+                    self.assertLessEqual(set(got.headers), set(model.RELAY_HEADERS), "nothing else is passed on")
+                self.assertEqual(self.hub.requests[-1][1].get("range"), sent)
+                self.assertTrue(self.hub.requests[-1][0].endswith("/art/cover.png"))
+
+    def test_a_track_row_s_art_and_names_that_are_not_art(self):
+        row = self.c.tracks(self.c.may("stream_audio"))[0]
+        with self.c.open_art_ranged(row, self.v, byte_range=(4, 7)) as got:
+            self.assertEqual((got.status, got.read()), (206, b"made"))
+        elsewhere = dict(row, art_url=row["audio_url"])
+        for bad in ("", "..", None, 5, elsewhere, dict(row, art_url="https://elsewhere.example/art/cover.png")):
+            with self.assertRaises(NotAvailable, msg=repr(bad)) as caught:
+                self.c.open_art_ranged(bad, self.v)
+            self.assertEqual(caught.exception.reason, "bad_name")
+        for gone in ("gone.png", "../corpus.json"):              # only the last part of a path is read, under art/
+            with self.assertRaises(NotAvailable) as caught:
+                self.c.open_art_ranged(gone, self.v)
+            self.assertEqual((caught.exception.reason, caught.exception.status), ("not_found", 404))
+            self.assertTrue(self.hub.requests[-1][0].startswith("/api/corpi/%s/art/" % CID), self.hub.requests[-1][0])
+
+    def test_it_takes_the_gate_like_any_accessor(self):
+        for verdict in (self.c.may("study"), self.c.may("stream_audio"), None):
+            with self.assertRaises(GateRequired):
+                self.c.open_art_ranged("cover.png", verdict)
+
+    def test_a_local_corpus_answers_the_same_way(self):
+        root = write_local(pathlib.Path(self.tmp.name) / "local" / CID, manifest(), files={"art/cover.png": b"PNG-made-up!"})
+        c = Corpus.load(root)
+        v = c.may("store_art")
+        for kw, status, body, content_range in [(dict(), 200, b"PNG-made-up!", None), (dict(byte_range=(0, 2)), 206, b"PNG", "bytes 0-2/12"),
+                                                (dict(range_header="bytes=12-"), 416, b"", "bytes */12")]:
+            with c.open_art_ranged("cover.png", v, **kw) as got:
+                self.assertEqual((got.status, got.read(), got.headers.get("Content-Range")), (status, body, content_range), kw)
+        with self.assertRaises(NotAvailable):
+            c.open_art_ranged("../corpus.json", v)
+
+
+class HeldForPeopleAndRowUrls(HubCase):
+    """What a client holds for people is bounded; a row's art and audio URLs stay inside their kind."""
+
+    def test_what_is_held_for_people_is_bounded_and_can_be_forgotten(self):
+        from bollardeck.corpus import hub as hubmod
+        self.hub.add(manifest())
+        client = self.client()
+        for i in range(hubmod.HELD_MAX + 20):
+            client.listing(acting_for="p%d@example.org" % i)
+        self.assertEqual(len(client._held), hubmod.HELD_MAX)
+        self.assertNotIn(("http", client._url("corpi"), "p0@example.org"), client._held, "the least used went first")
+        client.corpus(CID, acting_for="ada@example.org")
+        self.assertTrue(any(k[-1] == "ada@example.org" for k in client._held))
+        client.forget(" Ada@Example.org ")
+        self.assertFalse(any(k[-1] == "ada@example.org" for k in client._held))
+        client.forget()
+        self.assertEqual(len(client._held), 0)
+
+    def test_a_row_s_url_must_stay_inside_its_kind(self):
+        self.hub.add(manifest(), audio={"one.mp3": b"0123456789"}, art={"cover.png": b"PNG-made-up!"},
+                     tracks={"tracks": [{"file": "one.mp3", "art": "cover.png"}]})
+        c = self.client().corpus(CID)
+        row = c.tracks(c.may("stream_audio"))[0]
+        art_v, audio_v = c.may("store_art"), c.may("stream_audio")
+        base = row["art_url"].rsplit("/art/", 1)[0]
+        for bad in ("/art/../audio/one.mp3", "/art/%2e%2e/audio/one.mp3", "/art/%252e%252e/audio/one.mp3",
+                    "/art/./cover.png", "/art//cover.png", "/art/cover.png?x=1", "/art/a/cover.png"):
+            with self.assertRaises(NotAvailable, msg=bad) as caught:
+                c.open_art_ranged(dict(row, art_url=base + bad), art_v)
+            self.assertEqual(caught.exception.reason, "bad_name", bad)
+        for bad in ("/audio/../art/cover.png", "/audio/%2E%2E/art/cover.png", "/audio/x/../one.mp3", "/wbol/x/chapter/one",
+                    "/wbol/../chapter/1", "/audio/one.mp3#t"):
+            with self.assertRaises(NotAvailable, msg=bad) as caught:
+                c.open_audio_ranged(dict(row, audio_url=base + bad), audio_v)
+            self.assertEqual(caught.exception.reason, "bad_name", bad)
+        with c.open_audio_ranged(row, audio_v) as got:
+            self.assertEqual(got.read(), b"0123456789")
+        with c.open_art_ranged(row, art_v) as got:
+            self.assertEqual(got.read(), b"PNG-made-up!")
+
+
+class HubMirroredAttestation(HubCase):
+    """A corpus read from a hub can be checked against its signed edition
+    record, which the hub serves where it serves the whole manifest, and the client keeps."""
+
+    def setUp(self):
+        super().setUp()
+        from test_corpus_attest import build_edition
+        from bollardeck.corpus import attest
+        self.attest = attest
+        self.e = build_edition(pathlib.Path(self.tmp.name) / "edition")
+        self.m = json.loads((self.e["root"] / "corpus.json").read_text())
+        self.files = attest.read_local_record(self.e["root"], self.e["edition"])
+        names = {"attestation": attest.ATTESTATION_NAME, "manifest_tsv": attest.MANIFEST_TSV_NAME,
+                 "ed25519_sig": attest.SIG_ED_NAME, "mldsa65_sig": attest.SIG_ML_NAME}
+        self.locker = {self.e["edition"]: {names[k]: v for k, v in self.files.items()}}
+        self.keys = dict(zip(("ed25519_pub", "mldsa65_pub"), attest.read_public_keys(self.e["keys"], self.e["keyid"])))
+
+    def test_a_public_corpus_s_record_is_fetched_kept_and_checks(self):
+        self.hub.add(self.m, locker=self.locker)
+        c = self.client().corpus(self.m["id"])
+        record = c.attestation_record()
+        self.assertEqual(record, self.files)
+        res = self.attest.verify_attestation(c, **record, **self.keys)
+        self.assertEqual((res.manifest_hash, res.record, res.keyid, res.ed25519),
+                         (self.attest.VERIFIED,) * 4, res.problems)
+        kept = self.cache / self.m["id"] / "locker" / self.e["edition"]
+        self.assertEqual(sorted(p.name for p in kept.iterdir()), sorted(self.locker[self.e["edition"]]))
+        asked = len(self.hub.requests)
+        self.assertEqual(self.client().corpus(self.m["id"]).attestation_record(), self.files)
+        self.assertFalse(any("/attestation/" in p for p, _ in self.hub.requests[asked:]), "an edition is never asked for twice")
+        # A changed record on the client's side does not verify.
+        bad = dict(record, ed25519_sig=b"\x00" * 64)
+        self.assertEqual(self.attest.verify_attestation(c, **bad, **self.keys).ed25519, self.attest.FAILED)
+
+    def test_the_study_only_engine_gets_no_record_of_a_private_corpus(self):
+        m = dict(self.m, visibility="private", owner_email="ada@example.org")
+        self.hub.add(m, locker=self.locker)
+        engine = self.client().corpus(m["id"])
+        self.assertEqual(engine.attestation_record(), {k: None for k in self.files})
+        self.assertFalse((self.cache / m["id"] / "locker").exists())
+        ada = self.client(acting_for="ada@example.org").corpus(m["id"])
+        self.assertEqual(ada.attestation_record(), self.files)                 # the owner gets it, in memory only
+        self.assertFalse((self.cache / ".for").exists())
+
+    def test_what_has_no_record_says_none(self):
+        self.hub.add(self.m)                                                     # an older hub, or none kept
+        c = self.client().corpus(self.m["id"])
+        self.assertEqual(c.attestation_record(), {k: None for k in self.files})
+        self.assertFalse((self.cache / self.m["id"] / "locker").exists(), "nothing half kept")
+        self.hub.corpora[self.m["id"]]["locker"] = {self.e["edition"]: dict(list(self.locker[self.e["edition"]].items())[:2])}
+        self.assertEqual(sum(v is not None for v in c.attestation_record().values()), 2)
+        self.assertFalse((self.cache / self.m["id"] / "locker").exists(), "a record is kept only whole")
+        plain = dict(self.m)
+        plain.pop("attestation")
+        self.hub.add(dict(plain, id="9003-PLAIN", number=9003, slug="PLAIN"))
+        self.assertEqual(self.client().corpus("9003-PLAIN").attestation_record(), {k: None for k in self.files})
+        self.hub.fail = 503
+        self.assertEqual(sum(v is not None for v in c.attestation_record().values()), 0, "an unreachable hub: none")
+
+    def test_a_local_corpus_reads_its_own(self):
+        self.assertEqual(Corpus.load(self.e["root"]).attestation_record(), self.files)
 
 
 class Dna(HubCase):

@@ -43,6 +43,30 @@
  *       listens (null: the keymap's). A press in flight and pending taps are kept; taps that
  *       can no longer become a combo are reported at once.
  *
+ *   bollardeck.help.listen(root, engine, opts) -> {rescan(), stop()}
+ *       Feed a help engine from a page: activate (a click on a [data-help] element; blocked when it is
+ *       disabled, aria-disabled="true" or carries data-help-blocked), press (pointer down, with x and y),
+ *       input (keys), visible (the engine's dwell targets, by IntersectionObserver) and a tick every
+ *       opts.tickMs (1000).
+ *   bollardeck.help.cta(engine, opts) -> {stop()}
+ *       Show each offer as a small button (opts.label, default "HELP?") beside its target, announced
+ *       in a polite live region, named in a few words (aria-label, aria-labelledby, its first heading, or the
+ *       start of its text, at most 60 characters); pressed: settle("opened") and opts.onOpen(offer); left alone for
+ *       HELP_OFFER_MS (or opts.offerMs): settle("ignored").
+ *   bollardeck.help.modal(content, opts) -> {dialog, body, closed, close(value)} | null
+ *       One help box in a <dialog>: content {title, body}, opts {actions: [{label, value, primary}],
+ *       extra (a node above the body), canOpen(), onOpen(dialog), onClose(value)}. Focus goes back
+ *       where it was. help.renderBody(doc, body) builds a body with DOM calls (never HTML).
+ *   bollardeck.help.spot(element, opts) -> {pop, setText(t), place(), remove()}
+ *       Ring an element (data-help-spot="on") and lay a note beside it (opts.pop, opts.place).
+ *   bollardeck.help.ui(opts)
+ *       A ui for bollardeck.help.play: spots, a lower-third caption, button cues through cues.run with
+ *       {properties: false}, and the host's own module / open / close / press callbacks.
+ *   bollardeck.help.sheet(doc, css), help.CSS, help.place(doc, node, anchor, where)
+ *       The help look is one constructable stylesheet (help.CSS by default; sheet() replaces it), and
+ *       every position is a rule in a second one keyed by data-help-n: no element ever gets a style
+ *       attribute, so a page with a strict CSP or a no-inline-style rule can use all of this.
+ *
  *   bollardeck.matrix.canvas(canvas, opts) -> {draw(frame), run(frameFn), stop()}
  *       Draw matrix frames as round lamps on a <canvas>. draw(frame) paints one frame (null
  *       paints the matrix dark). run(frameFn) calls frameFn(nowMs) every animation frame and
@@ -303,6 +327,354 @@
     };
   }
 
+  // ── help: the page helpers for bollardeck.help ─────────────────────────────────────────
+  // Nothing here writes a style attribute: the look is one constructable stylesheet (HELP_CSS, or the
+  // page's own), and every position is a rule in a second constructed sheet keyed by data-help-n.
+
+  var HELP_CSS = [
+    '[data-help-spot="on"]{outline:3px solid var(--bdh-accent,#ffd23f);outline-offset:3px}',
+    '.bdh-pill{position:absolute;z-index:2147483000;font:inherit;font-size:.8rem;padding:.15rem .5rem;cursor:pointer;',
+    'border:2px solid var(--bdh-accent,#ffd23f);background:var(--bdh-bg,#111);color:var(--bdh-fg,#fff)}',
+    '.bdh-pop{position:absolute;z-index:2147483001;max-width:22rem;padding:.5rem .75rem;',
+    'border:2px solid var(--bdh-accent,#ffd23f);background:var(--bdh-bg,#111);color:var(--bdh-fg,#fff)}',
+    '.bdh-pop:empty{display:none}',
+    '.bdh-caption{position:fixed;z-index:2147483001;left:50%;bottom:6%;transform:translateX(-50%);max-width:44ch;',
+    'white-space:pre-line;text-align:center;padding:.4rem .8rem;background:var(--bdh-bg,#111);color:var(--bdh-fg,#fff)}',
+    '.bdh-caption:empty{display:none}',
+    '.bdh-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}',
+    '.bdh-modal-actions{display:flex;flex-wrap:wrap;gap:.5rem}'
+  ].join("");
+
+  var helpDocs = [];                // [{doc, base, pos, rules, n}] one per document
+  function helpDoc(doc) {
+    for (var i = 0; i < helpDocs.length; i++) if (helpDocs[i].doc === doc) return helpDocs[i];
+    var d = { doc: doc, base: null, pos: null, rules: {}, n: 0 };
+    var W = doc.defaultView || root;
+    if (W && typeof W.CSSStyleSheet === "function" && "adoptedStyleSheets" in doc) {
+      try {
+        d.base = new W.CSSStyleSheet();
+        d.pos = new W.CSSStyleSheet();
+        doc.adoptedStyleSheets = doc.adoptedStyleSheets.concat([d.base, d.pos]);
+        d.base.replaceSync(HELP_CSS);
+      } catch (e) { d.base = d.pos = null; }
+    }
+    helpDocs.push(d);
+    return d;
+  }
+  function helpSheet(doc, css) {           // replace the default look with the page's own
+    var d = helpDoc(doc || root.document);
+    if (d.base) d.base.replaceSync(String(css));
+    return !!d.base;
+  }
+  function writeRules(d) {
+    if (!d.pos) return;
+    d.pos.replaceSync(Object.keys(d.rules).map(function (k) { return d.rules[k]; }).join("\n"));
+  }
+  // Put `node` beside `anchor` (or at the anchor's window corner when anchor is null).
+  function placeBeside(doc, node, anchor, where) {
+    var d = helpDoc(doc), W = doc.defaultView || root;
+    var k = node.getAttribute("data-help-n");
+    if (!k) { k = String(++d.n); node.setAttribute("data-help-n", k); }
+    var sx = W.pageXOffset || 0, sy = W.pageYOffset || 0, vw = W.innerWidth || 1024;
+    var a = anchor && anchor.getBoundingClientRect ? anchor.getBoundingClientRect() : { top: 8, left: vw - 8, right: vw - 8, bottom: 8, width: 0, height: 0 };
+    var b = node.getBoundingClientRect ? node.getBoundingClientRect() : { width: 0, height: 0 };
+    var gap = 8, top, left;
+    var w = where || "auto";
+    if (w === "auto") w = a.right + gap + b.width <= vw ? "right" : (a.top - gap - b.height >= 0 ? "above" : "below");
+    if (w === "right") { top = a.top; left = a.right + gap; }
+    else if (w === "left") { top = a.top; left = a.left - gap - b.width; }
+    else if (w === "above") { top = a.top - gap - b.height; left = a.left; }
+    else { top = a.bottom + gap; left = a.left; }
+    left = Math.max(4, Math.min(left, vw - b.width - 4));
+    d.rules[k] = '[data-help-n="' + k + '"]{top:' + Math.round(top + sy) + "px;left:" + Math.round(left + sx) + "px}";
+    writeRules(d);
+  }
+  function forget(doc, node) {
+    var d = helpDoc(doc), k = node && node.getAttribute && node.getAttribute("data-help-n");
+    if (k && d.rules[k]) { delete d.rules[k]; writeRules(d); }
+  }
+  function targetEl(doc, id, nth) {
+    var all = doc.querySelectorAll('[data-help="' + String(id).replace(/["\\]/g, "") + '"]');
+    return all[(nth || 1) - 1] || null;
+  }
+  // What to call a target in a few words: its aria-label, the text of what labels it, its first heading,
+  // or the start of its own text. Never a whole panel read aloud.
+  function shortName(doc, el) {
+    var t = el.getAttribute("aria-label");
+    if (!t && el.getAttribute("aria-labelledby")) {
+      t = el.getAttribute("aria-labelledby").split(/\s+/).map(function (id) { var n = doc.getElementById(id); return n ? n.textContent : ""; }).join(" ");
+    }
+    if (!t && el.querySelector) { var h = el.querySelector("h1, h2, h3, h4, h5, h6"); if (h) t = h.textContent; }
+    t = String(t || el.textContent || "").replace(/\s+/g, " ").trim();
+    return t.length > 60 ? t.slice(0, 59).replace(/\s+\S*$/, "") + "\u2026" : t;
+  }
+  function blockedEl(el) {
+    return !!(el.disabled || el.getAttribute("aria-disabled") === "true" || el.hasAttribute("data-help-blocked"));
+  }
+
+  // Feed an engine from a page: activate, press, input, visible (for the dwell targets), and a tick.
+  function helpListen(rootEl, engine, opts) {
+    opts = opts || {};
+    var doc = rootEl.ownerDocument || rootEl, W = doc.defaultView || root, undo = [], io = null, seen = [];
+    function on(t, type, fn) { t.addEventListener(type, fn, true); undo.push(function () { t.removeEventListener(type, fn, true); }); }
+    function near(e) { return e.target && e.target.closest ? e.target.closest("[data-help]") : null; }
+    on(rootEl, "click", function (e) {
+      var el = near(e);
+      if (el) engine.feed({ kind: "activate", target: el.getAttribute("data-help"), blocked: blockedEl(el) });
+    });
+    on(rootEl, "pointerdown", function (e) {
+      var el = near(e);
+      engine.feed({ kind: "press", x: e.clientX, y: e.clientY, target: el ? el.getAttribute("data-help") : null });
+      if (el && el.disabled) engine.feed({ kind: "activate", target: el.getAttribute("data-help"), blocked: true });
+    });
+    on(rootEl, "keydown", function () { engine.feed({ kind: "input" }); });
+    function rescan() {
+      if (!W.IntersectionObserver) return;
+      if (!io) {
+        io = new W.IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            engine.feed({ kind: "visible", target: en.target.getAttribute("data-help"), on: en.isIntersecting });
+          });
+        }, { threshold: 0.5 });
+      }
+      engine.watched("dwell").forEach(function (id) {
+        var el = targetEl(doc, id);
+        if (el && seen.indexOf(el) < 0) { seen.push(el); io.observe(el); }
+      });
+    }
+    rescan();
+    var timer = W.setInterval(function () { engine.tick(); }, opts.tickMs || 1000);
+    return {
+      rescan: rescan,
+      stop: function () { undo.forEach(function (f) { f(); }); undo = []; if (io) io.disconnect(); W.clearInterval(timer); }
+    };
+  }
+
+  // The HELP? offer: a small button beside the target, gone after HELP_OFFER_MS unless pressed.
+  function helpCta(bollardeck, engine, opts) {
+    opts = opts || {};
+    var doc = opts.doc || root.document, W = doc.defaultView || root, shown = {};
+    helpDoc(doc);
+    var live = doc.createElement("div");
+    live.className = "bdh-live";
+    live.setAttribute("aria-live", "polite");
+    doc.body.appendChild(live);
+    function drop(topic) {
+      var s = shown[topic];
+      if (!s) return;
+      W.clearTimeout(s.timer);
+      forget(doc, s.pill);
+      if (s.pill.parentNode) s.pill.parentNode.removeChild(s.pill);
+      delete shown[topic];
+    }
+    function replace() { Object.keys(shown).forEach(function (t) { placeBeside(doc, shown[t].pill, shown[t].anchor, opts.place); }); }
+    W.addEventListener("resize", replace);
+    W.addEventListener("scroll", replace, { passive: true });
+    var offUnsub = engine.on("offer", function (o) {
+      var anchor = o.target ? targetEl(doc, o.target) : null;
+      if (anchor && anchor.getClientRects && !anchor.getClientRects().length) anchor = null;   // hidden: the corner
+      var pill = doc.createElement("button");
+      pill.type = "button";
+      pill.className = "bdh-pill";
+      pill.setAttribute("data-help-pill", o.topic);
+      pill.textContent = opts.label || "HELP?";
+      var named = anchor ? shortName(doc, anchor) : "";
+      pill.setAttribute("aria-label", (opts.label || "HELP?") + (named ? " " + named : ""));
+      pill.addEventListener("click", function () {
+        drop(o.topic);
+        engine.settle(o.topic, "opened");
+        if (opts.onOpen) opts.onOpen(o);
+      });
+      doc.body.appendChild(pill);
+      placeBeside(doc, pill, anchor, opts.place);
+      shown[o.topic] = { pill: pill, anchor: anchor, timer: W.setTimeout(function () {
+        drop(o.topic);
+        engine.settle(o.topic, "ignored");
+      }, opts.offerMs || bollardeck.constants.HELP_OFFER_MS) };
+      live.textContent = "";
+      live.textContent = (opts.announce || "Help is available") + (named ? " for " + named : "") + ".";
+    });
+    var settleUnsub = engine.on("settle", function (x) { drop(x.topic); });
+    return {
+      stop: function () {
+        offUnsub(); settleUnsub();
+        Object.keys(shown).forEach(drop);
+        W.removeEventListener("resize", replace);
+        W.removeEventListener("scroll", replace);
+        if (live.parentNode) live.parentNode.removeChild(live);
+      }
+    };
+  }
+
+  // A help body (paragraphs of strings, {b}, {code} and same-origin {a, href}) as DOM, never as HTML.
+  function renderBody(doc, body) {
+    var frag = doc.createDocumentFragment();
+    (body || []).forEach(function (para) {
+      var p = doc.createElement("p");
+      para.forEach(function (bit) {
+        if (typeof bit === "string") { p.appendChild(doc.createTextNode(bit)); return; }
+        var n;
+        if (bit.b !== undefined) { n = doc.createElement("b"); n.textContent = bit.b; }
+        else if (bit.code !== undefined) { n = doc.createElement("code"); n.textContent = bit.code; }
+        else if (bit.a !== undefined) {
+          if (/^\/(?![\/\\])/.test(String(bit.href)) && !/[\u0000-\u0020\u007f\\]/.test(String(bit.href))) { n = doc.createElement("a"); n.setAttribute("href", bit.href); }
+          else n = doc.createElement("span");
+          n.textContent = bit.a;
+        }
+        if (n) p.appendChild(n);
+      });
+      frag.appendChild(p);
+    });
+    return frag;
+  }
+
+  // One help box. content {title, body}; opts {doc, actions: [{label, value, primary}], extra: Node,
+  // canOpen(), onOpen(dialog), onClose(value), closeLabel}. Returns null when canOpen() says no.
+  function helpModal(content, opts) {
+    opts = opts || {};
+    var doc = opts.doc || root.document;
+    if (opts.canOpen && !opts.canOpen()) return null;
+    helpDoc(doc);
+    var dlg = doc.createElement("dialog");
+    dlg.className = "bdh-modal" + (opts.className ? " " + opts.className : "");
+    var h = doc.createElement("h2");
+    h.id = "bdh-h-" + (++helpDoc(doc).n);
+    h.textContent = content.title;
+    dlg.setAttribute("aria-labelledby", h.id);
+    var x = doc.createElement("button");
+    x.type = "button";
+    x.className = "bdh-modal-x";
+    x.setAttribute("aria-label", opts.closeLabel || "Close");
+    x.textContent = "\u00D7";
+    var bodyBox = doc.createElement("div");
+    bodyBox.className = "bdh-modal-body";
+    bodyBox.id = "bdh-b-" + helpDoc(doc).n;
+    dlg.setAttribute("aria-describedby", bodyBox.id);
+    bodyBox.appendChild(renderBody(doc, content.body));
+    dlg.appendChild(x);
+    dlg.appendChild(h);
+    if (opts.extra) dlg.appendChild(opts.extra);
+    dlg.appendChild(bodyBox);
+    var row = doc.createElement("div");
+    row.className = "bdh-modal-actions";
+    var result = null, done;
+    var closed = new Promise(function (r) { done = r; });
+    (opts.actions || []).forEach(function (a) {
+      var b = doc.createElement("button");
+      b.type = "button";
+      b.className = "bdh-modal-act" + (a.primary ? " is-primary" : "");
+      b.textContent = a.label;
+      b.addEventListener("click", function () { result = a.value; dlg.close(); });
+      row.appendChild(b);
+    });
+    dlg.appendChild(row);
+    x.addEventListener("click", function () { dlg.close(); });
+    var back = doc.activeElement;
+    dlg.addEventListener("close", function () {
+      if (dlg.parentNode) dlg.parentNode.removeChild(dlg);
+      if (back && back.focus && back.isConnected) { try { back.focus(); } catch (e) { /* gone */ } }
+      if (opts.onClose) opts.onClose(result);
+      done(result);
+    });
+    doc.body.appendChild(dlg);
+    if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+    if (opts.onOpen) opts.onOpen(dlg);
+    return { dialog: dlg, body: bodyBox, closed: closed, close: function (v) { result = v === undefined ? result : v; if (dlg.open) dlg.close(); } };
+  }
+
+  // Ring a target and, if pop is given, lay a note beside it. Returns {pop, setText(t), place(), remove()}.
+  function helpSpot(el, opts) {
+    opts = opts || {};
+    var doc = el.ownerDocument, W = doc.defaultView || root;
+    helpDoc(doc);
+    el.setAttribute("data-help-spot", "on");
+    if (opts.scroll !== false && el.scrollIntoView) {
+      try { el.scrollIntoView({ block: "center", behavior: opts.calm || reducedMotion() ? "auto" : "smooth" }); } catch (e) { el.scrollIntoView(); }
+    }
+    var pop = doc.createElement("div");
+    pop.className = "bdh-pop";
+    pop.setAttribute("role", "note");
+    pop.textContent = opts.pop || "";
+    doc.body.appendChild(pop);
+    function place() { placeBeside(doc, pop, el, opts.place); }
+    place();
+    W.addEventListener("resize", place);
+    return {
+      el: el, pop: pop,
+      setText: function (t) { pop.textContent = t || ""; place(); },
+      place: place,
+      remove: function () {
+        W.removeEventListener("resize", place);
+        if (el.getAttribute("data-help-spot") === "on") el.removeAttribute("data-help-spot");
+        forget(doc, pop);
+        if (pop.parentNode) pop.parentNode.removeChild(pop);
+      }
+    };
+  }
+
+  // A ui for bollardeck.help.play: say, spot, cue, unspot, hide, module, open, close, act, chapter.
+  // opts {doc, find(target, nth) -> element, buttons() -> {1, 2, 3} elements, module(name, open),
+  // open(topic), close(), press(button, hold), chapter(title), calm}.
+  function helpUi(bollardeck, opts) {
+    opts = opts || {};
+    var doc = opts.doc || root.document, spots = [], pending = null, list = [], run = null, caption = null;
+    function find(target, nth) { return opts.find ? opts.find(target, nth) : targetEl(doc, target, nth); }
+    function cap() {
+      if (!caption) {
+        helpDoc(doc);
+        caption = doc.createElement("div");
+        caption.className = "bdh-caption";
+        caption.setAttribute("aria-live", "polite");
+        doc.body.appendChild(caption);
+      }
+      return caption;
+    }
+    function clearSpots() { spots.forEach(function (s) { s.remove(); }); spots = []; pending = null; }
+    function clearCues() {
+      list = [];
+      if (run) { run.stop(); run = null; }
+      var b = opts.buttons ? opts.buttons() : null;
+      if (b) bollardeck.cues.apply(b, bollardeck.cues.at([], 0), { properties: false });
+    }
+    var ui = {
+      chapter: function (s) { if (opts.chapter) opts.chapter(s.title); },
+      say: function (s, cues) {
+        if (pending) { pending.setText(s.text); if (caption) caption.textContent = ""; }
+        else cap().textContent = (cues || [s.text]).join("\n");
+      },
+      spot: function (s) {
+        if (!s.keep) clearSpots();
+        var el = find(s.target, s.nth);
+        if (!el) return;
+        var h = helpSpot(el, { pop: s.pop && s.pop !== "@say" ? s.pop : "", place: s.place, calm: opts.calm });
+        spots.push(h);
+        pending = h;
+        if (caption) caption.textContent = "";
+      },
+      cue: function (s) {
+        list = list.filter(function (c) { return c.button !== s.button; }).concat([{ button: s.button, state: s.state, role: s.role === undefined ? null : s.role }]);
+        var b = opts.buttons ? opts.buttons() : null;
+        if (b && !run) run = bollardeck.cues.run(b, function () { return list; }, { properties: false, undriven: "off", calm: opts.calm });
+        if (s.pop) { cap().textContent = s.pop; }
+      },
+      unspot: function () { clearSpots(); clearCues(); },
+      hide: function () { clearSpots(); clearCues(); if (caption) caption.textContent = ""; },
+      module: function (s) { if (opts.module) return opts.module(s.module, s.open); },
+      open: function (s) { if (opts.open) return opts.open(s.topic); },
+      close: function () { if (opts.close) return opts.close(); },
+      act: function (s) {
+        var m = /button([123])$/.exec(s.target);
+        if (m && opts.press && (s.action === "press" || s.action === "hold")) return opts.press(Number(m[1]), s.action === "hold");
+        var el = find(s.target, s.nth);
+        if (!el) throw new Error("bollardeck.help ui: no element for " + s.target);
+        if (s.action === "select") { el.value = s.value; el.dispatchEvent(new (doc.defaultView || root).Event("change", { bubbles: true })); }
+        else el.click();
+      },
+      stop: function () { ui.hide(); if (caption && caption.parentNode) caption.parentNode.removeChild(caption); caption = null; }
+    };
+    return ui;
+  }
+
   var bollardeck = (typeof root.bollardeck === "object" && root.bollardeck) ||
     ((typeof module === "object" && module.exports && typeof require === "function") ? require("./bollardeck.js") : (root.bollardeck = {}));
   var cues = bollardeck.cues || (bollardeck.cues = {});
@@ -312,6 +684,17 @@
   matrix.canvas = function (canvas, opts) { return matrixCanvas(bollardeck, canvas, opts); };
   var gestures = bollardeck.gestures || (bollardeck.gestures = {});
   gestures.listen = function (elements, onGesture, opts) { return listenGestures(bollardeck, elements, onGesture, opts); };
+  var help = bollardeck.help || (bollardeck.help = {});
+  help.CSS = HELP_CSS;
+  help.sheet = helpSheet;
+  help.listen = helpListen;
+  help.cta = function (engine, opts) { return helpCta(bollardeck, engine, opts); };
+  help.renderBody = renderBody;
+  help.shortName = shortName;
+  help.modal = helpModal;
+  help.spot = helpSpot;
+  help.place = placeBeside;
+  help.ui = function (opts) { return helpUi(bollardeck, opts); };
   (bollardeck.parts || (bollardeck.parts = {})).dom = true;
-  if (typeof module === "object" && module.exports) module.exports = { cues: cues, matrix: matrix, gestures: gestures };
+  if (typeof module === "object" && module.exports) module.exports = { cues: cues, matrix: matrix, gestures: gestures, help: help };
 })(typeof globalThis !== "undefined" ? globalThis : this);

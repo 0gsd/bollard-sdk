@@ -1,0 +1,136 @@
+{
+  "schema": "help-pack/1",
+  "pack": "example.player",
+  "lang": "en-GB",
+  "rev": 3,
+  "pages": {
+    "player": {
+      "intro": {
+        "guest": {
+          "title": "welcome",
+          "body": [
+            [
+              "this is a player."
+            ],
+            [
+              "see ",
+              {
+                "a": "the guide",
+                "href": "/guide"
+              },
+              "."
+            ]
+          ]
+        },
+        "owner": {
+          "title": "your player",
+          "body": [
+            [
+              "it plays your music."
+            ]
+          ],
+          "variants": [
+            {
+              "when": {
+                "tiers": [
+                  "paid"
+                ]
+              },
+              "body": [
+                [
+                  "it plays everything."
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "topics": {
+        "player.play": {
+          "title": "playing",
+          "body": [
+            [
+              "press ",
+              {
+                "b": "PLAY"
+              },
+              ", or the ",
+              {
+                "code": "space"
+              },
+              " key."
+            ]
+          ],
+          "targets": [
+            "player.play"
+          ],
+          "when": {
+            "roles": [
+              "owner",
+              "guest"
+            ]
+          },
+          "see": [
+            "player.queue"
+          ],
+          "tour": "tour.player.play",
+          "video": {
+            "src": "/help-media/tour.player.play.ab12.webm",
+            "vtt": "/help-media/tour.player.play.ab12.vtt",
+            "uihash": "ab12"
+          },
+          "rev": 2
+        },
+        "player.queue": {
+          "title": "the queue",
+          "body": [
+            [
+              "what plays next."
+            ]
+          ],
+          "video": null,
+          "tour": null
+        },
+        "x.myskin.knob": {
+          "title": "the knob",
+          "body": [
+            [
+              "a skin's own control."
+            ]
+          ],
+          "targets": [
+            "x.myskin.knob"
+          ]
+        }
+      },
+      "scenarios": {
+        "player.play-blocked": {
+          "topic": "player.play",
+          "detector": "blocked-repeat",
+          "target": "player.play",
+          "params": {
+            "n": 2,
+            "window_ms": 8000
+          }
+        },
+        "player.offline": {
+          "topic": "player.queue",
+          "detector": "error-code",
+          "codes": [
+            "network"
+          ]
+        },
+        "x.myskin.knob-spin": {
+          "topic": "x.myskin.knob",
+          "detector": "x-spin",
+          "target": "x.myskin.knob",
+          "when": {
+            "sites": [
+              "example"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

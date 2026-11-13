@@ -1,7 +1,133 @@
 # Changelog
 
 What each version of the Bollawax Bollard SDK added and changed. The SDK has its own version, and
-its tags are the version number (`0.1.0`, `0.2.0`); it is not the Bollawax image version.
+its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`); it is not the Bollawax image version.
+
+## 0.3.0 (2026-11-12)
+
+Shipped with Bollawax 0.3.0. **Mostly additive, with breaks.** Nobody outside Bollawax used 0.2.0, so
+these changes are noted here and not deprecated first. Each is marked "Changed meaning" below unless it
+says otherwise:
+
+- the gesture engine reads two kinds of late key event differently;
+- a `HubClient` keeps a person's manifest in memory, not on disk;
+- `attest.verify_attestation` binds a manifest's signed fields, so a rights change needs a new edition;
+- the licence gains a ninth capability, `stream_render`, off for `full` and `morpus_only`;
+- the keymap's pocket context gives button 2 a triple tap;
+- `bollardeck.deck` is no longer a placeholder, and the schema validator refuses NaN and infinities.
+
+New parts: `bollardeck.help`, `bollardeck.pxs`, `bollardeck.deck`, and the `nowplaying` and `transport` schemas.
+
+- **`bollardeck.help`, a new part** (`js/bollardeck.help.js`, page helpers in `js/bollardeck.dom.js`,
+  `python/bollardeck/help.py`): help content keyed by page and scenario (`help-pack/1`), eight struggle
+  detectors and the rules for offering help without nagging (`help.engine`), and scripts that drive the
+  help boxes for tours and recorded videos (`help-director/1`, `help.play`, WebVTT captions). The page
+  helpers never set a `style` attribute. Constants `HELP_*`; schemas `help-pack`, `help-director` with
+  vectors; `data-parts` takes `help`.
+- **`bollardeck.pxs`: read, write and validate `.pxs`, the Pop Snip format** (Pompas' extended song format,
+  PXS specification v1): an IT module followed by a PXS block (a 16-byte header, typed chunks, and a 12-byte
+  footer with the block's offset and a CRC-32). `validate(data)` applies rules V1-V9 with the amendments agreed
+  with Amorphus (detection by content, HEAD checked for meaning, only HEAD's flags checked) and never raises;
+  `attach(module, chunks)` writes a block (chunks other than HEAD deflated) and the `PXS1` fingerprint;
+  `read_chunks(data)` reads them back; `measure_it(data)` is the IT structure check and finds the module's end.
+  `conformance/pxs/blocks.json`: 35 vectors (11 valid, one or more invalid per rule), written by
+  `tools/pxs_vectors.py` from a made-up module.
+- **`cues.at()` and `cues.compile()` no longer need `bollardeck.schema.js`.** A page that loads only
+  `bollardeck.js` and the cue part could not draw a cue list: checking it threw "checking a cue list
+  needs bollardeck.schema". Without the validator, `cues.problems()` now checks the `cue` schema's
+  rules itself (the same verdict on every vector) and reports them with the same pointers, keywords
+  and text; with it loaded, the schema is asked as before. `cues.run(..., {properties: false})` works
+  on such a page. Nothing that worked changes.
+- **The gesture engine's clock can be read, and a host time after the host's last is never refused.**
+  When `key()` places an announced press by its beginning (rule 9), its release may land at
+  `began + hold_ms`, later than any time the host gave; `tick`, `down`, `up` or `cancel` with a later
+  host time then raised "time ran backwards". Such a time is now read as the engine's clock; a time
+  behind the host's own last one still raises. New: `engine.now_ms` (JS `engine.nowMs()`).
+- **Changed meaning: a release read more than `PRESS_LOST_MS` after its announcement is still that
+  press.** `key()` matched the release only after giving up announcements older than
+  `PRESS_LOST_MS`, so a late-read release was placed at its reading and chained with taps made after
+  it. It is now matched first and placed at its announcement; only announcements nothing is read for
+  are given up.
+- **Changed meaning: a press judged by its own two times closes a chain's window that closed before
+  it began.** A late key event whose press began after the pending chain's window had closed (an
+  announcement held the window, and was lost) joined that chain. The chain is now reported as it
+  stood when its window closed, and the press starts its own.
+- Vectors: `key-engine-clock-ahead-reads-a-later-host-time-as-its-own`,
+  `key-engine-clock-ahead-still-refuses-a-time-behind-the-host-s`,
+  `key-release-read-after-press-lost-ms-is-matched-before-the-hint-is-given-up`,
+  `key-press-judged-by-its-own-times-closes-a-window-that-closed-before-it-began`.
+- **`ManifestRefused.manifest`**: the manifest that was refused, as plain dicts and lists that are the
+  caller's own (None when there was nothing to read). A host no longer has to read the cache's copy
+  after a refusal.
+- **Changed meaning: a person's manifest is never written to disk.** What a `HubClient` fetches for a
+  named person (`acting_for`: a manifest with the owner's address and the access list, a listing)
+  is held in that client's memory, where ETag revalidation and the offline fallback still work for
+  as long as the client lives; nothing is written under `<cache>/.for/`. `HubClient(...,
+  keep_for_person=True)` keeps the 0.2.0 behaviour (a separate copy on disk per person). What a client holds
+  for people is bounded (`HELD_MAX`, the least used first out) and `HubClient.forget(person)` lets
+  it go.
+- **`Corpus.open_art_ranged(name, verdict, byte_range=None, range_header=None)`**: one cover image,
+  streamed for a relay, as `open_audio_ranged` streams a recording (the source's status, 200, 206 or
+  416, and the headers a relay passes on). Needs "store_art". `name` is an art file's name or a row
+  from `tracks()`, whose `art_url` must point into the corpus's art. Hub and local corpora. A row's
+  `art_url` and `audio_url` are checked segment by segment after decoding (no empty, `.` or `..`
+  segment, even percent-encoded twice), not by prefix alone.
+- **`Corpus.attestation_record()`**: the signed edition record the manifest's `attestation` block names,
+  as `attest.verify_attestation()`'s keyword arguments (None for a file that could not be had). A
+  local corpus reads `<root>/locker/<edition>/`; a hub corpus asks the hub's new route
+  `/api/corpi/<ID>/attestation/<edition>/<file>`, which a hub serves where it serves the whole
+  manifest (never to the study-only engine for a corpus that is not public), and keeps a whole record
+  beside the cached corpus, so a corpus mirrored from a hub can be checked like a local one
+  (Bollawax 0.3.0). Metadata: no verdict needed.
+- **Changed meaning: `attest.verify_attestation` binds the manifest's signed fields.** `record` fails unless the
+  manifest says what the edition signed (`attest.signed_field_problems`): the corpus's id, number, slug, name,
+  artist and edition label; the licence's scope and its eight permission flags (`SIGNED_FLAGS`, read as the SDK
+  reads a block on paper); consent; the owner's address. Everything the edition does not sign may change after it
+  without a new edition: packing fields, counts, descriptions, the licence block's bookkeeping; `access` and
+  `visibility` are not signed. A record that states no licence does not vouch for the manifest's rights. Before,
+  a manifest rewritten around a genuine attestation block (another licence or owner) verified.
+- **Licence: a ninth capability, `stream_render`** (Bollawax 0.3.0): the corpus's MIDI may be
+  played rendered through Pop Boll's own sounds, never a recording. On by default for `public_domain_midi`, off for
+  `full` and `morpus_only` unless the block grants it; `stream_audio` still means recordings. The schema, both
+  bindings' scope tables, `attest.SIGNED_FLAGS` (an edition signed before the ninth flag existed holds it at the signed
+  scope's default: such an edition still verifies, and a manifest cannot grant `stream_render` around it) and gate vectors. New: `gate.listen(manifest, identity, render=False)` (JS
+  `corpus.listen(manifest, identity, render)`): a recording needs `stream_audio`, a render `stream_render`.
+- **Keymap: `tap2x3` in the pocket context is `pair`** (a new verb in `POCKET_VERBS`): it starts pairing the cart with
+  a person's Pop Boll account (Bollawax 0.3.0). In the pocket context button 2 now has a triple
+  tap, so `combos_from_keymap(KEYMAP, ("pocket",))` gives it (2, 3); with no context nothing changes.
+- `parse_key_line` says what it always did: the word `down` is lower case only, and a line with
+  `DOWN` is not a key line. No change in meaning.
+- **Schemas `nowplaying` and `transport`**, with vectors: what a player is playing (the bollardeck
+  `nowplaying` body; `song_id`, `title` and `position_ms` required, unknown members allowed, optional
+  `lane` 0 to 3 and `player`), and the transport and volume writes that control one (`cmd` play, pause,
+  stop, next, prev; volume `set` 0 to 1 or `step` ±1, never both; optional `lane`). Shared by docks,
+  watches and players (Bollawax 0.3.0).
+- **`bollardeck.deck`, a minimal deck service and its client** (a draft, as Part A is): the bollardeck/1
+  handshake (`hello`, `welcome`), grants with the spec's defaults and the user's consent per dock
+  (`Deck.approve`, `revoke`; `consent=` is told what waits), subscriptions, writes answered by a
+  registered handler (`volume` and `transport` checked against the `transport` schema; `nowplaying`
+  published only when it fits its schema), the spec's error codes. Transports: in one process
+  (`pair`) and a Unix-domain socket (`serve_unix`, `connect_unix`); BLE and USB come with the cart's
+  deck. `bollardeck.deck.sim` has a made-up player and dock; `examples/deck_client.py` is a sample
+  third-party client (Bollawax 0.3.0).
+  Hardened before release: consent is applied only to a session whose transport proved who the peer is (on
+  a Unix socket, the kernel's peer uid, and on Linux its executable; `peer_identity`), never to vid
+  and pid alone; NaN and Infinity are bad requests, and the schema validator refuses non-finite
+  numbers; a handler that fails is answered `busy` or `bad_request` and the session lives on; each
+  Unix-socket peer has a bounded outbox and its own writer, and one that stops reading is
+  disconnected without holding up `publish`; requests past `rate` (20 a second) are `rate_limited`;
+  `limits["max_line"]` is enforced and never above `MAX_LINE`; a server takes at most `max_sessions`
+  connections and lets closed ones go; client callbacks that fail are logged, a callback may not call
+  `request()`, and `inbox` keeps only what no callback took, the newest `INBOX`.
+  Also: a callback may not call `request()` on any transport, in-process `pair()`
+  included (it deadlocked there); the state topics (`COALESCED`: state, nowplaying, corpus, led,
+  led_ring, matrix) keep only their latest message in a peer's outbox, so a burst never drops a peer
+  that is reading; `serve_unix` replaces only a stale socket at its path (a regular file is
+  FileExistsError, a live deck's socket EADDRINUSE) and `close()` removes only its own; a macOS
+  `xucred` of an unknown version fails closed, and a Linux peer whose executable cannot be read is
+  known by its uid alone, said once in the log. A session that ends still writes what it
+  had queued (the peer refused with `no_common_api` reads why), and writes from all sessions
+  together are limited too (`write_rate`, 40 a second).
 
 ## 0.2.0 (2026-11-11)
 

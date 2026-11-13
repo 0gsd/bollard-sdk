@@ -269,6 +269,37 @@ class Gestures(unittest.TestCase):
                         if "hold_ms" in w:
                             self.assertEqual(g.hold_ms, w["hold_ms"], "event %d: %s" % (i, event))
 
+    def test_no_host_time_in_order_is_refused_after_key_places_a_press(self):
+        # key() may place an announced press's release
+        # later than any time the host gave. Times the host gives in order must never be refused,
+        # and now_ms says where the engine's clock is.
+        import random
+        rng = random.Random(20261111)
+        for n in range(300):
+            engine, t = GestureEngine(hold_ms=800, tap_follow_ms=500, combos={1: [3], 3: [3]}), 0
+            self.assertIsNone(engine.now_ms)
+            for _ in range(40):
+                t += rng.choice((0, 1, 5, 20, 60, 150, 400, 900, 6000))
+                b = rng.choice((1, 2, 3))
+                kind = rng.random()
+                if kind < 0.3:
+                    engine.key({"t": "key", "i": b, "down": 1, "t_ms": t - rng.choice((0, 0, 10, 40))}, now_ms=t)
+                elif kind < 0.6:
+                    event = {"t": "key", "i": b, "down": 0, "hold_ms": rng.choice((30, 100, 300, 900))}
+                    if rng.random() < 0.5:
+                        event["t_ms"] = t - rng.choice((0, 10, 50))
+                    engine.key(event, now_ms=t)
+                elif kind < 0.75:
+                    engine.tick(t)
+                elif kind < 0.85:
+                    engine.cancel(b, t)
+                elif kind < 0.93:
+                    engine.down(b, t)
+                else:
+                    engine.up(b, t)
+                if engine.now_ms is not None:           # a hint alone does not move the clock
+                    self.assertLessEqual(engine.now_ms, t + 900, "timeline %d: at most began + hold_ms ahead" % n)
+
     def test_every_vector_event_is_well_formed(self):
         for v in vectors("gestures/timelines.json")["vectors"]:
             self.assertEqual(set(v), {"name", "about", "config", "events"}, v["name"])
@@ -482,7 +513,7 @@ class Keymap(unittest.TestCase):
     def test_combos_are_unchanged_without_a_context(self):
         from bollardeck.device import gestures
         self.assertEqual(gestures.DEFAULT_COMBOS, {1: (3,), 3: (3,)})
-        self.assertEqual(gestures.combos_from_keymap(constants.KEYMAP, ("pocket",)), {1: (2, 3), 2: (2,), 3: (2, 3)})
+        self.assertEqual(gestures.combos_from_keymap(constants.KEYMAP, ("pocket",)), {1: (2, 3), 2: (2, 3), 3: (2, 3)})
 
     def test_a_pocket_entry_under_always_is_a_problem(self):
         doc = {"v": 2, "prompt": {}, "idle": {}, "always": {"hold3": "power"}, "pocket": {"hold3": "stop"}}

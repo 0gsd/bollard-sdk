@@ -63,7 +63,7 @@ PROMPT_KINDS = ("abc", "spectrum", "game")
 # to a verb. "pocket" (optional) maps a gesture to a player verb when no prompt is showing and the
 # device is in the pocket context (a cart with no dock), and is looked at before "idle". It fits
 # schema/keymap.schema.json.
-KEYMAP = {"v": 2, "prompt": {"tap1": {"abc": {"choice": "A"}, "spectrum": {"choice": -1}, "game": {"do": "raw"}}, "tap2": {"abc": {"choice": "B"}, "spectrum": {"choice": 0}, "game": {"do": "raw"}}, "tap3": {"abc": {"choice": "C"}, "spectrum": {"choice": 1}, "game": {"do": "raw"}}, "tap1x3": {"abc": {"choice": "A"}, "spectrum": {"choice": -2}, "game": {"do": "raw"}}, "tap3x3": {"abc": {"choice": "C"}, "spectrum": {"choice": 2}, "game": {"do": "raw"}}, "hold1": {"abc": {"do": "replay"}, "spectrum": {"do": "replay"}, "game": None}, "hold2": {"abc": {"do": "pass"}, "spectrum": {"do": "pass"}, "game": {"do": "forfeit"}}}, "idle": {"tap1": "skip_to_frontier", "tap1x3": "leave_us_alone"}, "always": {"hold3": "power"}, "pocket": {"tap1": "play_pause", "hold1": "stop", "tap1x2": "volume_down", "tap2": "whats_on", "tap2x2": "prev", "hold2": "share", "tap3": "next", "tap3x2": "volume_up"}}
+KEYMAP = {"v": 2, "prompt": {"tap1": {"abc": {"choice": "A"}, "spectrum": {"choice": -1}, "game": {"do": "raw"}}, "tap2": {"abc": {"choice": "B"}, "spectrum": {"choice": 0}, "game": {"do": "raw"}}, "tap3": {"abc": {"choice": "C"}, "spectrum": {"choice": 1}, "game": {"do": "raw"}}, "tap1x3": {"abc": {"choice": "A"}, "spectrum": {"choice": -2}, "game": {"do": "raw"}}, "tap3x3": {"abc": {"choice": "C"}, "spectrum": {"choice": 2}, "game": {"do": "raw"}}, "hold1": {"abc": {"do": "replay"}, "spectrum": {"do": "replay"}, "game": None}, "hold2": {"abc": {"do": "pass"}, "spectrum": {"do": "pass"}, "game": {"do": "forfeit"}}}, "idle": {"tap1": "skip_to_frontier", "tap1x3": "leave_us_alone"}, "always": {"hold3": "power"}, "pocket": {"tap1": "play_pause", "hold1": "stop", "tap1x2": "volume_down", "tap2": "whats_on", "tap2x2": "prev", "tap2x3": "pair", "hold2": "share", "tap3": "next", "tap3x2": "volume_up"}}
 
 # The device contexts a keymap may give meanings for besides idle; a resolver is told the context,
 # and with none given only prompt, idle and always apply.
@@ -83,7 +83,80 @@ POWER_SOURCES = ("mains", "dock", "usb", "pack", "unknown")
 CART_ROLES = ("primary", "guest", "tv", "pocket", "off")
 
 # The player verbs of the pocket context: what a player (Pompa on a cart) does for each. whats_on
-# shows the title, the audio route and the battery; share queues a share until the device is online.
-POCKET_VERBS = ("play_pause", "stop", "next", "prev", "volume_up", "volume_down", "whats_on", "share")
+# shows the title, the audio route and the battery; share queues a share until the device is online;
+# pair starts pairing the cart with a person's Pop Boll account (HAMS pairing).
+POCKET_VERBS = ("play_pause", "stop", "next", "prev", "volume_up", "volume_down", "whats_on", "share", "pair")
 
-__all__ = ["HOLD_MS", "TAP_FOLLOW_MS", "PRESS_MATCH_MS", "PRESS_LOST_MS", "TAP_CHAIN_MAX", "CUE_STATES", "CUE_ROLES", "PULSE_PERIOD_MS", "CHASE_PERIOD_MS", "PULSE_FLOOR", "CHASE_TAIL", "CHASE_STEPS", "BUTTON_NUMBERS", "BUTTONS", "GESTURES", "PROMPT_KINDS", "KEYMAP", "KEYMAP_CONTEXTS", "AUDIO_ROUTES", "POWER_SOURCES", "CART_ROLES", "POCKET_VERBS"]
+# The struggle detectors bollardeck.help ships (help-pack/1 scenarios name one of these, or a
+# detector a page registers with a name starting x-). Each is a pure function of the event stream
+# and the clock.
+HELP_DETECTORS = ("blocked-repeat", "rage", "error-code", "signal-repeat", "dwell", "idle-after-landing", "bounce", "abandon")
+
+# How many help offers (the small HELP? button by a control) a page shows at once.
+HELP_PILLS_AT_ONCE = 1
+
+# The most help offers one page view makes, however many struggles are detected (an offer withdrawn
+# because a quiet zone began does not count).
+HELP_OFFERS_PER_VIEW = 1
+
+# Offers in a row, of any topic, left to fade that make the whole engine back off.
+HELP_BACKOFF_IGNORES = 2
+
+# The first back-off: no offers at all for this long (a day). Each back-off after it doubles, until
+# an offer is opened.
+HELP_BACKOFF_MS = 86400000
+
+# The longest back-off (thirty days).
+HELP_BACKOFF_MAX_MS = 2592000000
+
+# The most events an engine keeps, whatever its window: a page left open for hours stays as cheap as
+# a new one.
+HELP_EVENTS_MAX = 2000
+
+# After a topic is offered, it is not offered again for this long (one day).
+HELP_TOPIC_COOLDOWN_MS = 86400000
+
+# NOT NOW on a help box, or HELP_IGNORES_TO_SNOOZE ignored offers, keep its topic quiet this long
+# (seven days).
+HELP_SNOOZE_MS = 604800000
+
+# Offers of one topic left to fade on their own that snooze the topic.
+HELP_IGNORES_TO_SNOOZE = 3
+
+# How long an offer stays up before it fades by itself (counted as ignored).
+HELP_OFFER_MS = 12000
+
+# No offers this soon after a page loads, except from the idle-after-landing detector.
+HELP_LANDING_QUIET_MS = 10000
+
+# A help box open this long (or its tour or video watched halfway) counts as read: its topic is not
+# offered again unless the struggle comes back.
+HELP_READ_MS = 4000
+
+# A read topic is offered again once its struggle has been detected on this many different later
+# days (UTC days), or when its rev rises.
+HELP_RECUR_DAYS = 3
+
+# A director script's say step stays up this long per word, unless the step gives its own ms.
+HELP_SAY_MS_PER_WORD = 330
+
+# The shortest a say step stays up.
+HELP_SAY_MIN_MS = 2500
+
+# The longest text one say step may carry.
+HELP_SAY_MAX_CHARS = 280
+
+# The longest caption line, in characters; a caption cue is at most two lines.
+HELP_CAPTION_LINE = 42
+
+# The longest a director script may run in recorded time (every say, wait and hold, not cut).
+HELP_SCRIPT_MAX_MS = 240000
+
+# The steps a help-director/1 script may take.
+HELP_DIRECTOR_VERBS = ("chapter", "say", "spot", "cue", "unspot", "hide", "module", "open", "close", "wait", "cut", "act", "mark")
+
+# Each director verb's default hold after it is done, in ms (a say step's hold is its reading time
+# instead).
+HELP_HOLD_MS = {"chapter": 0, "say": 0, "spot": 300, "cue": 300, "unspot": 0, "hide": 300, "module": 400, "open": 300, "close": 300, "wait": 0, "cut": 0, "act": 600, "mark": 0}
+
+__all__ = ["HOLD_MS", "TAP_FOLLOW_MS", "PRESS_MATCH_MS", "PRESS_LOST_MS", "TAP_CHAIN_MAX", "CUE_STATES", "CUE_ROLES", "PULSE_PERIOD_MS", "CHASE_PERIOD_MS", "PULSE_FLOOR", "CHASE_TAIL", "CHASE_STEPS", "BUTTON_NUMBERS", "BUTTONS", "GESTURES", "PROMPT_KINDS", "KEYMAP", "KEYMAP_CONTEXTS", "AUDIO_ROUTES", "POWER_SOURCES", "CART_ROLES", "POCKET_VERBS", "HELP_DETECTORS", "HELP_PILLS_AT_ONCE", "HELP_OFFERS_PER_VIEW", "HELP_BACKOFF_IGNORES", "HELP_BACKOFF_MS", "HELP_BACKOFF_MAX_MS", "HELP_EVENTS_MAX", "HELP_TOPIC_COOLDOWN_MS", "HELP_SNOOZE_MS", "HELP_IGNORES_TO_SNOOZE", "HELP_OFFER_MS", "HELP_LANDING_QUIET_MS", "HELP_READ_MS", "HELP_RECUR_DAYS", "HELP_SAY_MS_PER_WORD", "HELP_SAY_MIN_MS", "HELP_SAY_MAX_CHARS", "HELP_CAPTION_LINE", "HELP_SCRIPT_MAX_MS", "HELP_DIRECTOR_VERBS", "HELP_HOLD_MS"]

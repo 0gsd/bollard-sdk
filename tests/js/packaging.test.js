@@ -59,7 +59,7 @@ test("bollardeck.mjs has the whole binding as named exports", () => {
     "import('./js/bollardeck.mjs').then((m) => { const b = m.default;" +
     "console.log(JSON.stringify([Object.keys(m).sort(), m.schema === b.schema, m.cues === b.cues, m.matrix === b.matrix, m.schemas === b.schemas, m.constants === b.constants," +
     " !!(" + WHOLE + "), m.schema.isValid('cue', []), b === require('./js/bollardeck.js')])); })"));
-  assert.deepEqual(out, [["constants", "corpus", "cues", "default", "gestures", "keymap", "matrix", "minBollawax", "schema", "schemas", "speaks", "version"], true, true, true, true, true, true, true, true]);
+  assert.deepEqual(out, [["constants", "corpus", "cues", "default", "gestures", "help", "keymap", "matrix", "minBollawax", "schema", "schemas", "speaks", "version"], true, true, true, true, true, true, true, true]);
 });
 
 // ── a page: a stand-in document, and the files run as classic scripts ─────────────────────
@@ -148,7 +148,7 @@ test("data-parts=\"none\" loads nothing, and hand-written tags work in any order
   // Parts before bollardeck.js need nothing said; parts after it need data-parts="none" on its tag,
   // or it will have asked for them already.
   const none = { src: "file:///site/js/bollardeck.js", async: false, defer: false, type: "", getAttribute: (n) => (n === "data-parts" ? "none" : null) };
-  const orders = [PARTS.slice().reverse().concat(["bollardeck"]), ["dom", "keymap", "matrix", "corpus", "bollardeck", "cues", "gestures", "schema", "schemas"], ["bollardeck"].concat(PARTS)];
+  const orders = [PARTS.slice().reverse().concat(["bollardeck"]), ["dom", "keymap", "help", "matrix", "corpus", "bollardeck", "cues", "gestures", "schema", "schemas"], ["bollardeck"].concat(PARTS)];
   for (const order of orders) {
     const q = page();
     const last = order[order.length - 1] === "bollardeck";

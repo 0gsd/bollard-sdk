@@ -1,6 +1,8 @@
 # Bollard Physical Specification
 
-Version 1.0-draft · Status: speculative draft, superseded in part · Updated 2026-11-10 · As of Bollawax 0.2.4 and Bollard SDK 0.1.0
+Version 1.0-draft · Status: speculative draft, superseded in part · Updated 2026-11-10
+
+Written for Bollawax 0.2.4 and Bollard SDK 0.1.0 on 2026-11-10. The hardware it describes has not changed since Bollawax 0.2.4, so the page stands as written.
 
 > **Speculative draft.** No Pop Boll hardware has shipped, and nothing on this page has been built or validated on hardware. Dimensions, pinouts and protocols will change without notice, and nothing here is an offer, a commitment or a promise of compatibility. We would love to hear about partnership, OEM and dev-kit ideas: use the contact form on this site.
 
@@ -982,6 +984,6 @@ Bollard v2 is not written. These points are decided and will be in it. Everythin
 - **Two carts at most.** The cart in a dock's first slot is the brain and the USB host. A second cart is a guest: a USB device of the first, connected through the dock. A guest lends its corpora and its computing while it is seated, and drives no screen and no sound of its own.
 - This round's carts are built on the Arduino Uno Q. The Raspberry Pi family stays in the open Bolltridge specification for other makers and later rounds.
 
-**In 0.2.5.** Bollawax 0.2.5 carries the cart's software for pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor. No cart exists yet, and none of it is verified on hardware. This section still describes the cart as Bollawax 0.2.4 specifies it.
+**Since 0.2.5.** Since Bollawax 0.2.5, the image has carried the cart's software for pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor, and the Bollard SDK has carried draft dock and cart descriptor schemas. No cart exists yet, and none of it is verified on hardware. This section describes the cart as it was introduced in Bollawax 0.2.4; nothing in it has changed since.
 
 **Not decided, or not written:** the dock classes and the descriptor's fields; the Bollport's tolerances, magnets and cycle life; whether any of the v1 foot interface survives; the Pop Boll's dimensions as a dock; and a conformance checklist.

@@ -1,0 +1,19 @@
+{
+  "song_id": "pompa:42",
+  "title": "A file",
+  "artist": "",
+  "album": "",
+  "origin": "pompa",
+  "player": "pompa",
+  "entry_id": 42,
+  "entry_origin": "file",
+  "kind": "audio",
+  "bpm": null,
+  "key": null,
+  "time_sig": null,
+  "corpus_ids": [],
+  "position_ms": 0,
+  "duration_ms": 0,
+  "playing": false,
+  "lane": 1
+}

@@ -3,16 +3,16 @@
   "licence": "CC-BY-4.0",
   "pages": {
     "bollard.md": {
-      "bytes": 77749,
-      "sha256": "e1131f9c67dfe941bcb73cd5545103ee287d8cb553fece51db7227b2d15a0a75"
+      "bytes": 77994,
+      "sha256": "c492f02388c45b996a35f7b28fe625b8eb759d00c47aaa460de8741f55e73bda"
     },
     "bollardeck.md": {
-      "bytes": 64895,
-      "sha256": "e3efc2bf8a77900267d71cabbf82ad1a51c5e88d1af8132ce081cc47bf650845"
+      "bytes": 69582,
+      "sha256": "84064b5ba3c7ce5377d69fb9c8433011968f7321561d3fa7a0ddc36bade3be9a"
     },
     "index.md": {
-      "bytes": 17650,
-      "sha256": "830bb85c1930b3aa66b87d50135c17db31523092273c04b3964e944dd4e6226b"
+      "bytes": 18445,
+      "sha256": "8d820cdd844bdfe2cc55b608754b1f4bf389ece07293225f0a1936856053b550"
     },
     "popsniplish.md": {
       "bytes": 46337,
@@ -21,7 +21,7 @@
   },
   "published_at": "https://popboll.com/spec",
   "schema": "bollard-sdk.spec-sources/1",
-  "source_commit": "d22b695e9d356206fc93e10ec0a7300de01a8dc5",
+  "source_commit": "fe1562c8400ee20eb9f7bf7f5e62ec166c38eb77",
   "source_path": "docs/public/spec",
   "source_repository": "popbollard"
 }

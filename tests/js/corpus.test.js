@@ -391,3 +391,15 @@ test("gate: one wrong reading of the clock heals at the next contact, and a what
   down = false;
   assert.equal((await c.check("study")).allowed, true);
 });
+
+test("listen: a recording needs stream_audio, a render stream_render", () => {
+  const doc = JSON.parse(require("node:fs").readFileSync(require("node:path").join(CONFORMANCE, "corpus-gate", "scopes.json"), "utf8"));
+  const at = "2031-06-01T12:00:00Z";
+  for (const [name, recording, render] of [["full", true, false], ["public_domain_midi", false, true],
+                                           ["morpus_only", false, false], ["full_with_render", true, true]]) {
+    const m = doc.manifests[name];
+    assert.deepEqual([bollardeck.corpus.listen(m, null, false, at).allowed, bollardeck.corpus.listen(m, null, true, at).allowed],
+                     [recording, render], name);
+  }
+});
+

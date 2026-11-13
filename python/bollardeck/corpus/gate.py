@@ -332,6 +332,14 @@ def judge(manifest: Any, capability: Any, identity: Optional[Identity] = None, n
     return decide(read_manifest(manifest), capability, identity, now, standing)
 
 
+def listen(manifest: Any, identity: Optional[Identity] = None, render: bool = False, now: Any = None,
+           standing: Optional[Standing] = None) -> Verdict:
+    """May this listener hear the corpus? A recording needs `stream_audio`; a render of its MIDI through
+    Pop Boll's own sounds (`render=True`, never a recording) needs `stream_render`. The verdict answers
+    the capability it checked."""
+    return judge(manifest, "stream_render" if render else "stream_audio", identity, now, standing)
+
+
 # ── admission: what a content accessor demands ───────────────────────────────────────────
 
 class GateRequired(PermissionError):

@@ -193,7 +193,8 @@ KEY_DOWN_WORD = "down"
 
 def parse_key_line(line: str) -> Optional[KeyEvent]:
     """One line of the button format a GPIO bridge writes, as a key event; None for a line that is
-    not one. The button is written exactly "1", "2" or "3".
+    not one. The button is written exactly "1", "2" or "3", and the word down in lower case: a
+    line with "DOWN" is not a key line (a bridge writes the word small).
 
         "<button> <hold_ms> [release_ms]"   a complete press, written at its release
             -> {"t": "key", "i": button, "down": 0, "hold_ms": ..., "t_ms": release_ms or None}

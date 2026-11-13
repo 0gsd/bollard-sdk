@@ -168,7 +168,7 @@ test("every resolver case: the keymap's answer is the vector's", () => {
   for (const e of resolve.errors) assert.throws(() => K.resolve(e.gesture, null), RangeError, e.about);
   for (const e of resolve.bad_keymaps) assert.throws(() => K.resolve(e.gesture, e.prompt, e.keymap), RangeError, e.about);
   for (const e of resolve.bad_contexts) assert.throws(() => K.resolve(e.gesture, null, null, e.context), RangeError, e.about);
-  assert.deepEqual(K.combos(null, ["pocket"]), { 1: [2, 3], 2: [2], 3: [2, 3] }, "a pocket engine gets the double taps");
+  assert.deepEqual(K.combos(null, ["pocket"]), { 1: [2, 3], 2: [2, 3], 3: [2, 3] }, "a pocket engine gets the double taps, and button 2 its triple (pair)");
   assert.deepEqual(K.combos(), { 1: [3], 3: [3] }, "no context: the combos are what they were");
   assert.deepEqual(K.resolve("tap1", undefined), K.resolve("tap1", null), "no prompt is no prompt, however it is said");
 });
@@ -305,4 +305,32 @@ test("gestures.listen: a throwing onChange leaves no button down, and stop() end
   assert.deepEqual([heard.engine.isDown(2), edges, heard.engine.pending()], [false, ["3down@30", "3up@40"], 0]);
   heard.stop();                                                     // twice is once
   assert.equal(changes.length, 3);
+});
+
+// key() may place an announced press's release later than
+// any time the host gave. Times the host gives in order must never be refused; nowMs() says where
+// the engine's clock is.
+test("no host time given in order is refused after key() places a press", () => {
+  let seed = 20261111;
+  const rand = () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
+  const pick = (xs) => xs[Math.floor(rand() * xs.length)];
+  for (let n = 0; n < 300; n++) {
+    const engine = bollardeck.gestures.engine({ holdMs: 800, tapFollowMs: 500, combos: { 1: [3], 3: [3] } });
+    assert.equal(engine.nowMs(), null);
+    let t = 0;
+    for (let i = 0; i < 40; i++) {
+      t += pick([0, 1, 5, 20, 60, 150, 400, 900, 6000]);
+      const b = pick([1, 2, 3]), kind = rand();
+      if (kind < 0.3) engine.key({ t: "key", i: b, down: 1, t_ms: t - pick([0, 0, 10, 40]) }, t);
+      else if (kind < 0.6) {
+        const event = { t: "key", i: b, down: 0, hold_ms: pick([30, 100, 300, 900]) };
+        if (rand() < 0.5) event.t_ms = t - pick([0, 10, 50]);
+        engine.key(event, t);
+      } else if (kind < 0.75) engine.tick(t);
+      else if (kind < 0.85) engine.cancel(b, t);
+      else if (kind < 0.93) engine.down(b, t);
+      else engine.up(b, t);
+      if (engine.nowMs() !== null) assert.ok(engine.nowMs() <= t + 900, "timeline " + n + ": at most began + hold_ms ahead");
+    }
+  }
 });

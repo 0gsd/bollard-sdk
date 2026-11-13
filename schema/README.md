@@ -17,9 +17,15 @@ prose and as validators in code.
 | `snipler-events.schema.json` | a batch of Glass Snipler input events | PWHAMSS page 0.0.2-draft |
 | `snipler-frame.schema.json` | a Glass Snipler frame | envelope `v` 1, PWHAMSS page 0.0.2-draft |
 | `keymap.schema.json` | the engagement keymap: what each button gesture means | `v` 2 |
+| `help-pack.schema.json` | help content for `bollardeck.help`: intros, topics, scenarios | `help-pack/1` |
+| `help-director.schema.json` | a help tour or video script for `bollardeck.help.play` | `help-director/1` |
+| `nowplaying.schema.json` | what a player is playing: the bollardeck `nowplaying` body, shared by docks, watches and players | bollardeck/1 §6.1 |
+| `transport.schema.json` | the transport and volume writes that control a player | bollardeck/1 §7.3 |
 
-Not here yet, on purpose: bollardeck Part A messages and the dock descriptor. That specification
-is being rewritten, and schemas written now would be wrong.
+Not here yet, on purpose: the rest of the bollardeck Part A messages (the handshake, the grants, the
+streams). That specification is being rewritten for the cart and Bollard v2. The now-playing body and
+the transport and volume writes are here because players, docks and watches already share them, and
+the rewrite changes how they travel, not what they say.
 
 ## Using them
 

@@ -85,7 +85,7 @@
         "idle": {"tap1": "skip_to_frontier", "tap1x3": "leave_us_alone"},
         "always": {"hold3": "power"},
         "pocket": {"tap1": "play_pause", "hold1": "stop", "tap1x2": "volume_down", "tap2": "whats_on",
-                   "tap2x2": "prev", "hold2": "share", "tap3": "next", "tap3x2": "volume_up"}
+                   "tap2x2": "prev", "tap2x3": "pair", "hold2": "share", "tap3": "next", "tap3x2": "volume_up"}
       },
       "about": "The engagement keymap, version 2: what each gesture means. \"prompt\" applies while a prompt is showing and gives one meaning per kind of prompt: {\"choice\": x} answers the prompt with x, {\"do\": name} is a verb (\"raw\": this kind wants press and release times, not gestures), null takes the gesture and does nothing. \"idle\" (no prompt showing) and \"always\" (both, and first) map a gesture to a verb. \"pocket\" (optional) maps a gesture to a player verb when no prompt is showing and the device is in the pocket context (a cart with no dock), and is looked at before \"idle\". It fits schema/keymap.schema.json."
     },
@@ -106,8 +106,92 @@
       "about": "The role a cart picks from what is on its Bollport (spec v0.3 §5.3): host and brain of a dock, a guest under another cart, a screen or hub with no dock descriptor, nothing at all (pocket), or off. A computer on either port is an overlay, not a role."
     },
     "POCKET_VERBS": {
-      "value": ["play_pause", "stop", "next", "prev", "volume_up", "volume_down", "whats_on", "share"],
-      "about": "The player verbs of the pocket context: what a player (Pompa on a cart) does for each. whats_on shows the title, the audio route and the battery; share queues a share until the device is online."
+      "value": ["play_pause", "stop", "next", "prev", "volume_up", "volume_down", "whats_on", "share", "pair"],
+      "about": "The player verbs of the pocket context: what a player (Pompa on a cart) does for each. whats_on shows the title, the audio route and the battery; share queues a share until the device is online; pair starts pairing the cart with a person's Pop Boll account (HAMS pairing)."
+    },
+    "HELP_DETECTORS": {
+      "value": ["blocked-repeat", "rage", "error-code", "signal-repeat", "dwell", "idle-after-landing", "bounce", "abandon"],
+      "about": "The struggle detectors bollardeck.help ships (help-pack/1 scenarios name one of these, or a detector a page registers with a name starting x-). Each is a pure function of the event stream and the clock."
+    },
+    "HELP_PILLS_AT_ONCE": {
+      "value": 1,
+      "about": "How many help offers (the small HELP? button by a control) a page shows at once."
+    },
+    "HELP_OFFERS_PER_VIEW": {
+      "value": 1,
+      "about": "The most help offers one page view makes, however many struggles are detected (an offer withdrawn because a quiet zone began does not count)."
+    },
+    "HELP_BACKOFF_IGNORES": {
+      "value": 2,
+      "about": "Offers in a row, of any topic, left to fade that make the whole engine back off."
+    },
+    "HELP_BACKOFF_MS": {
+      "value": 86400000,
+      "about": "The first back-off: no offers at all for this long (a day). Each back-off after it doubles, until an offer is opened."
+    },
+    "HELP_BACKOFF_MAX_MS": {
+      "value": 2592000000,
+      "about": "The longest back-off (thirty days)."
+    },
+    "HELP_EVENTS_MAX": {
+      "value": 2000,
+      "about": "The most events an engine keeps, whatever its window: a page left open for hours stays as cheap as a new one."
+    },
+    "HELP_TOPIC_COOLDOWN_MS": {
+      "value": 86400000,
+      "about": "After a topic is offered, it is not offered again for this long (one day)."
+    },
+    "HELP_SNOOZE_MS": {
+      "value": 604800000,
+      "about": "NOT NOW on a help box, or HELP_IGNORES_TO_SNOOZE ignored offers, keep its topic quiet this long (seven days)."
+    },
+    "HELP_IGNORES_TO_SNOOZE": {
+      "value": 3,
+      "about": "Offers of one topic left to fade on their own that snooze the topic."
+    },
+    "HELP_OFFER_MS": {
+      "value": 12000,
+      "about": "How long an offer stays up before it fades by itself (counted as ignored)."
+    },
+    "HELP_LANDING_QUIET_MS": {
+      "value": 10000,
+      "about": "No offers this soon after a page loads, except from the idle-after-landing detector."
+    },
+    "HELP_READ_MS": {
+      "value": 4000,
+      "about": "A help box open this long (or its tour or video watched halfway) counts as read: its topic is not offered again unless the struggle comes back."
+    },
+    "HELP_RECUR_DAYS": {
+      "value": 3,
+      "about": "A read topic is offered again once its struggle has been detected on this many different later days (UTC days), or when its rev rises."
+    },
+    "HELP_SAY_MS_PER_WORD": {
+      "value": 330,
+      "about": "A director script's say step stays up this long per word, unless the step gives its own ms."
+    },
+    "HELP_SAY_MIN_MS": {
+      "value": 2500,
+      "about": "The shortest a say step stays up."
+    },
+    "HELP_SAY_MAX_CHARS": {
+      "value": 280,
+      "about": "The longest text one say step may carry."
+    },
+    "HELP_CAPTION_LINE": {
+      "value": 42,
+      "about": "The longest caption line, in characters; a caption cue is at most two lines."
+    },
+    "HELP_SCRIPT_MAX_MS": {
+      "value": 240000,
+      "about": "The longest a director script may run in recorded time (every say, wait and hold, not cut)."
+    },
+    "HELP_DIRECTOR_VERBS": {
+      "value": ["chapter", "say", "spot", "cue", "unspot", "hide", "module", "open", "close", "wait", "cut", "act", "mark"],
+      "about": "The steps a help-director/1 script may take."
+    },
+    "HELP_HOLD_MS": {
+      "value": {"chapter": 0, "say": 0, "spot": 300, "cue": 300, "unspot": 0, "hide": 300, "module": 400, "open": 300, "close": 300, "wait": 0, "cut": 0, "act": 600, "mark": 0},
+      "about": "Each director verb's default hold after it is done, in ms (a say step's hold is its reading time instead)."
     }
   }
 }

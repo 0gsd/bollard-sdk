@@ -7,7 +7,9 @@
  * `cue` schema's document with at most one {button, state, role} per button, in any order;
  * buttons are numbered 1, 2, 3. problems(list) says what is wrong with a list ([] when valid).
  *
- * at() and compile() want a valid list and throw otherwise. A loop that must not stop for one
+ * at() and compile() want a valid list and throw otherwise. Checking needs only this part:
+ * with bollardeck.schema.js loaded the `cue` schema is asked, and without it this file checks the
+ * same rules itself, so a page that loads only the parts it uses can still call at(). A loop that must not stop for one
  * bad cue passes normalise(list) instead: it never throws, drops a cue it cannot use, reads a
  * role it cannot use as none, and keeps the last of two cues for one button. repairs(list) says
  * what normalise dropped or changed. Python's bollardeck.device.cues has the same four functions
@@ -87,16 +89,50 @@
     return f;
   }
 
+  // A problem found without the validator: the members bollardeck.schema.Problem has, and its text.
+  function Problem(pointer, message, keyword) { this.pointer = pointer; this.message = message; this.keyword = keyword; }
+  Problem.prototype.toString = function () { return "#" + this.pointer + ": " + this.message; };
+
+  function problem(pointer, message, keyword) {
+    var P = bollardeck.schema && bollardeck.schema.Problem;
+    return P ? new P(pointer, message, keyword) : new Problem(pointer, message, keyword);
+  }
+
+  // The `cue` schema checked by hand, for a page that loads this part without bollardeck.schema.js
+  // (54 KB with the schemas). The schema is small and fixed by cue model 1; with the validator
+  // loaded, problems() asks it instead, and the tests hold the two to the same verdicts.
+  function shapeProblems(list) {
+    if (!Array.isArray(list)) return [problem("", "is not an array", "type")];
+    var found = [];
+    if (list.length > 3) found.push(problem("", "has more than 3 items", "maxItems"));
+    var states = K("CUE_STATES"), roles = K("CUE_ROLES");
+    list.forEach(function (c, i) {
+      var at = "/" + i;
+      if (c === null || typeof c !== "object" || Array.isArray(c)) { found.push(problem(at, "is not an object", "type")); return; }
+      ["button", "state", "role"].forEach(function (k) {
+        if (!Object.prototype.hasOwnProperty.call(c, k)) found.push(problem(at, "lacks \"" + k + "\"", "required"));
+      });
+      Object.keys(c).forEach(function (k) {
+        if (k !== "button" && k !== "state" && k !== "role") found.push(problem(at + "/" + k, "is not allowed here", "additionalProperties"));
+      });
+      if ("button" in c && BUTTONS.indexOf(c.button) < 0) found.push(problem(at + "/button", "is not one of 1, 2, 3", "enum"));
+      if ("state" in c && states.indexOf(c.state) < 0) found.push(problem(at + "/state", "is not one of " + states.join(", "), "enum"));
+      if ("role" in c && c.role !== null && roles.indexOf(c.role) < 0) found.push(problem(at + "/role", "is not one of " + roles.join(", ") + " or null", "enum"));
+      if (c.state === "off" && "role" in c && c.role !== null) found.push(problem(at + "/role", "must be null for an off cue", "const"));
+    });
+    return found;
+  }
+
   // What is wrong with `list` as a cue list ([] when it is fine): the `cue` schema's problems,
-  // and a second cue for a button the list already has one for.
+  // and a second cue for a button the list already has one for. Uses bollardeck.schema when it
+  // is loaded, and its own check of the same schema when it is not.
   function problems(list) {
-    if (!bollardeck.schema) throw new Error("bollardeck.cues: checking a cue list needs bollardeck.schema (load bollardeck.schema.js)");
-    var found = bollardeck.schema.validate("cue", list);
+    var found = bollardeck.schema ? bollardeck.schema.validate("cue", list) : shapeProblems(list);
     if (found.length) return found;
     var seen = {};
     list.forEach(function (cue, i) {
       if (seen[cue.button]) {
-        found.push(new bollardeck.schema.Problem("/" + i + "/button", "is a second cue for button " + cue.button, "one-per-button"));
+        found.push(problem("/" + i + "/button", "is a second cue for button " + cue.button, "one-per-button"));
       }
       seen[cue.button] = true;
     });

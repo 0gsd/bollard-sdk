@@ -61,7 +61,7 @@ class Version(unittest.TestCase):
 
 class Package(unittest.TestCase):
     def test_every_subpackage_imports_with_the_standard_library_only(self):
-        for name in ("corpus", "device", "deck", "routines", "snipler"):
+        for name in ("corpus", "device", "deck", "pxs", "routines", "snipler"):
             module = __import__("bollardeck." + name, fromlist=["_"])
             self.assertTrue(module.__doc__ and module.__doc__.strip(), name)
         text = (ROOT / "pyproject.toml").read_text()

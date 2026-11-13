@@ -24,6 +24,7 @@ Where it is deliberately exact:
 """
 
 import json
+import math
 import re
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple
 from urllib.parse import urldefrag, urljoin
@@ -208,7 +209,11 @@ def _regex(pattern: str) -> "re.Pattern[str]":
 
 
 def _is_number(v: Any) -> bool:
-    return isinstance(v, (int, float)) and not isinstance(v, bool)
+    """A JSON number: never a bool, and never NaN or an infinity (JSON cannot carry them, and JS's
+    validator, whose input is parsed JSON, never sees one)."""
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        return False
+    return not isinstance(v, float) or math.isfinite(v)
 
 
 def _is_type(v: Any, t: str) -> bool:

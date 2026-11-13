@@ -1,0 +1,31 @@
+{
+  "v": 1,
+  "t": "nowplaying",
+  "song_id": "pb0042_d03_s012_x",
+  "title": "Example",
+  "origin": "factory",
+  "form": "single",
+  "corpus_ids": [
+    "0007-DEMO"
+  ],
+  "corpus_labels": [
+    "PB 0007 — Demo corpus"
+  ],
+  "bpm": 118.0,
+  "key": "A Major (Hexatonic Pop)",
+  "time_sig": "4/4",
+  "parts": [
+    {
+      "index": 1,
+      "label": "Intro",
+      "category": "Intro",
+      "bar": 1,
+      "bars": 8
+    }
+  ],
+  "routines": [
+    "mixolydian_bridge"
+  ],
+  "position_ms": 12345,
+  "duration_ms": 201000
+}

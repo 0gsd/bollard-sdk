@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/nowplaying.schema.json",
+  "title": "Now playing",
+  "description": "What a player is playing, as a Boll sends it to a dock on the bollardeck topic nowplaying (spec/bollardeck.md 6.1) and as any player can share it with a dock, a watch or another player. It is the message's body: the wire message adds \"v\": 1 and \"t\": \"nowplaying\", and both forms validate. song_id, title and position_ms are required; every other member is optional, and members not named here are allowed and ignored by readers, so a player may add its own (Pompa adds entry_id, entry_origin and kind). lane is a player's playback lane, 0 to 3 (0 the primary), for a player with more than one; player names who is publishing (\"factory\", \"pompa\", a third party's own word). A payload of null, or no message, means nothing is playing.",
+  "type": "object",
+  "required": [
+    "song_id",
+    "title",
+    "position_ms"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "t": {
+      "type": "string",
+      "const": "nowplaying"
+    },
+    "song_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "artist": {
+      "type": "string"
+    },
+    "album": {
+      "type": "string"
+    },
+    "origin": {
+      "description": "Where the song comes from: \"factory\" for a song the Boll made, a player's own word otherwise.",
+      "type": "string",
+      "minLength": 1
+    },
+    "player": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}$"
+    },
+    "lane": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "form": {
+      "type": "string"
+    },
+    "corpus_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[A-Za-z0-9_]+$"
+      }
+    },
+    "corpus_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bpm": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      ]
+    },
+    "key": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "time_sig": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[1-9][0-9]?/(1|2|4|8|16|32)$"
+        }
+      ]
+    },
+    "parts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/part"
+      }
+    },
+    "routines": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "position_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "duration_ms": {
+      "description": "0 when the player does not know.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "playing": {
+      "description": "false while paused; absent from a Boll, which sends nowplaying only while it plays.",
+      "type": "boolean"
+    }
+  },
+  "$defs": {
+    "part": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "bar": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bars": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

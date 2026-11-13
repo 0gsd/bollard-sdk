@@ -4,12 +4,13 @@ The SDK for building on the Pop Boll platform: docks, routines, apps and tools t
 Bollawax device or to its web twin, and that read corpora the way the platform does, respecting
 each corpus's licence and settings.
 
-**Status: 0.2.0, shipped with Bollawax 0.2.5 (0.1.0, the first version, shipped with 0.2.4). Its
-interfaces may still change between 0.x versions.** The corpus client, the device layer, routines,
+**Status: 0.3.0, shipped with Bollawax 0.3.0 (0.2.0 shipped with 0.2.5, and 0.1.0, the first version,
+with 0.2.4). Its interfaces may still change between 0.x versions.** The corpus client, the device layer, routines,
 the matrix engine and the browser binding are built, and so are a cart's additions (a pocket
 context for the keymap, power sources, file playback and its decoders, audio routes, Bluetooth, the
-cart and dock descriptors), tested against the simulated board; the dock protocol, the deck client
-and the Glass Snipler types are placeholders. Of the specifications under `spec/`, the software
+cart and dock descriptors), tested against the simulated board. 0.3.0 adds help content and tours, the
+`.pxs` format, a minimal deck service and client (a draft, as the dock protocol is), and the now-playing
+and transport schemas. The Glass Snipler types are placeholders. Of the specifications under `spec/`, the software
 pages are current with this version and the hardware pages are speculative drafts: `bollard.md` is
 version 1, the interface under the Boll's foot, and the specification for the cart and its docks is
 not written (`spec/bollardeck.md` §20 records what is decided).
@@ -68,7 +69,8 @@ tracks, audio, art and bundles, say who the client acts for: `HubClient(..., act
 or `hub.corpus(id, acting_for=...)`. The name goes in the `X-Pop-For` header, never in a URL, and
 is self-declared until sign-in arrives. Also there: `CorpusUnavailable` and `NotAvailable` carry a
 `reason` and the hub's `status`; `corpus.open_audio_ranged(file, verdict, range_header=...)` gives
-a relay the source's status and headers; `hub.listing().from_cache`; `corpus.manifest_view()` (read-only,
+a relay the source's status and headers, and `corpus.open_art_ranged(name, verdict, ...)` does the same
+for cover art; `hub.listing().from_cache`; `corpus.manifest_view()` (read-only,
 no copy); `hub.corpus_gate()` (the hub's rollout switch, `enforce` or `report`). A clock that is set
 back does not reopen an expired licence held in a cache.
 
@@ -140,7 +142,7 @@ their expected values), and `tools/generate.py` writes `js/bollardeck.schemas.js
 
 ## Versions
 
-The SDK has its own version, and its tags are the version number (`0.1.0`, `0.2.0`). It is not the Bollawax
+The SDK has its own version, and its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`). It is not the Bollawax
 image version.
 `bollardeck.SPEAKS` lists the wire and format versions this SDK speaks, and
 `bollardeck.MIN_BOLLAWAX` is the oldest Bollawax release it is tested against.

@@ -214,3 +214,38 @@ test("the cue helpers do not depend on the page helper or the matrix", () => {
   const source = fs.readFileSync(path.join(__dirname, "..", "..", "js", "bollardeck.cues.js"), "utf8");
   assert.ok(!/document|window|requestAnimationFrame|canvas/.test(source.replace(/\/\*[\s\S]*?\*\//, "")));
 });
+
+// A page that loads only bollardeck.js and this part (no bollardeck.schema.js, 54 KB with the
+// schemas) can still check and draw a cue list, with the same verdicts the schema gives.
+test("without bollardeck.schema loaded, at() and compile() still check and draw a cue list", () => {
+  const vm = require("node:vm");
+  const { JS } = require("./support.js");
+  const sandbox = {};
+  sandbox.globalThis = sandbox;
+  const context = vm.createContext(sandbox);
+  for (const f of ["bollardeck.js", "bollardeck.cues.js"]) vm.runInContext(fs.readFileSync(path.join(JS, f), "utf8"), context, { filename: f });
+  const lean = sandbox.bollardeck;
+  assert.equal(lean.schema, undefined, "the schema part is not loaded");
+  const plain = (x) => JSON.parse(JSON.stringify(x));
+  const doc = readJson(CONFORMANCE, "cues", "normalise.json");
+  for (const v of doc.normalise) {
+    const verdict = cues.problems(v.input).length === 0;
+    assert.equal(lean.cues.problems(v.input).length === 0, verdict, v.name + ": the same verdict as the schema");
+    if (verdict) assert.deepEqual(plain(lean.cues.compile(v.input).cues), v.output, v.name);
+    else assert.throws(() => lean.cues.compile(v.input), (e) => e.name === "TypeError" && e.problems.length > 0, v.name);
+    assert.deepEqual(plain(lean.cues.at(lean.cues.normalise(v.input), 250)), plain(cues.at(cues.normalise(v.input), 250)), v.name + ": at() on normalise's output");
+  }
+  const index = readJson(CONFORMANCE, "index.json");
+  for (const v of index.vectors.filter((x) => x.schema === "cue")) {
+    const input = readJson(CONFORMANCE, v.file);
+    assert.equal(lean.cues.problems(input).length === 0, v.valid, v.file);
+  }
+  for (const odd of [{}, "x", null, [{ button: 1, state: "on", role: null }, { button: 2, state: "on", role: null }, { button: 3, state: "on", role: null }, { button: 1, state: "on", role: null }],
+                     [{ button: 1, state: "on" }], [{ button: 1, state: "on", role: null, colour: "red" }], [{ button: "1", state: "on", role: null }],
+                     [{ button: 1, state: "off", role: "go" }], [{ button: 1, state: "dim", role: null }], [{ button: 1, state: "on", role: "boss" }], [7]]) {
+    assert.equal(lean.cues.problems(odd).length === 0, cues.problems(odd).length === 0, JSON.stringify(odd));
+    assert.ok(lean.cues.problems(odd).length > 0, JSON.stringify(odd) + " is refused");
+  }
+  const twice = [{ button: 2, state: "on", role: null }, { button: 2, state: "off", role: null }];
+  assert.deepEqual(plain(lean.cues.problems(twice).map((p) => [p.pointer, p.keyword, String(p)])), [["/1/button", "one-per-button", "#/1/button: is a second cue for button 2"]]);
+});

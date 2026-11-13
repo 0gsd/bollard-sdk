@@ -44,6 +44,10 @@
       "description": "The recordings may be played to listeners. Needs store_audio.",
       "type": "boolean"
     },
+    "stream_render": {
+      "description": "The corpus's MIDI may be played to listeners rendered through Pop Boll's own sounds (never a recording). On by default for public_domain_midi, off for full and morpus_only unless the artist grants it.",
+      "type": "boolean"
+    },
     "store_art": {
       "description": "Cover art may be kept and shown.",
       "type": "boolean"

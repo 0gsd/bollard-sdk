@@ -61,7 +61,10 @@
  *     the whole press for a hold fed as a complete press.
  *
  * The clock is yours to keep: the engine throws when a time is earlier than the last one it was
- * given and never clamps. A host that mixes two clocks clamps before it calls.
+ * given. One exception: when key() places an announced press by its beginning (rule 9), its
+ * release may land later than any time you gave; a time between your last one and the engine's
+ * clock is then read as the engine's clock, and nowMs() says where that is. A host that mixes
+ * two clocks clamps before it calls.
  *
  * Debouncing is not here: drop contact bounce before it reaches the engine.
  */
@@ -149,6 +152,7 @@
     var combos = checkCombos(opts.combos === undefined || opts.combos === null ? combosFromKeymap(constant("KEYMAP")) : opts.combos);
     var buttons = constant("BUTTON_NUMBERS");
     var now = null;
+    var fed = null;                 // the latest time the host itself gave
     var down = {};                  // button -> [down time, hold already fired]
     var began = {};                 // button -> when a key source said a press began (a hint)
     var chainHolds = [];            // how long each pending tap lasted, oldest first
@@ -162,8 +166,9 @@
     }
     function has(map, b) { return Object.prototype.hasOwnProperty.call(map, b); }
     // Drop the hint of a press whose release has not come pressLostMs after it began.
-    function forgetLost(t) {
-      Object.keys(began).forEach(function (b) { if (t - began[b] > lostMs) delete began[b]; });
+    // (Except button `keep`'s, whose release is being read.)
+    function forgetLost(t, keep) {
+      Object.keys(began).forEach(function (b) { if (+b !== keep && t - began[b] > lostMs) delete began[b]; });
     }
     // Is the pending chain waiting on an announced press that began in its window and may still
     // be a tap at time t?
@@ -175,11 +180,24 @@
       if (typeof b !== "number" || buttons.indexOf(b) < 0) throw new RangeError("button must be 1, 2 or 3, not " + JSON.stringify(b));
       return b;
     }
-    function time(t) {
+    // Check a time and move the clock to it. host: the caller gave it (not a time the engine
+    // worked out). A host time behind the clock throws, unless the engine itself moved the clock
+    // past every time the host gave: it then reads as the engine's clock. judge false only
+    // checks the time and remembers that the host gave it (a key event's reading).
+    function time(t, host, judge) {
       if (typeof t !== "number" || t !== t) throw new RangeError("a time must be a number, not " + JSON.stringify(t));
-      if (now !== null && t < now) throw new RangeError("time ran backwards: " + t + " after " + now);
-      now = t;
-      return t;
+      if (judge === false) {
+        if (host) fed = fed === null ? t : Math.max(fed, t);
+        return t;
+      }
+      var at = t;
+      if (now !== null && at < now) {
+        if (host && fed !== null && at >= fed) at = now;        // the engine's clock is ahead of the host's: read as it
+        else throw new RangeError("time ran backwards: " + t + " after " + now);
+      }
+      if (host) fed = fed === null ? t : Math.max(fed, t);
+      now = at;
+      return at;
     }
 
     // After setCombos: can the pending chain no longer grow (its button has no combos now, or
@@ -248,9 +266,21 @@
       }
     }
 
+    // The beginning of a press.
+    function pressDown(b, tMs, host) {
+      var t = time(tMs, host), out = advance(t);
+      if (has(down, b)) return out;
+      if (chainCount) {
+        if (chainButton !== b) out = out.concat(flush(t));      // another button ends a chain
+        else chainOpen = true;                                  // pressed in time: wait for this one
+      }
+      down[b] = [t, false];
+      return out;
+    }
+
     // The end of a press, without touching any hint.
-    function up(b, tMs) {
-      var t = time(tMs), out = advance(t);                      // a press that reached holdMs fires here
+    function up(b, tMs, host) {
+      var t = time(tMs, host), out = advance(t);                      // a press that reached holdMs fires here
       if (!has(down, b)) return out;
       var fired = down[b][1], downMs = down[b][0];
       delete down[b];
@@ -274,6 +304,11 @@
         chainDropped = chainOver();
         return api;
       },
+
+      // Where the engine's clock is (null before the first call): the latest time it was given,
+      // except after key() placed an announced press by its beginning (rule 9), whose release is
+      // then at began + hold_ms and may be later than any time the host gave.
+      nowMs: function () { return now; },
 
       // Taps waiting to learn whether they are part of a chain.
       pending: function () { return chainCount; },
@@ -304,29 +339,19 @@
       },
 
       // Say what time it is. Returns what became certain since the last call.
-      tick: function (tMs) { return advance(time(tMs)); },
+      tick: function (tMs) { return advance(time(tMs, true)); },
 
-      down: function (b, tMs) {
-        button(b);
-        var t = time(tMs), out = advance(t);
-        if (api.isDown(b)) return out;
-        if (chainCount) {
-          if (chainButton !== b) out = out.concat(flush(t));    // another button ends a chain
-          else chainOpen = true;                                // pressed in time: wait for this one
-        }
-        down[b] = [t, false];
-        return out;
-      },
+      down: function (b, tMs) { return pressDown(button(b), tMs, true); },
 
       up: function (b, tMs) {
         button(b);
         if (api.isDown(b)) delete began[b];                     // an edge is the truth: a hint for this button is over
-        return up(b, tMs);
+        return up(b, tMs, true);
       },
 
       cancel: function (b, tMs) {
         button(b);
-        var t = time(tMs), out = advance(t);
+        var t = time(tMs, true), out = advance(t);
         delete began[b];                                        // a cancelled press takes its announcement with it
         if (!api.isDown(b)) return out;
         delete down[b];
@@ -347,11 +372,15 @@
         var release = event.t_ms;
         if (release === null || release === undefined) release = nowMs;
         if (release === null || release === undefined) throw new RangeError("this key event has no time: pass nowMs");
-        forgetLost(nowMs === null || nowMs === undefined ? release : Math.max(release, nowMs));
+        var readAt = nowMs === null || nowMs === undefined ? release : Math.max(release, nowMs);
+        time(readAt, true, false);                              // the host's own time, not yet the engine's
+        // Give up announcements nothing has been read for, but not the one this release may end:
+        // it is matched first, however late it is read.
+        forgetLost(readAt, event.down ? null : b);
         if (event.down) { began[b] = release; return []; }      // a hint, and nothing more
         if (api.isDown(b)) {                                    // the end of a press down() began
           delete began[b];
-          return api.up(b, now === null ? release : Math.max(release, now));
+          return up(b, now === null ? release : Math.max(release, now), true);
         }
         var hinted = has(began, b), start0 = began[b];
         var stated = event.hold_ms;
@@ -370,12 +399,13 @@
           }
           if (belongs || stale) delete began[b];
           hinted = belongs;
+          forgetLost(readAt);                                   // a hint this release was not for
         }
         var held = Math.max(0, Math.trunc(+stated || 0));
         if (hinted) release = start0 + held;                    // placed by its beginning
         var start = release - held;
         if (now === null || start >= now) {
-          return api.down(b, start).concat(up(b, release)).map(function (g) {    // not api.up: a hint kept above stays
+          return pressDown(b, start, false).concat(up(b, release, false)).map(function (g) {    // not api.up: a hint kept above stays
             if (g.kind === "hold" && g.button === b) g.holdMs = held;
             return g;
           });
@@ -384,6 +414,9 @@
         // button was down, or the event arrived late). Judge it by its own two times.
         var out = dropped(now);
         if (chainCount && chainButton !== b) out = out.concat(flush(start));
+        else if (chainCount && !chainOpen && start > chainRelease + followMs) {
+          out = out.concat(flush(chainRelease + followMs));     // its window closed before this press began
+        }
         if (held >= holdMs) {
           out = out.concat(flush(start + holdMs));
           out.push(gesture("hold", b, 1, start + holdMs, held));

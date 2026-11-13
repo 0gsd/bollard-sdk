@@ -1,0 +1,12 @@
+{
+  "schema": "help-director/0",
+  "id": "tour.player.play",
+  "title": "playing",
+  "page": "player",
+  "role": "owner",
+  "steps": [
+    {
+      "do": "hide"
+    }
+  ]
+}

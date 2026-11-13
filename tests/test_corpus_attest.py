@@ -119,8 +119,14 @@ def build_edition(td, real_mldsa=False):
     tsv = attest.render_manifest(entries)
     created = "2031-02-03T06:00:00Z"
     edition = attest.edition_id(created, tsv)
+    from bollardeck.corpus.licence import Licence
+    paper = Licence.from_block(m.get("licence"))
     att = attest.canonical_json({
-        "schema": attest.ATTESTATION_SCHEMA, "corpus": {"id": m["id"], "name": m["name"]}, "created_at": created,
+        "schema": attest.ATTESTATION_SCHEMA, "created_at": created,
+        "corpus": {"id": m["id"], "name": m["name"], "artist": m["artist"], "number": int(m["number"]), "slug": m["slug"],
+                   "edition_label": m.get("edition") or "PB %04d — %s Edition" % (int(m["number"]), m["slug"])},
+        "license": {"scope": paper.scope, "permissions": {f: paper.grants(f) for f in attest.SIGNED_FLAGS},
+                    "consent": bool(m.get("consent", False)), "owner_email": str(m.get("owner_email", ""))},
         "edition": edition, "signer": {"keyid": keyid},
         "manifest": {"sha256": hashlib.sha256(tsv).hexdigest(), "sha3_512": hashlib.sha3_512(tsv).hexdigest(),
                      "files": len(entries), "bytes": sum(e["size"] for e in entries)}})
@@ -230,6 +236,59 @@ class Attestation(unittest.TestCase):
         m = self.corpus.manifest()
         m["attestation"]["edition"] = "20310204-" + self.e["edition"][9:]
         self.assertEqual(verify_attestation(m, **dict(self.record, **self.keys), **nossl).record, FAILED)
+
+    def test_a_manifest_whose_rights_changed_around_a_genuine_block_fails(self):
+        # The manifest must say what the edition signed (identity, licence
+        # scope and flags, consent, owner); a change of rights needs a new edition.
+        good = self.corpus.manifest()
+        self.assertEqual(self.check().record, VERIFIED)
+        flip = "export_morpus"
+        for change in ({"licence": dict(good["licence"], **{flip: not Corpus.from_manifest(good).licence.grants(flip)})},
+                       {"licence": dict(good["licence"], scope="morpus_only")}, {"name": "Another Title"},
+                       {"owner_email": "mallory@example.org"}, {"consent": not good.get("consent", False)},
+                       {"edition": "PB 0001 — Not This Edition"}):
+            res = verify_attestation(dict(good, **change), **self.record, **self.keys)
+            self.assertEqual(res.record, FAILED, change)
+            self.assertTrue(any("not the one the edition signed" in p for p in res.problems), res.problems)
+
+    def test_a_flag_the_edition_never_signed_cannot_be_granted_around_it(self):
+        # An edition signed with eight flags, a full-scope manifest that writes
+        # stream_render: true. It must fail; left at the scope's default (off), it verifies.
+        from bollardeck.corpus.attest import signed_field_problems
+        good = self.corpus.manifest()
+        att = json.loads(self.record["attestation"])
+        att["license"]["permissions"].pop("stream_render", None)          # as an edition from before the flag
+        self.assertEqual(att["license"]["scope"], "full")
+        self.assertEqual(signed_field_problems(good, att), [])
+        granted = dict(good, licence=dict(good["licence"], stream_render=True))
+        problems = signed_field_problems(granted, att)
+        self.assertEqual(len(problems), 1, problems)
+        self.assertIn("stream_render", problems[0])
+        self.assertIn("does not sign it", problems[0])
+        # A public_domain_midi edition from before the flag: the scope's default is on, so leaving it is fine,
+        # and switching it off is a change of rights too.
+        pdm_att = dict(att, license=dict(att["license"], scope="public_domain_midi",
+                                         permissions={k: v for k, v in att["license"]["permissions"].items()}))
+        pdm = dict(good, licence={"schema": "popboll.licence/1", "version": 1, "scope": "public_domain_midi"})
+        flags = {f: Corpus.from_manifest(pdm).licence.grants(f) for f in attest.SIGNED_FLAGS if f != "stream_render"}
+        pdm_att["license"]["permissions"] = flags
+        self.assertEqual(signed_field_problems(pdm, pdm_att), [])
+        off = dict(pdm, licence=dict(pdm["licence"], stream_render=False))
+        self.assertTrue(any("stream_render" in p for p in signed_field_problems(off, pdm_att)))
+
+    def test_what_the_edition_does_not_sign_may_change(self):
+        good = self.corpus.manifest()
+        packed = dict(good, audio_format="wbol/1", albums=[{"slug": "a", "chapters": 3}], morpus_bundle_format="mrph5/1",
+                      mrph5_count=3, pack=True, packed_at="2031-03-01T00:00:00Z", description="a new description",
+                      form_stats={"v": "stats/1", "tracks": 9}, access=["grace@example.org"], visibility="unlisted",
+                      licence=dict(good["licence"], granted_at="2031-03-01T00:00:00Z", statements_sha256="0" * 64))
+        res = verify_attestation(packed, **self.record, **self.keys)
+        self.assertEqual(res.record, VERIFIED, res.problems)
+
+    def test_a_record_that_states_no_licence_does_not_vouch_for_rights(self):
+        from bollardeck.corpus.attest import signed_field_problems
+        self.assertEqual(signed_field_problems(self.corpus.manifest(), {"corpus": {"id": self.corpus.id}}),
+                         ["the attestation states no licence, so the manifest's rights cannot be checked"])
 
     def test_the_listing_must_be_canonical(self):
         tsv = self.record["manifest_tsv"]

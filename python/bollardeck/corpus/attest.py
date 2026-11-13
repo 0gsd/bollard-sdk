@@ -234,12 +234,71 @@ def _openssl_verify(exe: str, pub_pem: bytes, data: bytes, sig: bytes) -> bool:
 
 # ── the check ────────────────────────────────────────────────────────────────────────────
 
+# What an edition signs about the manifest it was made from:
+SIGNED_CORPUS_FIELDS = ("id", "number", "slug", "name", "artist", "edition_label")
+SIGNED_FLAGS = ("transcode", "store_audio", "stream_audio", "store_art", "store_morpus", "musicians_may_study",
+                "export_morpus", "device_copies", "stream_render")
+# An edition signed before a flag existed does not list it: the manifest must then leave that flag at the
+# signed scope's default (so an eight-flag edition still verifies, and cannot be made to grant the ninth).
+
+
+def signed_field_problems(manifest: Mapping[str, Any], att: Mapping[str, Any]) -> List[str]:
+    """Where the manifest does not say what the edition signed: the corpus's identity (id, number,
+    slug, name, artist, edition label), its licence's scope and the eight permission flags, read as
+    the SDK reads a block on paper, consent and the owner's address. [] when it does. Everything
+    else in the manifest is free to change after the edition (packing, counts, descriptions, the
+    licence block's bookkeeping); `access` and `visibility` are not signed."""
+    from .licence import Licence
+
+    out: List[str] = []
+    signed = att.get("corpus") if isinstance(att.get("corpus"), Mapping) else {}
+    try:
+        number = int(manifest.get("number"))
+    except (TypeError, ValueError):
+        number = manifest.get("number")
+    label = manifest.get("edition") or ("PB %04d — %s Edition" % (number, manifest.get("slug"))
+                                          if isinstance(number, int) else "")
+    mine = {"id": manifest.get("id"), "number": number, "slug": manifest.get("slug"), "name": manifest.get("name"),
+            "artist": manifest.get("artist"), "edition_label": label}
+    for field in SIGNED_CORPUS_FIELDS:
+        if field in signed and signed[field] != mine[field]:
+            out.append("the manifest is not the one the edition signed: its %s is %r, the edition says %r"
+                       % (field, mine[field], signed[field]))
+    lic = att.get("license") if isinstance(att.get("license"), Mapping) else None
+    if lic is None:
+        return out + ["the attestation states no licence, so the manifest's rights cannot be checked"]
+    block = manifest.get("licence") if isinstance(manifest.get("licence"), Mapping) else manifest.get("license")
+    paper = Licence.from_block(block)
+    if lic.get("scope") != paper.scope:
+        out.append("the manifest is not the one the edition signed: its licence scope is %r, the edition says %r"
+                   % (paper.scope, lic.get("scope")))
+    perms = lic.get("permissions") if isinstance(lic.get("permissions"), Mapping) else {}
+    from .licence import SCOPES
+    era_defaults = SCOPES[lic["scope"]][0] if lic.get("scope") in SCOPES else {}
+    for flag in SIGNED_FLAGS:
+        # A flag the edition does not list (signed before the flag existed) is held at the signed scope's
+        # default: a manifest cannot grant it by writing it in, around an edition that never consented to it.
+        signed = bool(perms[flag]) if flag in perms else bool(era_defaults.get(flag, False))
+        if signed != paper.grants(flag):
+            out.append("the manifest is not the one the edition signed: its licence %s %s, the edition %s"
+                       % ("allows" if paper.grants(flag) else "does not allow", flag,
+                          ("says it does" if signed else "says it does not") if flag in perms else
+                          ("does not sign it, and its scope's default is %s" % ("on" if signed else "off"))))
+    if bool(manifest.get("consent", False)) != bool(lic.get("consent", False)):
+        out.append("the manifest is not the one the edition signed: its consent differs")
+    if str(manifest.get("owner_email") or "").strip().lower() != str(lic.get("owner_email") or "").strip().lower():
+        out.append("the manifest is not the one the edition signed: its owner differs")
+    return out
+
+
 def verify_attestation(corpus: Any, *, attestation: Optional[bytes] = None, manifest_tsv: Optional[bytes] = None,
                        ed25519_sig: Optional[bytes] = None, mldsa65_sig: Optional[bytes] = None,
                        ed25519_pub: Optional[bytes] = None, mldsa65_pub: Optional[bytes] = None,
                        openssl: Optional[str] = None) -> AttestationResult:
     """Check a corpus (a Corpus, or a manifest dict) against its record. Never raises for bad
-    input: what is wrong is in `problems`, what could not be checked is in `notes`."""
+    input: what is wrong is in `problems`, what could not be checked is in `notes`. `record` is
+    verified only when the manifest says what the edition signed (signed_field_problems): a
+    manifest whose rights or identity were changed around a genuine attestation block fails."""
     manifest = corpus.manifest() if hasattr(corpus, "manifest") and callable(corpus.manifest) else corpus
     manifest = manifest if isinstance(manifest, Mapping) else {}
     block = manifest.get("attestation")
@@ -297,6 +356,11 @@ def verify_attestation(corpus: Any, *, attestation: Optional[bytes] = None, mani
                         bad.append("the edition id does not match created_at and the manifest hash")
                 except AttestationError as exc:
                     bad.append(str(exc))
+                # The manifest must say what the edition signed: the corpus's
+                # identity, the licence's scope and its permission flags, consent and the owner. Fields
+                # the edition does not sign (packing, counts, descriptions, licence bookkeeping) may
+                # change without a new edition; a change of rights needs one.
+                bad.extend(signed_field_problems(manifest, att))
         if bad:
             res.record = FAILED
             res.problems.extend(bad)

@@ -1,10 +1,10 @@
 # bollardeck API
 
-Version 0.2-draft · Status: speculative draft · Updated 2026-11-10 · As of Bollawax 0.2.4 and Bollard SDK 0.1.0
+Version 0.2-draft · Status: speculative draft · Updated 2026-11-12 · As of Bollawax 0.3.0 and Bollard SDK 0.3.0
 
 > **Speculative draft.** No Pop Boll hardware has shipped, and most of this API has not run against a real Boll yet. Message names, fields and limits will change without notice, and nothing here is an offer, a commitment or a promise of compatibility. We would love to hear about partnership, OEM and dev-kit ideas: use the contact form on this site.
 
-> **Note:** The band's brain is a removable cart, the **Bolltridge**. It lives in the ball, and the same cart can also go into other docks, such as the Glass Snipler. The deck is the cart's service, so where Part A says "the Boll" it means the deck on the cart. Part A was written before the cart and is still a draft with no service behind it. Part B is built. The old Part C (foot cartridges) is retired; Part C is now the Bollard SDK.
+> **Note:** The band's brain is a removable cart, the **Bolltridge**. It lives in the ball, and the same cart can also go into other docks, such as the Glass Snipler. The deck is the cart's service, so where Part A says "the Boll" it means the deck on the cart. Part A was written before the cart and is still a draft: the SDK has a minimal draft deck service for it (§17.1), and no Pop Boll runs one yet. Part B is built. The old Part C (foot cartridges) is retired; Part C is now the Bollard SDK.
 
 bollardeck is the software side of Bollard: everything above the physical connector, which is specified in the [Bollard Physical Specification](bollard.md). It is also the import name of the **Bollard SDK**, the open library (Apache-2.0) that the Pop Boll's own image and popboll.com are built on. The [overview page](index.md) explains how the pieces fit together.
 
@@ -14,12 +14,12 @@ bollardeck is the software side of Bollard: everything above the physical connec
 | :--- | :--- | :--- |
 | **A. Docks** (§2–§10) | anyone building a dock or an accessory | what a dock can read from a Pop Boll (now playing, MRPH5 stems, LED frames, buttons, battery, corpus labels) and what it can send (audio routing, volume, transport, remix and stem-balance requests, light sync), over USB or BLE |
 | **B. Routines** (§11–§16) | anyone who wants to change how the Boll writes songs | custom Python logic that runs inside the song factory on your own Boll, working only with the corpora already on the device |
-| **C. The Bollard SDK** (§17–§20) | anyone writing software against the platform | what `import bollardeck` gives you today: routines, buttons and gestures, cues, the keymap, the light matrix engine, the corpus client and its gate, and the schemas; and what is decided about the cart and its docks |
+| **C. The Bollard SDK** (§17–§20) | anyone writing software against the platform | what `import bollardeck` gives you today: routines, buttons and gestures, cues, the keymap, the light matrix engine, the corpus client and its gate, help, Pop Snip files, a draft deck and the schemas; and what is decided about the cart and its docks |
 
 | Item | Version |
 | :--- | :--- |
 | This document | 0.2-draft |
-| Bollard SDK | 0.1.0, first shipped with Bollawax 0.2.4 |
+| Bollard SDK | 0.3.0 (the first, 0.1.0, shipped with Bollawax 0.2.4) |
 | Wire protocol (Part A) | `bollardeck/1` |
 | Message envelope | `"v": 1` |
 | Routine API (Part B) | `api: 1` |
@@ -29,7 +29,7 @@ bollardeck is the software side of Bollard: everything above the physical connec
 **Status.**
 
 - **Built:** Part B (routines) and everything in Part C marked as shipped. The Pop Boll's image and popboll.com run on the same SDK code.
-- **Not built:** the deck service of Part A (dock sessions, the BLE layout, the consent prompts), sign-in, the sandbox for third-party apps, the registry, and the Glass Snipler's capability boundary. They are planned, and this page gives no date for them. The SDK's `bollardeck.deck`, `bollardeck.snipler` and `bollardeck.device.dock` modules are placeholders until then.
+- **Not built:** the deck service of Part A on a device (the USB and BLE transports, the BLE layout, the consent prompts on a Boll), sign-in, the sandbox for third-party apps, the registry, and the Glass Snipler's capability boundary. They are planned, and this page gives no date for them. Meanwhile the SDK's `bollardeck.deck` is a minimal draft that runs in one process or over a Unix socket, `bollardeck.device.dock` holds only draft dock and cart descriptors, and `bollardeck.snipler` is a placeholder.
 - §22 lists everything that is still open.
 
 Conventions:
@@ -41,7 +41,7 @@ Conventions:
 
 ## 2. Part A: Docks
 
-**Read this part as a draft of the message shapes.** No deck service exists yet, and the part was written when the computer was built into the ball. What the cart changes:
+**Read this part as a draft of the message shapes.** No device runs a deck service yet (the SDK's draft deck, §17.1, runs in one process or over a Unix socket), and the part was written when the computer was built into the ball. What the cart changes:
 
 - The deck runs on the cart. "The Boll" below means the deck on the cart, and the cart is the USB host and the only radio.
 - A Pop Boll or a Glass Snipler is itself a dock for the cart. How such a dock introduces itself (its descriptor and its slots) is decided in outline (§20) and not written.
@@ -790,21 +790,25 @@ The **Bollard SDK** is the open library every client of the platform builds on, 
 
 The earlier Part C described a cartridge that docked under the Boll's foot as a USB device and ran one signed image. That device class is retired: a Bolltridge is now the core cart (§20). Its messages (`caps`, `clock`, `midi`, `voice_claim`, `health`, the image relay and the `cartridge.yaml` manifest) are withdrawn and are not part of `bollardeck/1`. Whether add-on images and voice takeover come back as software on the cart is open.
 
-### 17.1 What SDK 0.1.0 contains
+### 17.1 What the SDK contains
+
+Bollard SDK 0.3.0, which ships with Bollawax 0.3.0, brought `bollardeck.help`, `bollardeck.pxs`, the draft deck, the `nowplaying`, `transport`, `help-pack` and `help-director` schemas and the ninth licence capability, and changed how attestation and a person's hub answers work (§19). The cart's pieces (the optional hal parts, the pocket keymap, the dock and cart descriptors, the decoders) were added in Bollard SDK 0.2.0, which shipped with Bollawax 0.2.5.
 
 | Module | What it is | State |
 | :--- | :--- | :--- |
 | `bollardeck.routines` | the routine API of Part B: loader, guard, limits, a simulator and a command line | shipped |
-| `bollardeck.device` | the hal protocols with a simulated board, device identity and maker codes, gestures, cues, the keymap (§18) | shipped |
+| `bollardeck.device` | the hal protocols with a simulated board and optional parts (playing a file, audio routes, Bluetooth, the power source and charging), the rule that recognises an Arduino Uno Q, device identity and maker codes, gestures, cues, the keymap (§18), and audio decoders | shipped |
 | `bollardeck.matrix` | the 13 × 8 light matrix engine, every renderer included, in Python and JavaScript | shipped |
 | `bollardeck.corpus` | the corpus reader, the licence gate, the hub client, attestation checks, self-hosted corpus discovery (§19) | shipped |
 | `bollardeck.schema` | a JSON Schema validator and the schemas of §17.2, in Python and JavaScript | shipped |
 | `bollardeck.constants` | one source of the timings, button names, cue values and keymap, generated into Python and JavaScript | shipped |
-| `bollardeck.device.dock` | the dock protocol | placeholder: it waits for Bollard v2 and the deck rewrite (§20) |
-| `bollardeck.deck` | the deck client of Part A | placeholder |
+| `bollardeck.help` | help packs, the detectors that offer help when a person seems stuck, director scripts for guided tours and captioned videos, and the page helpers in JavaScript | shipped |
+| `bollardeck.pxs` | reads, writes and checks `.pxs`, the Pop Snip format: an Impulse Tracker module followed by a block with the song's credits, licences and MIDI. Python only | shipped |
+| `bollardeck.device.dock`, `bollardeck.device.cart` | draft dock and cart descriptors and their checks; the dock protocol itself waits for Bollard v2 and the deck rewrite (§20) | draft |
+| `bollardeck.deck` | a minimal deck service and client for Part A: `hello` and `welcome`, grants with the user's consent per dock, subscriptions, the `nowplaying` and `transport` messages, in one process or over a Unix socket. No USB or BLE | draft |
 | `bollardeck.snipler` | Glass Snipler types and data formats | placeholder; two draft schemas ship |
 
-The JavaScript side is plain scripts with no build step. It has the constants, the validator, gestures, cues, the keymap, the matrix engine, the corpus gate and a `fetch` hub client. It has no disk cache, no attestation check and no origin discovery.
+The JavaScript side is plain scripts with no build step. It has the constants, the validator, gestures, cues, the keymap, the matrix engine, the corpus gate, help and a `fetch` hub client. It has no disk cache, no attestation check and no origin discovery.
 
 `bollardeck.SPEAKS` names the wire and format versions the SDK speaks, and `bollardeck.MIN_BOLLAWAX` the oldest Bollawax it is tested against.
 
@@ -823,15 +827,18 @@ Every format has a JSON Schema in the SDK, identified as `https://popboll.com/sd
 | `device-identity`, `makers` | a device's identity file and the maker-code registry |
 | `image-release` | the `latest.json` record of an image release |
 | `snipler-events`, `snipler-frame` | the Glass Snipler's events and frame (drafts) |
+| `dock-descriptor`, `cart-descriptor` | what a dock and a cart say about themselves (drafts for Bollard v2) |
+| `nowplaying`, `transport` | the draft deck's now-playing message and its transport requests |
+| `help-pack`, `help-director` | a help pack (topics, intros and the scenarios that offer them) and a director script (a guided tour or an INTRO video) |
 
 ### 17.3 What is planned and not available
 
-- **The deck service:** dock sessions, `hello` and `welcome`, grants (reads free, writes by the owner's consent on the device).
+- **The deck service on a device:** the USB and BLE transports, and the owner's consent asked on the device itself. The SDK's draft deck already has `hello` and `welcome` and the grants (reads free, writes by consent).
 - **Sign-in,** planned; no version promised yet. Until it exists, a person's name sent to the hub is self-declared (§19.3).
 - **A sandbox** for third-party apps on the cart and in the browser, through the same client.
 - **A signed registry** at bollawax.org with an affirmation step, and sideloading in hacker mode (both in §21).
 - **The Glass Snipler's capability boundary:** third-party code asks the deck for Snipler capabilities and never imports the engine, which stays closed.
-- **Signed releases and layers.**
+- **Signed layers.** Image releases are signed since Bollawax 0.2.5 (each release record carries Pop Boll's signature); the Snipler Layer is not signed yet.
 - **A C header.** `bollardeck.h` will carry the descriptor structs and message names.
 
 No version or date is promised yet for any of these, sign-in included.
@@ -889,10 +896,10 @@ The engagement keymap says what a gesture means while the band is asking the per
             "hold1": {"abc": {"do": "replay"}, "spectrum": {"do": "replay"}, "game": null}}}
 ```
 
-- It has three maps keyed by gesture name. `always` is checked first; then `prompt` while a prompt is showing, and `idle` while none is.
-- In `always` and `idle`, a gesture's value is a string: the name of an action.
+- It has three maps keyed by gesture name, and an optional fourth. `always` is checked first; then `prompt` while a prompt is showing, and `idle` while none is. `pocket`, the fourth, is for a cart running with no dock on a battery of its own: when the device names that context, it is looked at before `idle`, and it maps gestures to player verbs (`POCKET_VERBS`: play and pause, stop, volume, what's on, previous and next, share, and `pair` on `tap2x3`).
+- In `always`, `idle` and `pocket`, a gesture's value is a string: the name of an action.
 - In `prompt`, a gesture's value is an object with one member for each kind of prompt (`PROMPT_KINDS`: `abc`, `spectrum`, `game`). Each member is `{"choice": …}` (answer the prompt with that value), `{"do": …}` (a named action) or null (the gesture is taken and does nothing).
-- `bollardeck.device.keymap.resolve(gesture, prompt)` applies it and `problems(keymap)` checks one; the browser twin does the same. The example above is a valid keymap, cut down from the shipped one.
+- `bollardeck.device.keymap.resolve(gesture, prompt, context=None)` applies it and `problems(keymap)` checks one; the browser twin does the same. With no context named, the pocket map is never used. The example above is a valid keymap, cut down from the shipped one.
 
 A keymap whose `"v"` is not 2 is refused.
 
@@ -911,7 +918,10 @@ if not verdict.allowed:
     print(verdict.reason)          # for example "licence_missing"
 ```
 
-- A capability is one of `bollardeck.corpus.licence.CAPABILITIES` (`transcode`, `store_audio`, `stream_audio`, `store_art`, `store_morpus`, `musicians_may_study`, `export_morpus`, `device_copies`) or `see`. `study` is short for `musicians_may_study`.
+- A capability is one of `bollardeck.corpus.licence.CAPABILITIES` (`transcode`, `store_audio`, `stream_audio`, `store_art`, `store_morpus`, `musicians_may_study`, `export_morpus`, `device_copies`, `stream_render`) or `see`. `study` is short for `musicians_may_study`.
+- `stream_render`, the ninth, lets a corpus's MIDI be played rendered through Pop Boll's own sounds, never as a recording. A public-domain MIDI corpus has it by default; other scopes have it only when the licence grants it. An edition signed before the ninth capability existed holds it at its scope's default.
+- `bollardeck.corpus.gate.listen(manifest, identity, render=False)` asks whether a person may listen: a recording needs `stream_audio`, a render `stream_render`.
+- **Renders.** A corpus whose licence grants `stream_render` may carry renders: each piece of its MIDI played through Pop Boll's own sounds and stored as a pack beside its albums (`renders/<album>.wbol`). The hub lists them at `/api/corpi/<ID>/renders` and serves them only while the licence grants `stream_render`, and a track list made from them marks each track `source: render`, labelled "played from the score". popboll.com plays a render-only corpus, such as the public-domain Beethoven corpus 0006-BONNBINGO once its renders are published, to everyone signed in, whatever their tier. Recordings keep their tiers, and signed out you hear neither. A Pop Boll needs no render from the hub: it plays a corpus's MIDI through its own sounds, on the device.
 - The answer is a `Verdict`: allowed or not, with one reason from `bollardeck.corpus.gate.REASONS`.
 - Every accessor that returns content demands a fresh verdict and raises `GateRequired` without one.
 
@@ -931,12 +941,12 @@ The gate fails closed. `REASONS` is the full list; the rules that surprise peopl
 `bollardeck.corpus.HubClient` is the client for bollawax.org: one token, conditional requests, a disk cache that revalidates, and no silent substitution of one corpus for another.
 
 - **The read token alone is for study only.** For a corpus that is not public, a caller that presents only the token gets the morpus and a manifest with the people's addresses removed. Track lists, audio, art and bundles are not found.
-- **A named person gets more.** `acting_for=` names the person a request is for. It travels in the `X-Pop-For` header and never in a URL, and that person's copy is cached apart from everyone else's.
+- **A named person gets more.** `acting_for=` names the person a request is for. It travels in the `X-Pop-For` header and never in a URL. What the hub sends back for a person is held in memory (at most `HELD_MAX` answers, least used first out; `forget(person)` drops one) and never written to disk, unless the client is made with `keep_for_person=True`, which caches that person's copy on disk apart from everyone else's.
 - **Names are self-declared for now.** The hub believes the name it is given until sign-in exists (planned, no version promised yet; §17.3). Do not build anything that depends on the name being proved.
 
 ### 19.4 Attestation and self-hosted corpora
 
-- `bollardeck.corpus.attest.verify_attestation` checks a corpus edition's manifest hash and its Ed25519 signature. The ML-DSA-65 signature is checked only where the platform's OpenSSL knows the algorithm; where it does not, the result says `not_checked` for that signature and `partial` overall, never `verified`.
+- `bollardeck.corpus.attest.verify_attestation` checks a corpus edition's signed record: that the manifest's signed fields match it (`signed_field_problems` lists any that do not), and its Ed25519 signature. `Corpus.attestation_record(edition)` fetches the record, from the corpus's own folder or from the hub. The ML-DSA-65 signature is checked only where the platform's OpenSSL knows the algorithm; where it does not, the result says `not_checked` for that signature and `partial` overall, never `verified`.
 - `bollardeck.corpus.fetch_origin` reads the discovery file of a [self-hosted corpus](/hosting-your-own-corpus). The service that pulls such a corpus into Pop Boll is not built.
 
 ## 20. The cart and its docks: what is decided
@@ -950,7 +960,7 @@ The bollardeck text for the cart is not written. This section records what is de
 - **At most two carts in one dock.** The cart in the first slot is the brain. A second cart is a guest: a USB device of the first, lending its corpora and its computing, and showing nothing of its own.
 - **The serial belongs to the cart.** A dock has a model and a serial of its own in its descriptor and no device serial.
 
-Bollawax 0.2.5 carries the cart's software for pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor. No cart exists yet, and none of it is verified on hardware. This section still describes the cart as Bollawax 0.2.4 specifies it.
+Since Bollawax 0.2.5, the image has carried the cart's software for pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor. No cart exists yet, and none of it is verified on hardware. This section describes the cart as it was introduced in Bollawax 0.2.4; nothing in it has changed since.
 
 Not written: who sends `hello` first between a cart and its dock, the link between two carts, the guest's `hello` and how its secure element proves its licences, and the events for a dock's encoder and EJECT button.
 
@@ -984,6 +994,7 @@ Not yet validated on hardware. Nothing in Part A has run on a Boll.
 
 ### Changes
 
+- **2026-11-12.** Brought up to Bollawax 0.3.0 and Bollard SDK 0.3.0: the SDK's help, Pop Snip files and draft deck (§17.1), six more schemas (§17.2), the ninth licence capability `stream_render`, `gate.listen` and renders on popboll.com (§19.1), the pocket keymap (§18.4), a person's hub answers held in memory (§19.3), attestation by signed fields (§19.4), and signed image releases (§17.3).
 - **0.2-draft (2026-11-10).** The Bollard SDK 0.1.0 is described (Part C, §17–§19); the SDK's buttons, gestures, cues and keymap are described beside the wire's own labels; the cartridge messages and `cartridge.yaml` of the old Part C are withdrawn; §20 records what is decided about the cart; Part B points at the SDK's schema, limits, reader and simulator; the licence is no longer "proposed".
 - **0.1-draft.** First draft.
 

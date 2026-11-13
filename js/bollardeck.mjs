@@ -9,6 +9,7 @@ import "./bollardeck.matrix.js";
 import "./bollardeck.gestures.js";
 import "./bollardeck.keymap.js";
 import "./bollardeck.corpus.js";
+import "./bollardeck.help.js";
 import "./bollardeck.dom.js";
 
 const bollardeck = globalThis.bollardeck;
@@ -24,3 +25,4 @@ export const matrix = bollardeck.matrix;
 export const gestures = bollardeck.gestures;
 export const keymap = bollardeck.keymap;
 export const corpus = bollardeck.corpus;
+export const help = bollardeck.help;

@@ -7,7 +7,7 @@ const path = require("node:path");
 const ROOT = path.resolve(__dirname, "..", "..");
 const JS = path.join(ROOT, "js");
 const CONFORMANCE = path.join(ROOT, "conformance");
-const PARTS = ["schemas", "schema", "cues", "matrix", "gestures", "keymap", "corpus", "dom"];
+const PARTS = ["schemas", "schema", "cues", "matrix", "gestures", "keymap", "corpus", "help", "dom"];
 
 function readJson(...parts) {
   return JSON.parse(fs.readFileSync(path.join(...parts), "utf8"));

@@ -1,0 +1,27 @@
+{
+  "schema": "help-pack/1",
+  "pack": "example.player",
+  "lang": "en",
+  "rev": 1,
+  "pages": {
+    "player": {
+      "topics": {
+        "player.play": {
+          "title": "playing",
+          "body": [
+            [
+              "press ",
+              {
+                "b": "PLAY"
+              },
+              " to start."
+            ]
+          ],
+          "targets": [
+            "play"
+          ]
+        }
+      }
+    }
+  }
+}

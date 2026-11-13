@@ -22,8 +22,10 @@ says when the next tick will have something to say. `down` and `up` advance the 
 `press(button, down_ms, up_ms)` feeds a complete press, and `key(event)` feeds a hal key event.
 
 The clock is yours to keep. The engine raises ValueError when a time is earlier than the last one
-it was given; it never clamps. A host that mixes two clocks (a bridge's release times and its own
-for ticks, say) clamps before it calls: `t = max(t, last)`.
+it was given. One exception: when `key` places an announced press by its beginning (rule 9), its
+release may land later than any time you gave; a time between your last one and the engine's clock
+is then read as the engine's clock, and `now_ms` says where that is. A host that mixes two clocks
+(a bridge's release times and its own for ticks, say) clamps before it calls: `t = max(t, last)`.
 
 ## The rules
 
@@ -170,6 +172,7 @@ class GestureEngine:
         self.press_lost_ms = int(press_lost_ms)
         self.combos = _check_combos(DEFAULT_COMBOS if combos is None else combos)
         self._now: Optional[int] = None
+        self._fed: Optional[Any] = None             # the latest time the host itself gave
         self._down: Dict[int, List[Any]] = {}       # button -> [down_ms, hold already fired]
         self._began: Dict[int, Any] = {}            # button -> when a key source said a press began (a hint)
         self._chain_holds: List[Any] = []           # how long each pending tap lasted, oldest first
@@ -180,6 +183,13 @@ class GestureEngine:
         self._chain_open = False                    # the chain's button is down again, in time
 
     # -- reading the state ------------------------------------------------------------------
+
+    @property
+    def now_ms(self) -> Optional[Any]:
+        """Where the engine's clock is (None before the first call). It is the latest time it was
+        given, except after `key` placed an announced press by its beginning (rule 9): the release
+        is then at `began + hold_ms`, which may be later than any time the host gave."""
+        return self._now
 
     @property
     def pending(self) -> int:
@@ -226,10 +236,13 @@ class GestureEngine:
 
     def tick(self, t_ms: int) -> List[Gesture]:
         """Say what time it is. Returns what became certain since the last call."""
-        return self._advance(self._time(t_ms))
+        return self._advance(self._time(t_ms, host=True))
 
     def down(self, button: int, t_ms: int) -> List[Gesture]:
-        b, t = self._button(button), self._time(t_ms)
+        return self._down_at(self._button(button), t_ms, host=True)
+
+    def _down_at(self, b: int, t_ms: Any, host: bool) -> List[Gesture]:
+        t = self._time(t_ms, host)
         out = self._advance(t)
         if b in self._down:
             return out
@@ -245,10 +258,10 @@ class GestureEngine:
         b = self._button(button)
         if b in self._down:
             self._began.pop(b, None)                  # an edge is the truth: a hint for this button is over
-        return self._up(b, t_ms)
+        return self._up(b, t_ms, host=True)
 
-    def _up(self, b: int, t_ms: int) -> List[Gesture]:
-        t = self._time(t_ms)
+    def _up(self, b: int, t_ms: int, host: bool = False) -> List[Gesture]:
+        t = self._time(t_ms, host)
         out = self._advance(t)                        # a press that reached hold_ms fires here
         if b not in self._down:
             return out
@@ -258,7 +271,7 @@ class GestureEngine:
         return out + self._tap(b, t, t - down_ms)
 
     def cancel(self, button: int, t_ms: int) -> List[Gesture]:
-        b, t = self._button(button), self._time(t_ms)
+        b, t = self._button(button), self._time(t_ms, host=True)
         out = self._advance(t)
         self._began.pop(b, None)                      # a cancelled press takes its announcement with it
         if b not in self._down:
@@ -294,13 +307,17 @@ class GestureEngine:
             release = now_ms
         if release is None:
             raise ValueError("this key event has no time: pass now_ms")
-        self._forget_lost(release if now_ms is None else max(release, now_ms))
+        read_at = release if now_ms is None else max(release, now_ms)
+        self._time(read_at, host=True, judge=False)                      # the host's own time, not yet the engine's
+        # Give up announcements nothing has been read for, but not the one this release may end:
+        # it is matched first, however late it is read.
+        self._forget_lost(read_at, keep=None if event.get("down") else b)
         if event.get("down"):
             self._began[b] = release                                     # a hint, and nothing more
             return []
         if b in self._down:
             self._began.pop(b, None)
-            return self.up(b, max(release, self._now or release))        # the end of a press down() began
+            return self._up(b, max(release, self._now or release), host=True)   # the end of a press down() began
         began = self._began.get(b)
         stated = event.get("hold_ms")
         if began is not None:
@@ -318,18 +335,22 @@ class GestureEngine:
                 del self._began[b]
             if not belongs:
                 began = None
+            self._forget_lost(read_at)                                   # a hint this release was not for
         held = max(0, int(stated or 0))
         if began is not None:
             release = began + held                                       # placed by its beginning
         start = release - held
         if self._now is None or start >= self._now:
-            out = self.down(b, start) + self._up(b, release)      # not up(): a hint kept above stays
+            out = self._down_at(b, start, host=False) + self._up(b, release)   # not up(): a hint kept above stays
             return [g._replace(hold_ms=held) if g.kind == "hold" and g.button == b else g for g in out]
         # The press began before the last time this engine was told about (a tick ran while the
         # button was down, or the event arrived late). Judge it by its own two times.
         out: List[Gesture] = self._dropped(self._now)
         if self._chain_count and self._chain_button != b:
             out += self._flush(start)
+        elif (self._chain_count and not self._chain_open
+              and start > self._chain_release + self.tap_follow_ms):
+            out += self._flush(self._chain_release + self.tap_follow_ms)  # its window closed before this press began
         if held >= self.hold_ms:
             out += self._flush(start + self.hold_ms)
             out.append(Gesture(gesture_name("hold", b), b, "hold", 1, start + self.hold_ms, held))
@@ -370,13 +391,27 @@ class GestureEngine:
             raise ValueError("button must be 1, 2 or 3, not %r" % (button,))
         return int(button)
 
-    def _time(self, t_ms: Any) -> int:
+    def _time(self, t_ms: Any, host: bool = False, judge: bool = True) -> Any:
+        """Check a time and move the clock to it. `host`: the caller gave it (not a time the
+        engine worked out). A host time behind the clock raises, unless the engine itself moved
+        the clock past every time the host gave: then it reads as the engine's clock. `judge`
+        False only checks the time and remembers the host gave it (a key event's reading)."""
         if isinstance(t_ms, bool) or not isinstance(t_ms, (int, float)) or t_ms != t_ms:
             raise ValueError("t_ms must be a number, not %r" % (t_ms,))
-        if self._now is not None and t_ms < self._now:
-            raise ValueError("time ran backwards: %r after %r" % (t_ms, self._now))
-        self._now = t_ms
-        return t_ms
+        if not judge:
+            if host:
+                self._fed = t_ms if self._fed is None else max(self._fed, t_ms)
+            return t_ms
+        t = t_ms
+        if self._now is not None and t < self._now:
+            if host and self._fed is not None and t >= self._fed:
+                t = self._now                         # the engine's clock is ahead of the host's: read as it
+            else:
+                raise ValueError("time ran backwards: %r after %r" % (t_ms, self._now))
+        if host:
+            self._fed = t_ms if self._fed is None else max(self._fed, t_ms)
+        self._now = t
+        return t
 
     def _chain_over(self) -> bool:
         """After set_combos: can the pending chain no longer grow?"""
@@ -392,9 +427,10 @@ class GestureEngine:
             return []
         return self._flush(t if self._chain_open else min(t, self._chain_release + self.tap_follow_ms))
 
-    def _forget_lost(self, t: Any) -> None:
-        """Drop the hint of a press whose release has not come press_lost_ms after it began."""
-        for b in [b for b, began in self._began.items() if t - began > self.press_lost_ms]:
+    def _forget_lost(self, t: Any, keep: Optional[int] = None) -> None:
+        """Drop the hint of a press whose release has not come press_lost_ms after it began
+        (except button `keep`'s, whose release is being read)."""
+        for b in [b for b, began in self._began.items() if b != keep and t - began > self.press_lost_ms]:
             del self._began[b]
 
     def _held_back(self, t: Any) -> bool:

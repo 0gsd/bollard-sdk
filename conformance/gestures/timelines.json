@@ -413,6 +413,37 @@
         {"t_ms": 400, "edge": "up", "button": 3, "emits": []},
         {"t_ms": 450, "edge": "tick", "emits": []},
         {"t_ms": 460, "edge": "key", "key": {"t": "key", "i": 3, "down": 0, "hold_ms": 50, "t_ms": 300}, "emits": [{"gesture": "tap3x3", "t_ms": 400, "hold_ms": 50}]}
+      ]},
+    {"name": "key-engine-clock-ahead-reads-a-later-host-time-as-its-own", "about": "A press announced at 1000 whose 100 ms release is read at 1050 is placed at 1000 .. 1100, so the engine's clock is at 1100, ahead of every time the host gave. A tick at 1060 and a cancel at 1065 are read as 1100 instead of failing; the lone tap is reported when its window closes at 1600.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 1050, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100}, "emits": []},
+        {"t_ms": 1060, "edge": "tick", "emits": []},
+        {"t_ms": 1065, "edge": "cancel", "button": 1, "emits": []},
+        {"t_ms": 1601, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 1600, "hold_ms": 100}]}
+      ]},
+    {"name": "key-engine-clock-ahead-still-refuses-a-time-behind-the-host-s", "about": "The engine's clock is at 1100 after placing an announced press, but the host last said 1050: a tick at 1040 is behind the host's own clock and still fails.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 1000, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 1000}, "emits": []},
+        {"t_ms": 1050, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100}, "emits": []},
+        {"t_ms": 1040, "edge": "tick", "raises": true}
+      ]},
+    {"name": "key-release-read-after-press-lost-ms-is-matched-before-the-hint-is-given-up", "about": "A press announced at 13370 has its 300 ms release read at 18870, more than PRESS_LOST_MS later. It is still that press, placed at 13370 .. 13670, so its window closed at 14170 and it never chains with the two taps made after the reading.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 13370, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 13370}, "emits": []},
+        {"t_ms": 14000, "edge": "tick", "emits": []},
+        {"t_ms": 18870, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 300}, "emits": []},
+        {"t_ms": 19000, "edge": "down", "button": 1, "emits": [{"gesture": "tap1", "t_ms": 14170, "hold_ms": 300}]},
+        {"t_ms": 19100, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 19200, "edge": "down", "button": 1, "emits": []},
+        {"t_ms": 19300, "edge": "up", "button": 1, "emits": []},
+        {"t_ms": 19801, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 19800, "hold_ms": 100}, {"gesture": "tap1", "t_ms": 19800, "hold_ms": 100}]}
+      ]},
+    {"name": "key-press-judged-by-its-own-times-closes-a-window-that-closed-before-it-began", "about": "Taps released at 4700 and 4850; a press announced at 5150 holds their window (closing at 5350) open, and is lost. A tick at 5751; a new press announced at 5700 replaces the lost one and is released at 5800. It began after the window closed, so the two taps are reported as singles at 5350 and the new press starts a chain of its own.", "config": {"hold_ms": 800, "tap_follow_ms": 500, "combos": {"1": [3], "3": [3]}}, "events": [
+        {"t_ms": 4700, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 50, "t_ms": 4700}, "emits": []},
+        {"t_ms": 4850, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 50, "t_ms": 4850}, "emits": []},
+        {"t_ms": 5150, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 5150}, "emits": []},
+        {"t_ms": 5751, "edge": "tick", "emits": []},
+        {"t_ms": 5760, "edge": "key", "key": {"t": "key", "i": 1, "down": 1, "t_ms": 5700}, "emits": []},
+        {"t_ms": 5800, "edge": "key", "key": {"t": "key", "i": 1, "down": 0, "hold_ms": 100, "t_ms": 5800}, "emits": [{"gesture": "tap1", "t_ms": 5350, "hold_ms": 50}, {"gesture": "tap1", "t_ms": 5350, "hold_ms": 50}]},
+        {"t_ms": 6301, "edge": "tick", "emits": [{"gesture": "tap1", "t_ms": 6300, "hold_ms": 100}]}
       ]}
   ]
 }

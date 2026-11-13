@@ -97,7 +97,7 @@
 
   var VERSION = 1;
   var CAPABILITIES = ["transcode", "store_audio", "stream_audio", "store_art", "store_morpus",
-    "musicians_may_study", "export_morpus", "device_copies"];
+    "musicians_may_study", "export_morpus", "device_copies", "stream_render"];
   // [A, B]: A is on only while B is on.
   var IMPLIES = [["stream_audio", "store_audio"], ["musicians_may_study", "store_morpus"], ["export_morpus", "store_morpus"]];
   function all(on, off) {
@@ -109,8 +109,8 @@
   // scope -> [defaults, hard limits nothing in the block can override]
   var SCOPES = {
     __proto__: null,
-    full: [all(true), {}],
-    morpus_only: [all(true, ["store_audio", "stream_audio", "store_art", "export_morpus"]), { store_audio: false, stream_audio: false }],
+    full: [all(true, ["stream_render"]), {}],
+    morpus_only: [all(true, ["store_audio", "stream_audio", "store_art", "export_morpus", "stream_render"]), { store_audio: false, stream_audio: false }],
     public_domain_midi: [all(true, ["transcode", "store_audio", "stream_audio", "store_art"]), { store_audio: false, stream_audio: false }]
   };
   var OK = "ok", MISSING = "missing", INVALID = "invalid", UNKNOWN_SCOPE = "unknown_scope", NEWER_VERSION = "newer_version";
@@ -387,6 +387,12 @@
   }
 
   // The gate, for a manifest. Never throws; refuses what it cannot read.
+  // May this listener hear the corpus? A recording needs stream_audio; a render of its MIDI through Pop
+  // Boll's own sounds (render true, never a recording) needs stream_render.
+  function listen(manifest, identity, render, now, standing) {
+    return judge(manifest, render ? "stream_render" : "stream_audio", identity, now, standing);
+  }
+
   function judge(manifest, capability, identity, now, standing) {
     return decide(readManifest(manifest), capability, identity, now, standing);
   }
@@ -747,7 +753,7 @@
 
   var api = {
     CAPABILITIES: CAPABILITIES, ALL_CAPABILITIES: ALL_CAPABILITIES, REASONS: REASONS, SCOPES: Object.keys(SCOPES), VERDICT_TTL_SEC: VERDICT_TTL_SEC,
-    judge: judge, decide: decide, readManifest: readManifest, isVerdict: isVerdict, canonicalCapability: canonicalCapability,
+    judge: judge, listen: listen, decide: decide, readManifest: readManifest, isVerdict: isVerdict, canonicalCapability: canonicalCapability,
     licence: licence, parseTime: parseTime, formatTime: formatTime, notices: notices, hub: hub,
     BadTime: BadTime, HubError: HubError, HubUnreachable: HubUnreachable, CorpusUnavailable: CorpusUnavailable,
     ManifestRefused: ManifestRefused, GateRequired: GateRequired, NotAvailable: NotAvailable

@@ -1,0 +1,81 @@
+{
+  "schema": "help-director/1",
+  "id": "intro.player.owner",
+  "title": "playing",
+  "page": "player",
+  "role": "owner",
+  "steps": [
+    {
+      "do": "chapter",
+      "title": "hello"
+    },
+    {
+      "do": "say",
+      "text": "hi.",
+      "ms": 1200
+    },
+    {
+      "do": "spot",
+      "target": "player.list",
+      "nth": 2,
+      "place": "below",
+      "keep": true
+    },
+    {
+      "do": "cue",
+      "button": 1,
+      "state": "pulse",
+      "role": "a",
+      "capture_only": true
+    },
+    {
+      "do": "module",
+      "module": "songs",
+      "open": true
+    },
+    {
+      "do": "open",
+      "topic": "player.play"
+    },
+    {
+      "do": "close"
+    },
+    {
+      "do": "act",
+      "target": "player.play",
+      "action": "click"
+    },
+    {
+      "do": "cut",
+      "until": "signal:song.locked",
+      "max_ms": 60000,
+      "on_timeout": "skip"
+    },
+    {
+      "do": "wait",
+      "ms": 500
+    },
+    {
+      "do": "wait",
+      "until": "visible:player.list",
+      "max_ms": 2000
+    },
+    {
+      "do": "unspot"
+    },
+    {
+      "do": "mark",
+      "name": "end",
+      "hold_ms": 0
+    }
+  ],
+  "path": "/player/{owner}",
+  "site": "example",
+  "lang": "en",
+  "fixture": "demo",
+  "viewport": [
+    1280,
+    800
+  ],
+  "palette": "plain"
+}

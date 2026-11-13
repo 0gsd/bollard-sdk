@@ -35,6 +35,7 @@ PUBLIC_DOMAIN_MIDI = "public_domain_midi"
 CAPABILITIES: Tuple[str, ...] = (
     "transcode", "store_audio", "stream_audio", "store_art", "store_morpus",
     "musicians_may_study", "export_morpus", "device_copies",
+    "stream_render",        # the MIDI may be played rendered through Pop Boll's own sounds (not a recording)
 )
 
 # (A, B): A is on only while B is on.
@@ -47,9 +48,9 @@ IMPLIES: Tuple[Tuple[str, str], ...] = (
 _ON = {k: True for k in CAPABILITIES}
 # scope -> (defaults, hard limits nothing in the block can override)
 SCOPES: Dict[str, Tuple[Mapping[str, bool], Mapping[str, bool]]] = {
-    FULL: (dict(_ON), {}),
+    FULL: (dict(_ON, stream_render=False), {}),
     MORPUS_ONLY: (
-        dict(_ON, store_audio=False, stream_audio=False, store_art=False, export_morpus=False),
+        dict(_ON, store_audio=False, stream_audio=False, store_art=False, export_morpus=False, stream_render=False),
         {"store_audio": False, "stream_audio": False},
     ),
     PUBLIC_DOMAIN_MIDI: (

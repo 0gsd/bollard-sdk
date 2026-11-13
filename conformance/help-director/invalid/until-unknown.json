@@ -1,0 +1,13 @@
+{
+  "schema": "help-director/1",
+  "id": "tour.player.play",
+  "title": "playing",
+  "page": "player",
+  "role": "owner",
+  "steps": [
+    {
+      "do": "cut",
+      "until": "time:5"
+    }
+  ]
+}

@@ -1,0 +1,320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/help-pack.schema.json",
+  "title": "Help pack",
+  "description": "A pack of help content for bollardeck.help (help-pack/1): per page, the INTRO text for each role, the help topics, and the scenarios (a struggle detector and the topic it offers). Roles, tiers and sites are the host's own names; the SDK only matches them. Text is plain: a body is a list of paragraphs, each a list of strings and small marks (bold, code, a same-origin link), so a page builds it with DOM calls and never parses HTML. The schema checks shape; code checks that a scenario's topic, a topic's see list and its tour exist in the pack, that every page key is a name, and (with a target manifest) that targets exist on the page.",
+  "type": "object",
+  "required": [
+    "schema",
+    "pack",
+    "lang",
+    "rev",
+    "pages"
+  ],
+  "properties": {
+    "schema": {
+      "const": "help-pack/1"
+    },
+    "pack": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*([.][a-z0-9][a-z0-9-]*)*$",
+      "description": "The pack's own name (popboll.device, x.myskin)."
+    },
+    "lang": {
+      "type": "string",
+      "pattern": "^[a-z][a-z][a-z]?(-[A-Za-z0-9]+)*$",
+      "description": "A BCP 47 language tag (en, en-GB)."
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pages": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/page"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*([.][a-z0-9][a-z0-9-]*)+$",
+      "description": "A help id: lowercase words joined by dots, at least two (device.make). A third party's ids start with x.<its name>. Ids are stable: a retired one is never reused."
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "names": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/name"
+      }
+    },
+    "page": {
+      "type": "object",
+      "properties": {
+        "intro": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/content"
+          },
+          "description": "Keyed by role."
+        },
+        "topics": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/topic"
+          },
+          "description": "Keyed by topic id."
+        },
+        "scenarios": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/scenario"
+          },
+          "description": "Keyed by scenario id."
+        }
+      }
+    },
+    "inline": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "required": [
+            "b"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "b": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "a",
+            "href"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string",
+              "minLength": 1
+            },
+            "href": {
+              "type": "string",
+              "pattern": "^/([^/].*)?$",
+              "description": "Same origin only: a path."
+            }
+          }
+        }
+      ]
+    },
+    "paragraph": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/inline"
+      }
+    },
+    "body": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/paragraph"
+      }
+    },
+    "when": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "$ref": "#/$defs/names"
+        },
+        "tiers": {
+          "$ref": "#/$defs/names"
+        },
+        "sites": {
+          "$ref": "#/$defs/names"
+        }
+      },
+      "description": "Each list present must hold the context's value; an absent list matches anything."
+    },
+    "variant": {
+      "type": "object",
+      "required": [
+        "when"
+      ],
+      "minProperties": 2,
+      "properties": {
+        "when": {
+          "$ref": "#/$defs/when"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "$ref": "#/$defs/body"
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "required": [
+        "title",
+        "body"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "$ref": "#/$defs/body"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variant"
+          },
+          "description": "The first variant whose when matches replaces the title and/or body."
+        }
+      }
+    },
+    "video": {
+      "type": "object",
+      "required": [
+        "src",
+        "vtt"
+      ],
+      "properties": {
+        "src": {
+          "type": "string",
+          "pattern": "^/([^/].*)?$"
+        },
+        "vtt": {
+          "type": "string",
+          "pattern": "^/([^/].*)?$"
+        },
+        "poster": {
+          "type": "string",
+          "pattern": "^/([^/].*)?$"
+        },
+        "uihash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]+$"
+        }
+      }
+    },
+    "topic": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/content"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "when": {
+          "$ref": "#/$defs/when"
+        },
+        "see": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "tour": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "video": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/video"
+            }
+          ]
+        },
+        "rev": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "required": [
+        "topic",
+        "detector"
+      ],
+      "properties": {
+        "topic": {
+          "$ref": "#/$defs/id"
+        },
+        "detector": {
+          "type": "string",
+          "pattern": "^(x-)?[a-z][a-z0-9-]*$"
+        },
+        "target": {
+          "$ref": "#/$defs/id"
+        },
+        "signal": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*([.][a-z0-9_-]+)*$"
+        },
+        "codes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "params": {
+          "type": "object"
+        },
+        "when": {
+          "$ref": "#/$defs/when"
+        }
+      }
+    }
+  }
+}

@@ -107,6 +107,9 @@ headers, and takes its caller's Range header as it came:
     with corpus.open_audio_ranged(track, v, range_header=request.headers.get("Range")) as upstream:
         respond(upstream.status, upstream.headers, upstream.read())     # 200, 206 or 416
 
+Cover art goes the same way, with a "store_art" verdict: `corpus.open_art_ranged(name or track,
+v, range_header=...)`.
+
 When something the gate allowed cannot be had, NotAvailable says why in `reason` (one of
 model.NOT_AVAILABLE_REASONS, such as not_found, unreachable, not_licensed or bad_range) and
 gives the hub's HTTP `status` when a hub answered.

@@ -259,18 +259,19 @@ class CorpusReader(unittest.TestCase):
 # Corpus members that are metadata: free to read. Anything else public must take a Verdict.
 CORPUS_METADATA = {"from_manifest", "load", "id", "number", "slug", "name", "artist", "display_label", "description",
                    "edition_label", "licence", "visibility", "form_cap", "attestation", "source", "root", "standing",
-                   "manifest", "manifest_view", "summary", "notices", "refresh", "may"}
+                   "manifest", "manifest_view", "summary", "notices", "refresh", "may", "attestation_record"}
 # Store members that are about freshness, not content.
-STORE_FRESHNESS = {"standing", "freshen"}
+STORE_FRESHNESS = {"standing", "freshen", "attestation_record"}    # the edition record is metadata too
 # HubClient's public surface: metadata and Corpus objects only.
-HUB_PUBLIC = {"version", "corpus_gate", "latest", "listing", "cached_ids", "corpus", "corpora"}
+HUB_PUBLIC = {"version", "corpus_gate", "latest", "listing", "cached_ids", "corpus", "corpora", "forget"}
 # One sample call per accessor: the arguments before the verdict.
 ACCESSOR_ARGS = {"morpus_index": (), "study_pairs": (), "read_morpus": ("alpha.md",), "morpus_path": ("alpha.md",),
                  "dna": (), "export_bundle": ("alpha",), "tracks": (), "open_audio": ("song.mp3",),
-                 "open_audio_ranged": ("song.mp3",), "read_art": ("cover.png",)}
+                 "open_audio_ranged": ("song.mp3",), "read_art": ("cover.png",), "open_art_ranged": ("cover.png",)}
 ACCESSOR_NEEDS = {"morpus_index": "study", "study_pairs": "study", "read_morpus": "study", "morpus_path": "study",
                   "dna": "study", "export_bundle": "export_morpus", "tracks": "stream_audio",
-                  "open_audio": "stream_audio", "open_audio_ranged": "stream_audio", "read_art": "store_art"}
+                  "open_audio": "stream_audio", "open_audio_ranged": "stream_audio", "read_art": "store_art",
+                  "open_art_ranged": "store_art"}
 
 
 def class_node(module, name):
@@ -484,3 +485,18 @@ class NoContentWithoutTheGate(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Listen(unittest.TestCase):
+    """A recording needs stream_audio, a render stream_render."""
+
+    def test_recordings_and_renders(self):
+        doc = json.loads((ROOT / "conformance" / "corpus-gate" / "scopes.json").read_text(encoding="utf-8"))
+        at = "2031-06-01T12:00:00Z"
+        for name, recording, render in (("full", True, False), ("public_domain_midi", False, True),
+                                        ("morpus_only", False, False), ("full_with_render", True, True)):
+            m = doc["manifests"][name]
+            self.assertEqual((bool(gate.listen(m, now=at)), bool(gate.listen(m, render=True, now=at))),
+                             (recording, render), name)
+            self.assertEqual(gate.listen(m, render=True, now=at).capability, "stream_render")
+

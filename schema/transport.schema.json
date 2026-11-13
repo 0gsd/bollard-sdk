@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/transport.schema.json",
+  "title": "Transport and volume",
+  "description": "The two writes a dock, a watch or another player sends to a player to control it (spec/bollardeck.md 7.3): {\"t\": \"transport\", \"cmd\"} with cmd one of play, pause, stop, next, prev; and {\"t\": \"volume\"} with set (0 to 1) or step (+1 or -1, one of 16 steps), never both. On the bollardeck wire each carries \"v\": 1 and an \"id\" the answer refers to, and needs the grant of the same name. lane, optional, picks a playback lane (0 to 3) on a player with more than one; without it the primary. Nothing else is allowed: a player refuses a write it cannot read whole.",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/transport"
+    },
+    {
+      "$ref": "#/$defs/volume"
+    }
+  ],
+  "$defs": {
+    "transport": {
+      "type": "object",
+      "required": [
+        "t",
+        "cmd"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "type": "integer",
+          "const": 1
+        },
+        "t": {
+          "type": "string",
+          "const": "transport"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cmd": {
+          "type": "string",
+          "enum": [
+            "play",
+            "pause",
+            "stop",
+            "next",
+            "prev"
+          ]
+        },
+        "lane": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        }
+      }
+    },
+    "volume": {
+      "type": "object",
+      "required": [
+        "t"
+      ],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "set"
+          ],
+          "not": {
+            "required": [
+              "step"
+            ]
+          }
+        },
+        {
+          "required": [
+            "step"
+          ],
+          "not": {
+            "required": [
+              "set"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "v": {
+          "type": "integer",
+          "const": 1
+        },
+        "t": {
+          "type": "string",
+          "const": "volume"
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "set": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "step": {
+          "type": "integer",
+          "enum": [
+            -1,
+            1
+          ]
+        },
+        "lane": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        }
+      }
+    }
+  }
+}

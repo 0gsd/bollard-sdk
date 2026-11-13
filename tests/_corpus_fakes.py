@@ -191,8 +191,7 @@ class FakeHub:
             return self._send(h, 200, e["morpus"][rest[1] + ".mrph5"], "application/octet-stream")
         if rest == ["tracks"]:
             return self._send(h, 200, json.dumps(e["tracks"]).encode())
-        if rest[0] == "audio" and "/".join(rest[1:]) in e["audio"]:
-            data = e["audio"]["/".join(rest[1:])]
+        def ranged(data, ctype):
             rng = h.headers.get("Range")
             more = {"Accept-Ranges": "bytes", "Set-Cookie": "never=relayed"}
             if rng:
@@ -203,11 +202,17 @@ class FakeHub:
                 else:
                     first, last = int(start), min(int(end), size - 1) if end else size - 1
                 if first >= size:
-                    return self._send(h, 416, b"", "audio/mpeg", dict(more, **{"Content-Range": "bytes */%d" % size}))
+                    return self._send(h, 416, b"", ctype, dict(more, **{"Content-Range": "bytes */%d" % size}))
                 more["Content-Range"] = "bytes %d-%d/%d" % (first, last, size)
-                return self._send(h, 206, data[first:last + 1], "audio/mpeg", more)
-            return self._send(h, 200, data, "audio/mpeg", more)
+                return self._send(h, 206, data[first:last + 1], ctype, more)
+            return self._send(h, 200, data, ctype, more)
+        if rest[0] == "audio" and "/".join(rest[1:]) in e["audio"]:
+            return ranged(e["audio"]["/".join(rest[1:])], "audio/mpeg")
+        if rest[0] == "attestation" and len(rest) == 3 and rest[2] in e.get("locker", {}).get(rest[1], {}):
+            return self._send(h, 200, e["locker"][rest[1]][rest[2]], "application/octet-stream")
         if rest[0] == "art" and len(rest) == 2 and rest[1] in e["art"]:
+            if h.headers.get("Range"):
+                return ranged(e["art"][rest[1]], "image/png")
             return self._send(h, 200, e["art"][rest[1]], "image/png")
         return self._send(h, 404, b'{"error":"not found"}')
 

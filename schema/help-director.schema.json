@@ -1,0 +1,432 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://popboll.com/sdk/schema/help-director.schema.json",
+  "title": "Help director script",
+  "description": "A help-director/1 script: the shots of a help tour or an INTRO video, in order. The same script plays three ways: recorded (every step), as a live tour on the person's own page (act, cut and capture_only steps are skipped), and as text (the say lines, grouped by chapter, are the captions and the READ text). The schema checks each step's shape; code checks what it cannot: that a say carries at most HELP_SAY_MAX_CHARS characters, that a pop of @say is followed by a say, that the recorded length stays within HELP_SCRIPT_MAX_MS, and (with a target manifest and a signal list) that every target and signal exists.",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "title",
+    "page",
+    "role",
+    "steps"
+  ],
+  "properties": {
+    "schema": {
+      "const": "help-director/1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*([.][a-z0-9][a-z0-9-]*)+$",
+      "description": "A help id: lowercase words joined by dots, at least two (device.make). A third party's ids start with x.<its name>. Ids are stable: a retired one is never reused."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "page": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "site": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "fixture": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "palette": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "path": {
+      "type": "string",
+      "pattern": "^/"
+    },
+    "lang": {
+      "type": "string",
+      "pattern": "^[a-z][a-z][a-z]?(-[A-Za-z0-9]+)*$"
+    },
+    "viewport": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/step"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*([.][a-z0-9][a-z0-9-]*)+$",
+      "description": "A help id: lowercase words joined by dots, at least two (device.make). A third party's ids start with x.<its name>. Ids are stable: a retired one is never reused."
+    },
+    "until": {
+      "type": "string",
+      "pattern": "^(signal:[a-z][a-z0-9_-]*([.][a-z0-9_-]+)*|visible:[a-z][a-z0-9-]*([.][a-z0-9][a-z0-9-]*)+)$"
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "do"
+      ],
+      "properties": {
+        "do": {
+          "enum": [
+            "chapter",
+            "say",
+            "spot",
+            "cue",
+            "unspot",
+            "hide",
+            "module",
+            "open",
+            "close",
+            "wait",
+            "cut",
+            "act",
+            "mark"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "hold_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "capture_only": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "chapter"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "title"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "say"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "ms": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "spot"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/id"
+              },
+              "nth": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "pop": {
+                "type": "string",
+                "minLength": 1
+              },
+              "place": {
+                "enum": [
+                  "auto",
+                  "above",
+                  "below",
+                  "left",
+                  "right"
+                ]
+              },
+              "keep": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "cue"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "button",
+              "state"
+            ],
+            "properties": {
+              "button": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              "state": {
+                "enum": [
+                  "on",
+                  "pulse",
+                  "chase"
+                ]
+              },
+              "role": {
+                "enum": [
+                  "a",
+                  "b",
+                  "c",
+                  "live",
+                  "go",
+                  "warn",
+                  null
+                ]
+              },
+              "pop": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "module"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "module",
+              "open"
+            ],
+            "properties": {
+              "module": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "open": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "open"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "topic"
+            ],
+            "properties": {
+              "topic": {
+                "$ref": "#/$defs/id"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "wait"
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "ms"
+                ]
+              },
+              {
+                "required": [
+                  "until"
+                ]
+              }
+            ],
+            "properties": {
+              "ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "until": {
+                "$ref": "#/$defs/until"
+              },
+              "max_ms": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "on_timeout": {
+                "enum": [
+                  "fail",
+                  "skip",
+                  "continue"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "cut"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "until"
+            ],
+            "properties": {
+              "until": {
+                "$ref": "#/$defs/until"
+              },
+              "max_ms": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "on_timeout": {
+                "enum": [
+                  "fail",
+                  "skip",
+                  "continue"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "act"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target",
+              "action"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/id"
+              },
+              "nth": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "action": {
+                "enum": [
+                  "click",
+                  "press",
+                  "hold",
+                  "select"
+                ]
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "do": {
+                "const": "mark"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

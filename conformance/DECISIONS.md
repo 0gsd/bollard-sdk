@@ -41,7 +41,11 @@ Vectors: `corpus-gate/`.
   licence state. (`visibility.json`)
 - **`Identity(service=True)` passes the visibility check.** It stands for the platform's own
   engine, which may study a private corpus if its licence allows study. It is the caller's claim;
-  the gate cannot verify it, and a hub decides for itself what it serves to whom.
+  the gate cannot verify it, and a hub decides for itself what it serves to whom. **Keeping the
+  engine to study only on a corpus that is not public is the hub's job, not the gate's:** a hub
+  answers "not found" to the engine for such a corpus's tracks, audio, art and bundles. The gate
+  does not refuse them itself, so a device can still play a private corpus it holds in its own
+  folder.
 
 **Offline, revalidation and the clock**
 

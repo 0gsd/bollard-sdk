@@ -37,14 +37,25 @@ _ART = ("store_art",)
 
 
 class ManifestRefused(ValueError):
-    """A manifest the SDK will not read. `reason` is a gate reason; `problems` says where."""
+    """A manifest the SDK will not read. `reason` is a gate reason; `problems` says where.
+    `manifest` is the manifest that was refused, as plain dicts and lists that are the caller's
+    own (None when there was none to read, such as a corpus.json that is not JSON)."""
 
-    def __init__(self, reason: str, problems: Tuple[str, ...], where: str = ""):
+    def __init__(self, reason: str, problems: Tuple[str, ...], where: str = "", manifest: Any = None):
         self.reason = reason
         self.problems = tuple(problems)
         self.where = where
+        try:
+            self.manifest: Optional[Dict[str, Any]] = (copy.deepcopy(dict(manifest))
+                                                       if isinstance(manifest, Mapping) else None)
+        except Exception:                       # a manifest that cannot even be copied is not given back
+            self.manifest = None
         head = "%s: " % where if where else ""
         super().__init__("%s%s: %s" % (head, reason, "; ".join(self.problems[:5]) or reason))
+
+
+# The edition record's files, as attest.verify_attestation() takes them.
+RECORD_KEYS = ("attestation", "manifest_tsv", "ed25519_sig", "mldsa65_sig")
 
 
 # Why content the gate allowed could not be had: NotAvailable.reason is one of these.
@@ -118,7 +129,7 @@ def range_value(byte_range: Tuple[Optional[int], Optional[int]]) -> str:
 class RangedAudio:
     """One recording, open, with what a relay needs to answer its own caller: `status` (200,
     206 or 416), `headers` (those of RELAY_HEADERS the source sent), and read()/close(). Use it
-    as a context manager. From Corpus.open_audio_ranged()."""
+    as a context manager. From Corpus.open_audio_ranged() and Corpus.open_art_ranged()."""
 
     def __init__(self, status: int, headers: Mapping[str, str], body: Any, length: Optional[int] = None):
         self.status = int(status)
@@ -264,6 +275,13 @@ class _NoStore:
     def read_art(self, grant, name: str) -> bytes:
         return self._nothing(grant, "art")
 
+    def open_art_ranged(self, grant, name: Any, byte_range) -> RangedAudio:
+        return self._nothing(grant, "art")
+
+    def attestation_record(self, edition: str) -> Dict[str, Optional[bytes]]:
+        """The edition record's four files, None for each one this store does not have."""
+        return {k: None for k in RECORD_KEYS}
+
 
 class _LocalStore(_NoStore):
     """A corpus root on disk: corpus.json, morpus/, art/, and source audio."""
@@ -326,7 +344,10 @@ class _LocalStore(_NoStore):
 
     def open_audio_ranged(self, grant, file: Any, byte_range) -> RangedAudio:
         _gate.check_grant(grant, self.corpus_id)
-        path = self._recording(file)
+        return self._ranged(self._recording(file), byte_range)
+
+    @staticmethod
+    def _ranged(path: Path, byte_range) -> RangedAudio:
         size = path.stat().st_size
         headers = {"Accept-Ranges": "bytes", "Content-Length": str(size)}
         if byte_range is None:
@@ -343,12 +364,23 @@ class _LocalStore(_NoStore):
         headers.update({"Content-Length": str(end - start + 1), "Content-Range": "bytes %d-%d/%d" % (start, end, size)})
         return RangedAudio(206, headers, fh, end - start + 1)
 
-    def read_art(self, grant, name: str) -> bytes:
-        _gate.check_grant(grant, self.corpus_id)
+    def _art(self, name: Any) -> Path:
         base = name.split("/")[-1] if isinstance(name, str) else ""
         if not safe_name(base):
             raise NotAvailable("%s: %r is not an art file name" % (self.corpus_id, name), "bad_name")
-        return self._inside(self.root / ART_DIRNAME / base).read_bytes()
+        return self._inside(self.root / ART_DIRNAME / base)
+
+    def read_art(self, grant, name: str) -> bytes:
+        _gate.check_grant(grant, self.corpus_id)
+        return self._art(name).read_bytes()
+
+    def open_art_ranged(self, grant, name: Any, byte_range) -> RangedAudio:
+        _gate.check_grant(grant, self.corpus_id)
+        return self._ranged(self._art(name), byte_range)
+
+    def attestation_record(self, edition: str) -> Dict[str, Optional[bytes]]:
+        from . import attest
+        return attest.read_local_record(self.root, edition)
 
 
 # ── the corpus ───────────────────────────────────────────────────────────────────────────
@@ -360,7 +392,7 @@ class Corpus:
                  verdict_ttl: float = VERDICT_TTL_SEC, where: str = ""):
         reading = _gate.read_manifest(manifest)
         if reading.refusal:
-            raise ManifestRefused(reading.refusal, reading.problems, where or reading.corpus_id)
+            raise ManifestRefused(reading.refusal, reading.problems, where or reading.corpus_id, manifest)
         self._manifest: Dict[str, Any] = copy.deepcopy(dict(manifest))     # a view is copied to plain dicts too
         self._view: Optional[FrozenDict] = None
         self._reading = reading
@@ -444,6 +476,20 @@ class Corpus:
     def attestation(self) -> Optional[Dict[str, Any]]:
         block = self._manifest.get("attestation")
         return copy.deepcopy(block) if block else None
+
+    def attestation_record(self) -> Dict[str, Optional[bytes]]:
+        """The signed edition record the manifest's `attestation` block names, as the keyword
+        arguments of attest.verify_attestation(): {"attestation", "manifest_tsv", "ed25519_sig",
+        "mldsa65_sig"}, None for each file that could not be had. A local corpus reads it from
+        <root>/locker/<edition>/; a hub corpus asks the hub, which serves it where it serves the
+        whole manifest (never to the study-only engine for a corpus that is not public), and keeps
+        it beside the cached corpus. Metadata, not licensed content: no verdict is needed. All None
+        when the manifest names no edition."""
+        block = self._manifest.get("attestation")
+        edition = block.get("edition") if isinstance(block, dict) else None
+        if not isinstance(edition, str) or not edition:
+            return {k: None for k in RECORD_KEYS}
+        return self._store.attestation_record(edition)
 
     @property
     def source(self) -> str:
@@ -587,6 +633,14 @@ class Corpus:
     def read_art(self, name: str, verdict: Verdict) -> bytes:
         """One cover image. Needs "store_art"."""
         return self._store.read_art(self._admit(verdict, _ART), name)
+
+    def open_art_ranged(self, name: Any, verdict: Verdict, byte_range: Any = None,
+                        range_header: Optional[str] = None) -> RangedAudio:
+        """One cover image for a relay, streamed: as open_audio_ranged, with the source's status
+        (200, 206 or 416) and the headers a relay passes on. Needs "store_art". `name` is the
+        art file's name, or a row from tracks() (its art_url, which must point into this
+        corpus)."""
+        return self._store.open_art_ranged(self._admit(verdict, _ART), name, read_range(byte_range, range_header))
 
 
 __all__ = ["Corpus", "ManifestRefused", "NotAvailable", "NOT_AVAILABLE_REASONS", "GateRequired", "RangedAudio",

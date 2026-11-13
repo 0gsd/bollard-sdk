@@ -1,6 +1,6 @@
 {
  "version": 1,
- "about": "What each scope grants, capability by capability, and how explicit flags change it. Every licence here is in force at the clock given.",
+ "about": "What each scope grants, capability by capability, and how explicit flags change it. Every licence here is in force at the clock given. stream_render (the MIDI played rendered through Pop Boll's own sounds) is on by default only for public_domain_midi.",
  "manifests": {
   "full": {
    "schema_version": 1,
@@ -117,6 +117,21 @@
    "display_label": "9008-BARE",
    "licence": {
     "scope": "full"
+   }
+  },
+  "full_with_render": {
+   "schema_version": 1,
+   "id": "9001-RENDER",
+   "number": 9001,
+   "slug": "RENDER",
+   "name": "The Placeholders: Full",
+   "artist": "The Placeholders",
+   "display_label": "9001-FULL",
+   "licence": {
+    "schema": "popboll.licence/1",
+    "version": 1,
+    "scope": "full",
+    "stream_render": true
    }
   }
  },
@@ -454,6 +469,46 @@
     "reason": "allowed"
    },
    "why": "A block is read without its schema and version members."
+  },
+  {
+   "name": "full/stream_render",
+   "manifest": "full",
+   "capability": "stream_render",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "morpus_only/stream_render",
+   "manifest": "morpus_only",
+   "capability": "stream_render",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": false,
+    "reason": "not_granted"
+   }
+  },
+  {
+   "name": "public_domain_midi/stream_render",
+   "manifest": "public_domain_midi",
+   "capability": "stream_render",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
+  },
+  {
+   "name": "full granting stream_render",
+   "manifest": "full_with_render",
+   "capability": "stream_render",
+   "clock": "2031-06-01T12:00:00Z",
+   "expect": {
+    "allowed": true,
+    "reason": "allowed"
+   }
   }
  ]
 }

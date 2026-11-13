@@ -30,9 +30,12 @@ manifest with the people taken out, and answers 404 for tracks, audio, art and b
 those, name the person the client acts for: `HubClient(..., acting_for="ada@example.org")`, or
 per call (`hub.corpus(id, acting_for=...)`, `hub.listing(acting_for=...)`). The name travels in
 the header X-Pop-For and never in a URL. It is what the caller says and the hub checks nothing
-(sign-in arrives with 0.2.5): it narrows what a token holder gets and proves nothing. A corpus
-fetched for a person is cached apart from the engine's copy, under <cache>/.for/<hash>/, so a
-manifest with addresses in it never replaces the redacted one a device studies from.
+(sign-in is planned): it narrows what a token holder gets and proves nothing. What is fetched for
+a person (a manifest with addresses and the access list in it, a listing) is held in the client's
+memory and never written to disk, so ETags still work for as long as the client lives. A host that
+wants a person's copy on disk passes `keep_for_person=True`; it is then cached apart from the
+engine's copy, under <cache>/.for/<hash>/, so a manifest with addresses in it never replaces the
+redacted one a device studies from.
 
 What a hub owes in return, since the same URL now answers differently for different people:
 every corpus route (the listing included) must answer with `Vary: X-Pop-For, Authorization`,
@@ -60,6 +63,7 @@ Cache (when cache_dir is given), laid out like a corpus root so plain files can 
     <cache>/.remote_index.json       the ids the hub listed last time
     <cache>/.http/<hash>.json        other JSON answers (listing, release record) with their ETags
     <cache>/.for/<hash>/<ID>/...     the same layout, for a corpus fetched for a named person
+                                     (only with keep_for_person=True)
 
 Revalidation. Before a corpus is used (Corpus.may), its manifest is revalidated when the last
 check is older than `revalidate_after` seconds. The hub answering 200 or 304 refreshes the
@@ -81,13 +85,14 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Mapping, Optional, Tuple
 
 from .. import schema as _schema
 from . import gate as _gate
 from .licence import Licence, format_time, parse_time
-from .model import (DNA_NAME, MANIFEST_NAME, MORPUS_DIRNAME, RELAY_HEADERS, Corpus, ManifestRefused, NotAvailable,
+from .model import (RECORD_KEYS, DNA_NAME, MANIFEST_NAME, MORPUS_DIRNAME, RELAY_HEADERS, Corpus, ManifestRefused, NotAvailable,
                     RangedAudio, _NoStore, range_value, safe_name, safe_rel_path)
 
 STATE_NAME = ".remote.json"
@@ -97,6 +102,7 @@ HEADER_PLAYER = "X-Pop-Player"
 HEADER_DEVICE = "X-Pop-Device"
 HEADER_FOR = "X-Pop-For"
 FOR_DIRNAME = ".for"
+HELD_MAX = 64                # answers a client keeps in memory for people (manifests, listings), least used first out
 VERSION_GATE_KEY = "corpus_gate"
 GATE_MODES = ("enforce", "report")
 USER_AGENT = "bollard-sdk corpus client"
@@ -234,7 +240,7 @@ class HubClient:
     def __init__(self, base_url: str, token: str = "", *, player: str = "", device: str = "",
                  cache_dir=None, timeout: float = 10.0, revalidate_after: float = 300.0,
                  retry_after: float = 30.0, user_agent: str = USER_AGENT, allow_insecure_token: bool = False,
-                 clock=time.time, acting_for: str = ""):
+                 clock=time.time, acting_for: str = "", keep_for_person: bool = False):
         self.base_url = str(base_url or "").strip().rstrip("/")
         self._origin = _origin_of(self.base_url)
         if self._origin[0] not in ("http", "https") or not self._origin[1]:
@@ -246,6 +252,10 @@ class HubClient:
         self.device = str(device or "")
         self.acting_for = person(acting_for)      # the person this client acts for; "" is nobody (the engine)
         self.cache_dir = Path(cache_dir) if cache_dir else None
+        # What is fetched for a named person (a manifest with addresses and the access list in it)
+        # is held in this client's memory and never written to disk, unless the host asks.
+        self.keep_for_person = bool(keep_for_person)
+        self._held: "OrderedDict[Any, Any]" = OrderedDict()   # in memory: what is fetched for a person (LRU)
         self.timeout = float(timeout)
         self.revalidate_after = float(revalidate_after)
         self.retry_after = float(retry_after)
@@ -257,6 +267,30 @@ class HubClient:
 
     def __repr__(self) -> str:
         return "HubClient(%s)" % self.base_url
+
+    # ---- what is held in memory for people ------------------------------------------
+    def _hold_get(self, key: Any) -> Any:
+        with self._lock:
+            if key not in self._held:
+                return None
+            self._held.move_to_end(key)
+            return self._held[key]
+
+    def _hold_put(self, key: Any, value: Any) -> None:
+        with self._lock:
+            self._held[key] = value
+            self._held.move_to_end(key)
+            while len(self._held) > HELD_MAX:
+                self._held.popitem(last=False)
+
+    def forget(self, who: Optional[str] = None) -> None:
+        """Let go of what this client holds in memory for the person `who` (everyone when None). A
+        client that acts for many people keeps at most HELD_MAX answers for them, the least used
+        going first."""
+        who = None if who is None else person(who)
+        with self._lock:
+            for key in [k for k in self._held if who is None or k[-1] == who]:
+                del self._held[key]
 
     # ---- URLs ------------------------------------------------------------------------
     def _url(self, *parts: str, query: Optional[Mapping[str, str]] = None, safe: str = "") -> str:
@@ -362,7 +396,10 @@ class HubClient:
         slot = None
         saved: Dict[str, Any] = {}
         who = self._who(acting_for)
-        if self.cache_dir is not None and keep:
+        in_memory = bool(who) and not self.keep_for_person
+        if in_memory and keep:
+            saved = dict(self._hold_get(("http", url, who)) or {})
+        elif self.cache_dir is not None and keep:
             key = url + ("\n" + who if who else "")
             slot = self.cache_dir / HTTP_DIRNAME / (hashlib.sha256(key.encode("utf-8")).hexdigest()[:32] + ".json")
             saved = _read_json(slot)
@@ -382,7 +419,9 @@ class HubClient:
             data = json.loads(body.decode("utf-8"))
         except (ValueError, UnicodeDecodeError):
             raise HubError("%s sent something that is not JSON" % self._origin[1]) from None
-        if slot is not None:
+        if in_memory and keep:
+            self._hold_put(("http", url, who), {"url": url, "etag": etag, "body": data, "for": who})
+        elif slot is not None:
             record = {"url": url, "etag": etag, "body": data}
             if who:
                 record["for"] = who
@@ -458,7 +497,7 @@ class HubClient:
                                     "unreachable", store.state.get("last_status"))
         if manifest.get("id") != corpus_id:
             raise ManifestRefused("manifest_invalid", ("#/id: asked for %s, got %r" % (corpus_id, manifest.get("id")),),
-                                  self._url("corpi", corpus_id))
+                                  self._url("corpi", corpus_id), manifest)
         return Corpus(manifest, store=store, clock=self._clock, where=self._url("corpi", corpus_id))
 
     def corpora(self, acting_for: Optional[str] = None) -> Tuple[List[Corpus], List[Tuple[str, str, Tuple[str, ...]]]]:
@@ -491,12 +530,22 @@ class _HubStore(_NoStore):
         self._client = client
         self._for = acting_for                  # every request of this store is made for this person
         base = client.cache_dir
-        if base is not None and acting_for:     # a person's copy is kept apart from the engine's
+        held = None
+        if acting_for and not client.keep_for_person:
+            base = None                         # a person's copy lives in the client's memory only
+            held = client._hold_get(("corpus", corpus_id, acting_for))
+        elif base is not None and acting_for:   # a person's copy is kept apart from the engine's
             base = base / FOR_DIRNAME / hashlib.sha256(acting_for.encode("utf-8")).hexdigest()[:24]
         self.root = base / corpus_id if base is not None else None
         self.state: Dict[str, Any] = {}
         self.manifest: Optional[Dict[str, Any]] = None
         self._licence = Licence.from_block(None)
+        if held is not None:
+            self.state = held.state             # shared with the client's memory, so it carries on
+            if held.manifest is not None:
+                self._set_manifest(held.manifest)
+        if acting_for and not client.keep_for_person:
+            client._hold_put(("corpus", corpus_id, acting_for), self)
         if self.root is not None:
             state = _read_json(self.root / STATE_NAME)
             if (state.get("base_url") == client.base_url and state.get("id") == corpus_id
@@ -741,28 +790,40 @@ class _HubStore(_NoStore):
         c = self._client
         if isinstance(file, Mapping):             # a row from tracks()
             url = c._on_hub(file.get("audio_url"))
-            if not url or not url.startswith(c._url("corpi", self.corpus_id) + "/"):
-                raise NotAvailable("%s: that track does not point into this corpus" % self.corpus_id, "bad_name")
-            return url
+            rel = self._tail(url, "audio")
+            if rel is not None and safe_rel_path(rel) == rel:
+                return url
+            chapter = self._tail(url, "wbol")
+            parts = chapter.split("/") if chapter is not None else []
+            if len(parts) == 3 and parts[1] == "chapter" and parts[2].isdigit():
+                return url
+            raise NotAvailable("%s: that track does not point into this corpus" % self.corpus_id, "bad_name")
         rel = safe_rel_path(file)
         if not rel:
             raise NotAvailable("%s: %r is not a recording's path" % (self.corpus_id, file), "bad_name")
         return c._url("corpi", self.corpus_id, "audio", rel, safe="/")
 
     def _open_audio(self, file: Any, byte_range, accepted: Tuple[int, ...]):
+        return self._open_ranged(self._audio_url(file), "the recording", byte_range, accepted)
+
+    def _open_ranged(self, url: str, what: str, byte_range, accepted: Tuple[int, ...]):
         try:
-            resp = self._client._open(self._audio_url(file), byte_range=byte_range, acting_for=self._for, as_stored=True)
+            resp = self._client._open(url, byte_range=byte_range, acting_for=self._for, as_stored=True)
         except HubUnreachable as exc:
-            raise NotAvailable("%s: could not open the recording (%s)" % (self.corpus_id, exc), "unreachable", exc.status) from None
+            raise NotAvailable("%s: could not open %s (%s)" % (self.corpus_id, what, exc), "unreachable", exc.status) from None
         except HubError as exc:
-            raise NotAvailable("%s: could not open the recording (%s)" % (self.corpus_id, exc), "bad_answer", exc.status) from None
+            raise NotAvailable("%s: could not open %s (%s)" % (self.corpus_id, what, exc), "bad_answer", exc.status) from None
         status = getattr(resp, "status", None) or resp.getcode()
         if status not in accepted:
             resp.close()
             reason = ("not_found" if status in (404, 410) else "bad_range" if status == 416
                       else "unreachable" if status in (401, 403, 429) or status >= 500 else "bad_answer")
-            raise NotAvailable("%s: the hub answered %d for that recording" % (self.corpus_id, status), reason, status)
+            raise NotAvailable("%s: the hub answered %d for %s" % (self.corpus_id, status, what), reason, status)
         return status, resp
+
+    def _relayed(self, status: int, resp) -> RangedAudio:
+        headers = {name: str(resp.headers.get(name)) for name in RELAY_HEADERS if resp.headers.get(name) is not None}
+        return RangedAudio(status, headers, resp)
 
     def open_audio(self, grant, file: Any, byte_range: Optional[Tuple[Optional[int], Optional[int]]]) -> BinaryIO:
         _gate.check_grant(grant, self.corpus_id)
@@ -770,9 +831,70 @@ class _HubStore(_NoStore):
 
     def open_audio_ranged(self, grant, file: Any, byte_range) -> RangedAudio:
         _gate.check_grant(grant, self.corpus_id)
-        status, resp = self._open_audio(file, byte_range, (200, 206, 416))
-        headers = {name: str(resp.headers.get(name)) for name in RELAY_HEADERS if resp.headers.get(name) is not None}
-        return RangedAudio(status, headers, resp)
+        return self._relayed(*self._open_audio(file, byte_range, (200, 206, 416)))
+
+    def _tail(self, url: Optional[str], under: str) -> Optional[str]:
+        """The decoded rest of `url` after this corpus's `<under>/`, or None when the URL is not
+        under it: no query or fragment, and no empty, "." or ".." segment, written plainly or
+        percent-encoded (a server that normalises the path would otherwise land elsewhere)."""
+        prefix = self._client._url("corpi", self.corpus_id, under) + "/"
+        if not url or not url.startswith(prefix):
+            return None
+        tail = url[len(prefix):]
+        if "?" in tail or "#" in tail:
+            return None
+        dec = urllib.parse.unquote(tail)
+        for form in (dec, urllib.parse.unquote(dec)):        # once, and once more for a double encoding
+            if "\\" in form or any(p in ("", ".", "..") for p in form.split("/")):
+                return None
+        return dec
+
+    def attestation_record(self, edition: str) -> Dict[str, Optional[bytes]]:
+        """The four record files: from <root>/locker/<edition>/ when all are kept there, else asked
+        of the hub (/api/corpi/<ID>/attestation/<edition>/<file>) and, when all four came and the
+        cache may keep files, written there. A file the hub does not give (404, an older hub, the
+        study-only engine on a corpus that is not public) or cannot give right now is None. An
+        edition is immutable, so a kept record is never asked for again."""
+        from . import attest
+        names = ((k, n) for k, n in zip(RECORD_KEYS, (attest.ATTESTATION_NAME, attest.MANIFEST_TSV_NAME,
+                                                     attest.SIG_ED_NAME, attest.SIG_ML_NAME)))
+        names = list(names)
+        if not attest.EDITION.match(str(edition or "")):
+            return {k: None for k, _ in names}
+        if self.root is not None:
+            kept = attest.read_local_record(self.root, edition)
+            if all(v is not None for v in kept.values()):
+                return kept
+        out: Dict[str, Optional[bytes]] = {}
+        for key, name in names:
+            try:
+                status, body, _ = self._client._get(self._client._url("corpi", self.corpus_id, "attestation", edition, name),
+                                                    max_bytes=MAX_JSON_BYTES, acting_for=self._for)
+            except HubError:
+                status, body = None, b""
+            out[key] = body if status == 200 else None
+        if self.root is not None and all(v is not None for v in out.values()):
+            folder = self.root / attest.LOCKER_DIRNAME / edition
+            for key, name in names:
+                _atomic_write(folder / name, out[key])
+        return out
+
+    def _art_url(self, name: Any) -> str:
+        c = self._client
+        if isinstance(name, Mapping):             # a row from tracks()
+            url = c._on_hub(name.get("art_url"))
+            base = self._tail(url, "art")
+            if base is None or not safe_name(base):
+                raise NotAvailable("%s: that track's art does not point into this corpus" % self.corpus_id, "bad_name")
+            return url
+        base = name.split("/")[-1] if isinstance(name, str) else ""
+        if not safe_name(base):
+            raise NotAvailable("%s: %r is not an art file name" % (self.corpus_id, name), "bad_name")
+        return c._url("corpi", self.corpus_id, "art", base)
+
+    def open_art_ranged(self, grant, name: Any, byte_range) -> RangedAudio:
+        _gate.check_grant(grant, self.corpus_id)
+        return self._relayed(*self._open_ranged(self._art_url(name), "the art", byte_range, (200, 206, 416)))
 
     def read_art(self, grant, name: str) -> bytes:
         _gate.check_grant(grant, self.corpus_id)
