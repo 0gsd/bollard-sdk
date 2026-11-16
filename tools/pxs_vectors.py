@@ -145,6 +145,17 @@ def cases():
     yield "head-not-json", raw_block(m, [(b"HEAD", b"schema=pxs/1", 0)]), False, "invalid", "V7", "HEAD is not JSON."
     yield "head-array", raw_block(m, [(b"HEAD", b'["pxs/1"]', 0)]), False, "invalid", "V7", "HEAD is not an object."
     yield "it-with-broken-footer", m + b"trailing junk, not a block" + b"PXSF" + struct.pack("<II", len(m), 0), False, "invalid", "V4", "Detection is by content: a PXSF footer makes it a .pxs, and the block must hold."
+    # HEAD is read as the PXS specification's JSON (§5) (bollardeck.pxs.loads): one more field written by hand before its closing brace.
+    def head_plus(extra: bytes) -> bytes:
+        return raw_block(m, [(b"HEAD", hd[:-1] + extra + b"}", 0)])
+    yield "v7-head-nan", head_plus(b',"x":NaN'), False, "invalid", "V7", "NaN is not JSON."
+    yield "v7-head-infinity", head_plus(b',"x":-Infinity'), False, "invalid", "V7", "-Infinity is not JSON."
+    yield "v7-head-number-too-large", head_plus(b',"x":1e400'), False, "invalid", "V7", "A number no 64-bit float holds."
+    yield "v7-head-wide-integer", head_plus(b',"x":9223372036854775808'), False, "invalid", "V7", "A whole number wider than 64 signed bits."
+    yield "v7-head-nested-33", head_plus(b',"x":' + b"[" * 32 + b"]" * 32), False, "invalid", "V7", "33 lists and objects one inside another (HEAD is the first)."
+    yield "v7-head-nested-1500", head_plus(b',"x":' + b"[" * 1500 + b"]" * 1500), False, "invalid", "V7", "Far too deep; counted before parsing, so no RecursionError on Python 3.11."
+    yield "head-nested-32", head_plus(b',"x":' + b"[" * 31 + b"]" * 31), True, "pxs", "", "32 lists and objects one inside another, the most allowed."
+    yield "head-widest-integers", head_plus(b',"x":[9223372036854775807,-9223372036854775808]'), True, "pxs", "", "The widest whole numbers 64 signed bits hold."
 
 
 def document() -> dict:

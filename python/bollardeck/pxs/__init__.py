@@ -36,6 +36,8 @@ present, never affects validity. Standard library only.
 from __future__ import annotations
 
 import json
+import math
+import re
 import struct
 import zlib
 from dataclasses import dataclass, field
@@ -66,7 +68,7 @@ IT_MIDI_CONFIG_LEN = 4896
 
 __all__ = [
     "SCHEMA", "MAX_BLOCK", "MAX_CHUNKS", "MAX_HEAD", "PxsError", "ItLayout", "Chunk", "Verdict",
-    "canonical_json", "measure_it", "build_block", "attach", "read_chunks", "validate",
+    "canonical_json", "loads", "measure_it", "build_block", "attach", "read_chunks", "validate",
 ]
 
 
@@ -319,6 +321,66 @@ def _parse_block(data: bytes, block_offset: int) -> Tuple[List[Tuple[str, int, b
     return out, minor
 
 
+MAX_JSON_DEPTH = 32                                    # lists and objects one inside another (the PXS specification, §5)
+_QUOTE_OR_BRACKET = re.compile(r'["\[\]{}]')           # what matters outside a string
+_QUOTE_OR_ESCAPE = re.compile(r'["\\]')                # what matters inside one
+
+
+def _refuse_constant(name: str):
+    raise ValueError("%s is not JSON" % name)
+
+
+def _finite(text: str) -> float:
+    v = float(text)
+    if not math.isfinite(v):
+        raise ValueError("a number no 64-bit float holds")
+    return v
+
+
+def _int64(text: str) -> int:
+    v = int(text)
+    if not -(1 << 63) <= v < (1 << 63):
+        raise ValueError("a whole number wider than 64 bits")
+    return v
+
+
+def _check_nesting(text: str) -> None:
+    """Raises ValueError when lists and objects nest more than MAX_JSON_DEPTH deep. One pass over the text,
+    which is either outside a string (a quote opens one, a bracket opens or closes a level) or inside one (a
+    quote closes it, a backslash takes the next character with it). Every step moves on, so the time is the
+    text's length whatever the text is. Text that is not JSON is json.loads's to refuse; this only counts."""
+    depth, at = 0, 0
+    while True:
+        m = _QUOTE_OR_BRACKET.search(text, at)
+        if m is None:
+            return
+        c, at = m.group(), m.end()
+        if c == '"':
+            while True:
+                m = _QUOTE_OR_ESCAPE.search(text, at)
+                if m is None:
+                    return                      # the string never closes
+                if m.group() == '"':
+                    at = m.end()
+                    break
+                at = m.end() + 1                # the backslash and the character it escapes
+        elif c in "[{":
+            depth += 1
+            if depth > MAX_JSON_DEPTH:
+                raise ValueError("nested more than %d deep" % MAX_JSON_DEPTH)
+        else:
+            depth -= 1
+
+
+def loads(text: str) -> Any:
+    """The JSON a .pxs reader takes (the PXS specification, §5): RFC 8259 and no more (no NaN or Infinity), every number one a
+    64-bit float holds and every whole number one 64 signed bits hold, at most 32 lists and objects one inside
+    another. Raises ValueError for anything else, and never RecursionError: the depth is counted before the
+    text is parsed. A name that comes twice keeps its last value."""
+    _check_nesting(text)
+    return json.loads(text, parse_constant=_refuse_constant, parse_float=_finite, parse_int=_int64)
+
+
 def _check_head(chunks: List[Tuple[str, int, bytes]]) -> Dict[str, Any]:
     cid, flags, data = chunks[0]
     if cid != "HEAD":
@@ -328,7 +390,7 @@ def _check_head(chunks: List[Tuple[str, int, bytes]]) -> Dict[str, Any]:
     if len(data) > MAX_HEAD:
         raise PxsError("V7", "HEAD is %d bytes (at most %d)" % (len(data), MAX_HEAD))
     try:
-        head = json.loads(data.decode("utf-8"))
+        head = loads(data.decode("utf-8"))
     except (UnicodeDecodeError, ValueError):
         raise PxsError("V7", "HEAD is not UTF-8 JSON") from None
     if not isinstance(head, dict):

@@ -69,7 +69,7 @@ README) how to run them:
 | `matrix/` (1,135) | the LED matrix engine | inputs and the frame the engine makes for them | Python and JS |
 | `yaml/subset.json` (84) | the reader for `routine.yaml` | a text and its value, or a text that must be refused and the line to name | Python |
 | `corpus-gate/` | the corpus gate | see below | Python |
-| `pxs/blocks.json` (35) | the .pxs validator, rules V1-V9 | a whole file (base64 of its zlib bytes, made by `tools/pxs_vectors.py`) and the verdict: valid, kind (`pxs`, `it`, `invalid`) and the first rule broken | Python (`tests/test_pxs.py`); Amorphus runs the same file |
+| `pxs/blocks.json` (43) | the .pxs validator, rules V1-V9, and HEAD read as strict JSON (the PXS specification, §5) | a whole file (base64 of its zlib bytes, made by `tools/pxs_vectors.py`) and the verdict: valid, kind (`pxs`, `it`, `invalid`) and the first rule broken | Python (`tests/test_pxs.py`); Amorphus runs the same file |
 
 `tools/pin_vectors.py` writes the expected values of `cue-render/` from this repository's Python
 renderer, and those of `matrix/` from its Python engine, `bollardeck.matrix`. The other files are written by hand. The SDK's own runs are

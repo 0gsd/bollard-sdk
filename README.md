@@ -4,13 +4,14 @@ The SDK for building on the Pop Boll platform: docks, routines, apps and tools t
 Bollawax device or to its web twin, and that read corpora the way the platform does, respecting
 each corpus's licence and settings.
 
-**Status: 0.3.0, shipped with Bollawax 0.3.0 (0.2.0 shipped with 0.2.5, and 0.1.0, the first version,
-with 0.2.4). Its interfaces may still change between 0.x versions.** The corpus client, the device layer, routines,
+**Status: 0.4.0, shipped with Bollawax 0.3.6 (0.3.0 shipped with 0.3.0, 0.2.0 with 0.2.5, and 0.1.0, the first
+version, with 0.2.4). Its interfaces may still change between 0.x versions.** The corpus client, the device layer, routines,
 the matrix engine and the browser binding are built, and so are a cart's additions (a pocket
 context for the keymap, power sources, file playback and its decoders, audio routes, Bluetooth, the
 cart and dock descriptors), tested against the simulated board. 0.3.0 adds help content and tours, the
 `.pxs` format, a minimal deck service and client (a draft, as the dock protocol is), and the now-playing
-and transport schemas. The Glass Snipler types are placeholders. Of the specifications under `spec/`, the software
+and transport schemas. 0.4.0 adds `bollardeck.popsnip`, the signed records of Pop Snip apps, and reads a `.pxs`
+`HEAD` as strict JSON. The Glass Snipler types are placeholders. Of the specifications under `spec/`, the software
 pages are current with this version and the hardware pages are speculative drafts: `bollard.md` is
 version 1, the interface under the Boll's foot, and the specification for the cart and its docks is
 not written (`spec/bollardeck.md` §20 records what is decided).
@@ -21,7 +22,7 @@ Pop Boll builds its own device images and web apps on this SDK. What you install
 
 | Path | What | Licence |
 | :--- | :--- | :--- |
-| `python/bollardeck/` | The Python package (`import bollardeck`), standard library only: `corpus` (read corpora through one gate that respects their licence and settings), `device` (hardware abstraction with a simulator and a registry for boards, button cues, gestures, the keymap, device identity), `routines` (the routine API), `matrix` (the LED matrix frame engine: film shots, playback, DJ mode, text, the premiere box), `schema` (validate a document against a format), `constants`. `deck` and `snipler` are placeholders | Apache-2.0 |
+| `python/bollardeck/` | The Python package (`import bollardeck`), standard library only: `corpus` (read corpora through one gate that respects their licence and settings), `device` (hardware abstraction with a simulator and a registry for boards, button cues, gestures, the keymap, device identity), `routines` (the routine API), `matrix` (the LED matrix frame engine: film shots, playback, DJ mode, text, the premiere box), `schema` (validate a document against a format), `popsnip` (Pop Snip apps: the signed records of launches, releases, key changes and revocations, and their canonical bytes), `constants`. `deck` and `snipler` are placeholders | Apache-2.0 |
 | `js/` | The browser and Node binding, no build step: `bollardeck.js` and its parts (constants, the same validator and schemas, button cues, the LED matrix frame engine, optional page helpers). `js/README.md` is the reference | Apache-2.0 |
 | `c/` | A header for dock firmware | Apache-2.0 |
 | `schema/` | JSON Schemas (draft 2020-12) for eleven formats: corpus manifest, licence block, corpus origin file, routine manifest, button cues, keymap, device identity, maker registry, image release record, Glass Snipler events and frame | Apache-2.0 |
@@ -142,7 +143,7 @@ their expected values), and `tools/generate.py` writes `js/bollardeck.schemas.js
 
 ## Versions
 
-The SDK has its own version, and its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`). It is not the Bollawax
+The SDK has its own version, and its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`). It is not the Bollawax
 image version.
 `bollardeck.SPEAKS` lists the wire and format versions this SDK speaks, and
 `bollardeck.MIN_BOLLAWAX` is the oldest Bollawax release it is tested against.

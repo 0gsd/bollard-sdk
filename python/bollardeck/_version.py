@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """The SDK's version and what it speaks. The single source: js/, c/ and the tag are checked against it."""
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 # Wire and format versions this SDK speaks. Keys are the names the specifications use.
 SPEAKS = {
@@ -13,6 +13,7 @@ SPEAKS = {
     "help_pack": "help-pack/1",
     "help_director": "help-director/1",
     "pxs": "pxs/1",
+    "popsnip": "popsnip/1",
 }
 
 # The oldest Bollawax release this SDK is tested against.

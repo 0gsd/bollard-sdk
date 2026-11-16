@@ -387,6 +387,94 @@
     "rule": "V4"
    },
    "why": "Detection is by content: a PXSF footer makes it a .pxs, and the block must hold."
+  },
+  {
+   "name": "v7-head-nan",
+   "file_z64": "eNrlk9tLVFEUxvdvNG0yS9MsTet4cixzvHXPphrzklajlnnJLnZ0js4pnZnmokII2nvvgi8+CUIQ/gG+Cb0FXpBkQEIQsQcRQUF9sD1qSFJPPvYdNmvvtdZ39l57r6/CUe2obqhROvWWgMcn9iEyziTY/hJNiaZYaXvzo3p6Rar4tpuhKIMHgv2AEFs/5SkSI4RwytGhOXUl6FVaPT4l4NKVvcr8osJRXfFHcSYh7ELYegcl38Q2N0dyu7ROXfwNgIkIIjlEFNEcxswRYjhKLMc4ThzxnCCBRE6SxClOk0wKZ0gljbOcQyEdlfNkYCGTC1wki0tkYyWHXPLIp4DLXOEq17jODW5yi0JuY+MOd7mHnSLuU0wJpZTxgHIqeMgjHuOgkiqqecJTanhGLXXU08BzGnnBS17xmibeoNFMC050WmnDhcFb3tFOB248eHmPDz8BgnTShfhvITul5g+HPcH+7+5Asf9Ok+Pzx71IMGLHmsOtJtEXYUP0sSWn/ZEW80DscnxyUkzKaJol3ZaxkVmfVZUdsq7nDOX+yB3KXc8JWauy67M2Mm0ZlvTRtJiU5KTl+IFYi7k/UgjXZmhNX4lbWlhcnS+eC82OhaJmhqdHpiyT0RON48p443j0hGVyZGp4OmpmLBSaLZ5bnV9YjFvSV0Jrrk0pi5Tw+xpS0N+lLS8tKvmye+gParPm19VC1QioVrVNd+s+TepHOrzd/qZdMcmIx2e0GW7pbtbcTrn2BpvbjRa1sFVr9+tW1ae3ythOupxr+yEZ/haX3qHt/DivQDoCRqA9vLMjrOJar1K3zVZqPO62cNQXDLhktMNwGnLZrRZWapU9QtZStiov2v3pq+8XtBn55g==",
+   "bytes": 1229,
+   "expect": {
+    "valid": false,
+    "kind": "invalid",
+    "rule": "V7"
+   },
+   "why": "NaN is not JSON."
+  },
+  {
+   "name": "v7-head-infinity",
+   "file_z64": "eNrlk81PE1EUxd+vxSIiWhRRqugwUhRpC36hYtEiilStoAgofg50Skehre0UNcYEXPg3mLhhZULixoVLdqw1gCEhkxhjYgwuiCHBRFjgK2AMRlcsPZOX+96998zcO++eYKg51Hy1RenTu8x4UvyBLKdNsPgU2ApsedL2Vzme9Isd4u1yhqIMrgqBVUIsfJVVFNiFCMvVq4V1JZ1QIvGkYkZ15XdnKREMNQdXNGcTIiCEv39Q8m0scr2S+0Dr08XfANiwk8UaHGSzlhzWkct68tjARpzks4nNFLCFQrayjSJcbGcHxexkFwolqOymFDdl7GEv5eyjAg9efFRSxX4OcJBDHKaaIxzlGDUcx08tJzhJgDpOUc9pztDAWRoJco7zXCDERZpo5hKXaeEKrbTRzlWu0cF1bnCTW9zmDhqddBFGJ0I3UQzuco8eeokRJ8F9kqQwSdPHA8R/CzkpLSscgc2Bf08HSuBXmlyvnv6OpO1LNiczahIDdj9igAW5fZ7lznmR9y2/qDDXNVzsLvGXzpW1lzdVWJ4f3pe+j76Xvh9ey9NU0V4+V+YvdZcMF+e6igq/5b/Ic+c8zxIiOm9912ec01+mZj/Xf7I+jFiOyaGJ1+/d49ljHaPKaMdo9ph7/PX7oQnH5Ihlfaj/NPv5y5RzWp+xvkfnpSxcmfs1pKA/Stt4pu70m+WiH6udWkpXa1TDVD1qtx7Tk5rUj3QkHqZuL4tJRuJJo9uISXenFgvLcyLd2WN0qTURrSele9SkHpGxpXS51/6EZKS6onqvtvTiyv3SYRpmT+bLoYyKWxNK2yJbaYnHujPRZNqMymivETbk8aFa4w3GIkbMMB89kXXLnhpm5Q9/Vlv97ieW2vwC",
+   "bytes": 1237,
+   "expect": {
+    "valid": false,
+    "kind": "invalid",
+    "rule": "V7"
+   },
+   "why": "-Infinity is not JSON."
+  },
+  {
+   "name": "v7-head-number-too-large",
+   "file_z64": "eNrlk8tPE1EUxu+vIIiIgiAKgg4jRZHyUnxh1SIPQa1UkYf4wIEOdBTa2geQGBJw6V9AwoYVCYkb/gB2rE14hITUEENCCC4IIYEILPAWMASiK5Z+k5tz7znnmzln7vmq7A67o6FG6dRbAh6fOIDIeJNg+0kyJZnipO0tiOrpFWni226GogweCrZDQmz9lFUkRQjhlKtDc+pK0Ku0enxKwKUre535RZXdUbWvOZMQNiGsvYOSb2Kbmyu5XVqnLv4GwEQEkRwhimiOEsMxYjlOHCc4STwJnCKRJE6TzBnOkkIq50gjnfNcQCEDlYtkYiaLS1wmmyvkYCGXPPIpoJCrXKOI69zgJre4TTF3sHKXe9zHRgkPKKWMcip4SCVVPOIxT7DzlGocPOM5NbygljrqaeAljbziNW94SxPv0GimBSc6rbThwuA9H2inAzcevHzEh58AQTrpQvy3kJNSs89hS7T9ezpQbH/S5Pr6eS8SjNixMeFRk+iLsCL62JLb/khzzEDcckJKcmzqaLo5w5q5kVWfXZ0TsqznDuX9yBvKW88NWapz6rM3sqyZ5ozR9NjUlOTlhIE4c0x/pBCuzdCavhK/tLC4Ol86F5odC0XNDE+PTJknoycax5XxxvHoCfPkyNTwdNTMWCg0Wzq3Or+wGL+kr4TWXJtSFqnh+zWkoL9LW1leUjayW/QntVnz62qxagRUi9qmu3WfJvUjHd5uf9OumGTE4zPaDLd0N2tupzx7g83tRota3Kq1+3WL6tNbZWwnXe61g5AMf4tL79B2XpxfKB0BI9Ae/rI9rOJar1K3zVZqPO62cNQXDLhktMNwGvLYrRYX6kUFBT2yZtlPxar82b/uOb78BpEF+fU=",
+   "bytes": 1233,
+   "expect": {
+    "valid": false,
+    "kind": "invalid",
+    "rule": "V7"
+   },
+   "why": "A number no 64-bit float holds."
+  },
+  {
+   "name": "v7-head-wide-integer",
+   "file_z64": "eNrlU0tPU0EUnq+txYrVIhWlgl6uFEXaUlqgpVYt8pCqtdXKQ3zgbXvbXu3LviAxJOCvIGHDikjihh9A3LDW8AgJuQkxJARxQQgJJMACp4AhEF2x9LuZnJlzzndnzsz5nC6Py9PlZbK8Px1PkmOQqSQEe59aopYoqR0wyvsHSAn5dpDBMCMnguOEILu/6CnUUkICdES5AM9kEkwwnmTSYZ45rCxFnC6P80hxEkIchNgHRihfgj2unnJ7uSxP/gYAEkghwynIkYfTUOAM8nEWSpzDeahQgAsohBoXUYRLuIxiaHAFJSjFVVwDgzKwuI5yaFGBG7iJStxCFXTQw4BqGFEDE8yoRR3qYYEVDbDhNuy4g7u4BwcacR9NaEYLWvEAbXDiIR7hMVx4Ajc8eIpn8OI52tGBTnThBbrxEq/wGm/Qg7fg4IMfAfAIIoQwBLzDe0QQRQxxJPABSaSQRgZZ9IL8t6Cd4j3icBQ6/t0dYBx/0uj48ukwkpHuW0Wu1SgGpXaQQezS6ZBMqxhWrhUUF+VrJkq1Zfby7YrOSneVqNvSjxp+GEYNW3pR567qrNyusJdryyZK8zXFRWsFw0qtYkhGSHhH3OTXVavLKxtLTYviwqQonx+bG5/VzuRNd08xU91TedPamfHZsTn5/KQoLjQtbiwtr6hW+XVxM7xDZaHJva9ABf2T2raWxuavB4f+yPq4FM/aWCHN6tgQH+OTHNUPdST6Uj0HYqKReFIICTHq9nGxAF0nMr6I4GdtQS6S4nVskg/S2H46nXPHQRkpf5iPcvs/rq6hjrSQjuR2duVU3J5gOvbYjDceC+WiyUw6TKNRISDQZR9razCZzGaLyWiut9bVWix1VqO1n9DaWjfoxX//nN38DV9y/aE=",
+   "bytes": 1245,
+   "expect": {
+    "valid": false,
+    "kind": "invalid",
+    "rule": "V7"
+   },
+   "why": "A whole number wider than 64 signed bits."
+  },
+  {
+   "name": "v7-head-nested-33",
+   "file_z64": "eNrlk9tLVFEUxvdvNM3M0jRL0zqeHMscb92zqca8pNWkZV7SzI7O0TmlM9NcVAhB+xt6EHzxSRB68T3ffA68IMiARCBihIigoD7YHjVEKXzwse+w2Wuvb33n7H32+srtlfbKuiqlU2/xu71iH8JjTYKtJ8GUYIqRc29eRE+vSBHfdioUZfBQsB0SYvOn3EVCmBAOOTo0h64EPEqr26v4nbqyezKfKLdXlu85nEkImxDW3kGpN7GlzZbaLq1TF38DYCKMcI4QQSRHieIY0RwnhhOcJJY4ThFPAqdJ5AxnSSKZc6SQynkuoJCGykXSMZPBJS6TyRWysJBNDrnkkc9VrnGdG9zkFre5QwF3sXKP+zzARiEPKaKYEkp5RBnlPOYJT7HzjAoqec4LqnhJNTXUUscr6mngNY28oYm3aDTTggOdVtpwYvCO97TTgQs3Hj7gxYefAJ10If5byE6p2pOwxdv+3R0otj9lcnz5tMsEwrbnqFCrSfSFWRF9bMqwP9wcNRCzFJeUGJ08mmpOs6avZ9RmVmQFLWvZQznfc4Zy1rKDloqs2sz1DGu6OW00NTo5KXEpbiDGHNUfLoRzI7iqL8cuzi+szBX9CM6OBSNmhqdHpsyTkRP148p4/XjkhHlyZGp4OmJmLBicLfqxMje/ELuoLwdXnRvSFsmh+zVCxpZBWUlh8a+dTX9UmzWfrhaohl+1qG26S/dq0j8y4en2Ne2YSTJur9FmuGS6WXM55NoTaG43WtSCVq3dp1tUr94que1yGWv7IRW+FqfeoW2/ODdfJvyGvz30ZXvIxdUepWZLrVS5XW0h1hvwOyXbYTgMuexWCxoOQOMB6JH/oXRFXtLXus+bvwFeSg/l",
+   "bytes": 1289,
+   "expect": {
+    "valid": false,
+    "kind": "invalid",
+    "rule": "V7"
+   },
+   "why": "33 lists and objects one inside another (HEAD is the first)."
+  },
+  {
+   "name": "v7-head-nested-1500",
+   "file_z64": "eNrtl0tME0EYx+ff1mKFapGKUkGXlUWRtoBva9UiD6laW608BBG37bZd7cs+gMQQwbN3SYgJJxISLxw9cONswiMkZBNiSAjBAyEkkAAHnFIMgeiJG+5vM5mZ7/v+OzOZ7zuM3eFyuFrcTKfgTUbjZB8qnYJg+9Mr9Aot7Xsr1T29pJD82IlgmMEDYTsgZOsX3YVeSYiPtjDvE5hUjPFH40wyKDC7J0sQu8Nl33M4BSE2Qqy9g1SvwLbWRLVdfKdA/gYABZRQ4QjUyMJRaHAM2ciBFsdxAjrk4iTyoMcp5OM0zqAABpxFIYpwDufBoBgsLqAEHEpxEZdQhssohxEmmFGBSlThCq7iGq7jBm7iFm7Dgjuw4i7u4T5sqMYD1KAWdajHQzTAjkd4jCdw4CmccOEZnsONF2hEE5rRgpdoRRteoR2v0YE34OGBFz4I8COAIES8xTuEEEYEUcTwHnEkkEQKnegC+W+hmeLeY7Dl2f6dHWBsf8Jo+/Zp15NSZnpNOtUofUorSB+26LBfxWkGtMu5BfnZhtEirthaslHaXOYsl4zrpiHzT/OQed0kGZ3lzWUbpdYSrni0KNtQkL+cO6DlNP0qQoKb0pqwoltaWFydr5mTZsck9czw9MgUN5k10TrOjLeOZ01wkyNTw9PqmTFJmq2ZW51fWNQtCSvSWnCTloUhfb8iLejPOYQ01FXX+nIym/3AeviEwFpYMcka2YAQEeI8rR9qiHUnOnaKiXqicTEgRqjZw0d8dB5LeUKil7X4+VBCMLJxwU99mXA65vdDFQlvUAjzmR9XVFFDUkyG0is70lXcGGOattWMOxoJpL3xVDJIvWHRJ9JpN2tpk5GRkZE5dLTLyMjIyBw6euj7o36VPo4+fv/65Te6ui8N",
+   "bytes": 4225,
+   "expect": {
+    "valid": false,
+    "kind": "invalid",
+    "rule": "V7"
+   },
+   "why": "Far too deep; counted before parsing, so no RecursionError on Python 3.11."
+  },
+  {
+   "name": "head-nested-32",
+   "file_z64": "eNrlk8tPE1EUxu+vIFixWqSiIOgwUhQpL99i1SIPQS1Uq6L4wIEOdLS0tQ8wMSbg3+DChA0rEhI3/AHsWJuAxoQ0IcaEGEgkhAQisMBbwBiMunHpN7m5557vfDP3zj1fo9vj9tz1Kj16RywUEb8g1WoSrD82k81kkXNfRdrLPpEn3m1WKMrgP8H1jxBrs3IXthQhfHJ0az5diYeVzlBEifl15efJoqLR7WnccjiTEC4hnH2DUm9iXVsqtb1ajy5+B8BECqlsI410tmNmBxnsxMIudmMlkz1kYWMv2exjPznkcoA88jnIIRQKUDlMIXaKOMJRijlGCQ5KKaOcCio5zglOcorTnOEs56jiPE4ucJFLuKjmMjXUUkc9V2igkatc4zpummjGww1u4uUWt7lDC3e5Ryv3ecBDHtHGYzTa6cCHTidd+DF4wlMCdBMkRJhnRIgSI04PvYj/FrJTvFsSrizXn7sDxfWjTI63r34y8ZSN2ZxsNYn+FCeinzUZvkm1mwcs85k52Rm5o/n2AmfhSlFLcXNJwrFcOlT2qWyobLk04WguaSleKXIW2gtG8zNyc7LnMwcsdvObVCH8q4klfcE692Vmcbrmc2JqLJE2Ofxx5IP9ffpE67gy3jqePmF/P/Jh+GPa5FgiMVXzeXH6y4x1Tl9ILPlXpS1yk/drJI0tg4a66trZzU2/UNu1qK5WqUZMdahdelCPaNI/MhF+Hm3bNJNkQhGjywjKdLsW9Ml1ON4eMDrUqk4tENUdakTvlNxGuYy1XyEV0Q6/3q1tvLi8UiZiRiyQ/LI76eLbYeXOulrxhoJdSTYSj/kl2234DLl8rlbd/zse/h0vhZD/oX5RXtK3ptdfvwNT1w9L",
+   "bytes": 1289,
+   "expect": {
+    "valid": true,
+    "kind": "pxs",
+    "rule": ""
+   },
+   "why": "32 lists and objects one inside another, the most allowed."
+  },
+  {
+   "name": "head-widest-integers",
+   "file_z64": "eNrlU1tPE0EYndPWYsVqkYpSQbcrRZG2lBZoqVWLXKRqoVK5CCJu22272pu9AIkhAX8FCS88kZD4wg/gjWcTLiEhmxBDQgiaEEICCfCAU8AQUJ949OxOZuac79udL/Mdl9vj9nR5mX7en44nyRnIVBKCw0ctUUuUdB42yYeGSRH5dhzBMOPngvOcIAc/6CnUUkICdES5AM9kEkwwnmTSYZ45qSxFXG6P61RxEkKchDiGx2m+BIe5Bpo7wPXz5G8AIIEUMlyAHDm4CAUuIReXocQVXIUKebiGfKhxHQW4gZsohAa3UIRi3MYdMNCCxV2UQIdS3MN9lOEByqGHAUZUwIRKmGFBFapRAytsqIUdD+HAIzzGEzhRh6eoRwMa0YRnaIYLz/ECL+FGC1rhwSu0wYvXaEcHOtGFN+hGD96iF+/Qh/fg4IMfAfAIIoQwBHzAR0QQRQxxJPAJSaSQRgb9GAD5b0E7xXuKcOY7/90dYJy/w+j4+uVEyUiPZkW21ShGpA6QERzQ5ahMpxhTbuYVFuRqpot1WkfJXmlnWWu5qN81TBi/GyeMuwZR31reWbZX6ijRaaeLczWFBZt5Y0qdYlRGSHhf3OG3VBtr69ur9Svi8owoX5pcnFrQzefMdc8ys92zOXO6+amFyUX50owoLtevbK+uras2+C1xJ7xPbaHJ3q9ADZ19mxvrGhaPD/2Z9XEpnrWzQprVsyE+xic56h9KJAZTfcdmoko8KYSEGKV9XCxA94mMLyL4WXuQi6R4PZvkg1Q7Cqdr7ixoRsof5qPc0YcrKimRFtKR7J/dWRe3J5iOw2zGG4+Fsmoykw5TNSoEBLodZO09tWazxWI1myw1tuoqq7XaZrLqDX+Stt4hQmjNTdv0Qn76Wtp+AWHRAOM=",
+   "bytes": 1269,
+   "expect": {
+    "valid": true,
+    "kind": "pxs",
+    "rule": ""
+   },
+   "why": "The widest whole numbers 64 signed bits hold."
   }
  ]
 }

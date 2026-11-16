@@ -1,7 +1,46 @@
 # Changelog
 
 What each version of the Bollawax Bollard SDK added and changed. The SDK has its own version, and
-its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`); it is not the Bollawax image version.
+its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`); it is not the Bollawax image version.
+
+## 0.4.0 (2026-11-16)
+
+Shipped with Bollawax 0.3.6. **Mostly additive, with two stricter checks.** Breaks first:
+
+- **Changed meaning: `bollardeck.pxs` reads `HEAD` as strict JSON (the PXS specification, §5).** A new public
+  `pxs.loads(text)` takes RFC 8259 and no more: no `NaN` or `Infinity`, every number one a 64-bit float
+  holds (`1e400` is refused), every whole number one 64 signed bits hold, and at most 32 lists and objects
+  one inside another, counted before parsing so it never raises `RecursionError` (a deep `HEAD` did on
+  Python 3.11). `_check_head` uses it in place of `json.loads`, so `validate` now reports V7 for a `HEAD`
+  it used to pass, as the Pop Snip engine's reader already did. `conformance/pxs/blocks.json`: 43 vectors
+  (8 new: `v7-head-nan`, `v7-head-infinity`, `v7-head-number-too-large`, `v7-head-wide-integer`,
+  `v7-head-nested-33`, `v7-head-nested-1500`, `head-nested-32`, `head-widest-integers`).
+- **`bollardeck.corpus._ed25519.verify` refuses a public key or an `R` of small order** (the 8 torsion points), as
+  libsodium does. Such a key has no secret behind it: the identity point "signs" every message. No real key or
+  signature is affected.
+
+New: `bollardeck.popsnip`, and `SPEAKS` gains `popsnip: "popsnip/1"`.
+
+- **`bollardeck.popsnip`, a new part** (`python/bollardeck/popsnip/`, `js/bollardeck.popsnip.js`): the signed records
+  of Pop Snip apps, the third-party apps that live at `<name>.popsnip.app`.
+  - Twelve kinds:
+    - the launch-key certificate, its revocation, and a reaffirmation (signed by the release key);
+    - launch, publish, rekey, rekey-cancel, the log head and the revocation list (signed by a launch key);
+    - the release manifest, the key proof and the rekey request (signed by the developer's key; a rekey
+      request's signature travels as the rotation's `old_key_sig`).
+  - **One canonical form:** the record minus `signature`, keys sorted, no spaces, printable ASCII strings and safe
+    integers only. Every signature covers `popsnip/1\n` plus that form, so a Pop Snip signature can never pass as a
+    signature on a Bollawax release record.
+  - **Strict parsers in both languages:** no repeated keys, no fractions, no `NaN`, nesting at most 32 deep.
+    Depth is counted over the text first, without recursion, so deep input is `bad_json` before anything else.
+    An integer literal past 2⁵³−1 is refused as `bad_number`, however long.
+  - **The same refusal codes in both languages.** `check(record, signed=False)` checks a record about to be
+    signed. Every signer checks before signing and again after.
+  - Vectors in `conformance/popsnip/records.json`, written by `tools/popsnip_vectors.py`, with real Ed25519
+    signatures by test keys whose seeds are printed there.
+  - Public keys in records must be able to sign: the canonical encoding of a point on the curve, not of small
+    order. That's checked in both twins (`isPublicKey` in JS). A challenge stays 32 bytes of anything.
+  - `data-parts` takes `popsnip`.
 
 ## 0.3.0 (2026-11-12)
 

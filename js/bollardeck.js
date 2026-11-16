@@ -3,7 +3,7 @@
 // <script> tag (it defines globalThis.bollardeck), require() it, or import bollardeck.mjs.
 //
 // One tag is enough:   <script src="js/bollardeck.js"></script>
-// The binding is this file and nine parts beside it, and this file loads the parts:
+// The binding is this file and ten parts beside it, and this file loads the parts:
 //   bollardeck.schemas.js   bollardeck.schemas   the JSON Schemas (generated)
 //   bollardeck.schema.js    bollardeck.schema    validate(name, value)
 //   bollardeck.cues.js      bollardeck.cues      what each button shows at a time
@@ -12,6 +12,7 @@
 //   bollardeck.keymap.js    bollardeck.keymap    what a gesture means
 //   bollardeck.corpus.js    bollardeck.corpus    the corpus gate and a hub client
 //   bollardeck.help.js      bollardeck.help      help packs, struggle detection, director scripts
+//   bollardeck.popsnip.js   bollardeck.popsnip   Pop Snip apps: the signed records and their canonical bytes
 //   bollardeck.dom.js       cues.apply, cues.run, matrix.canvas, gestures.listen, help.listen/cta/modal/spot/ui: the optional page helpers
 // A plain tag in the page's HTML loads them in step, so the next <script> can use everything.
 // A tag that is async, deferred or added by script loads them in order after itself: wait for
@@ -30,7 +31,7 @@
   // A part loaded before this file has already made the object: fill it in, do not replace it.
   var bollardeck = (root.bollardeck && typeof root.bollardeck === "object") ? root.bollardeck : {};
   var core = {
-    version: "0.3.0",
+    version: "0.4.0",
     speaks: {
       bollardeck: "bollardeck/1",
       routine_api: 1,
@@ -40,6 +41,7 @@
       help_pack: "help-pack/1",
       help_director: "help-director/1",
       pxs: "pxs/1",
+      popsnip: "popsnip/1",
     },
     minBollawax: "0.3.0",
   };
@@ -175,7 +177,7 @@
   root.bollardeck = bollardeck;
 
   // ── the parts ──────────────────────────────────────────────────────────────────────────
-  var PARTS = ["schemas", "schema", "cues", "matrix", "gestures", "keymap", "corpus", "help", "dom"];
+  var PARTS = ["schemas", "schema", "cues", "matrix", "gestures", "keymap", "corpus", "help", "popsnip", "dom"];
   bollardeck.parts = bollardeck.parts || {};
   var wanted = PARTS;               // narrowed by data-parts="cues matrix" on the tag
   var missing = function () { return wanted.filter(function (p) { return !bollardeck.parts[p]; }); };

@@ -1,10 +1,10 @@
 # Pop Boll Developer Specifications
 
-Version 1.1-draft · Status: speculative draft · Updated 2026-11-12 · As of Bollawax 0.3.0 and Bollard SDK 0.3.0
+Version 1.1-draft · Status: speculative draft · Updated 2026-11-17 · As of Bollawax 0.3.6 and Bollard SDK 0.4.0
 
 > **Speculative draft.** No Pop Boll hardware has shipped, and nothing on these pages has been built or validated on hardware. Dimensions, pinouts and protocols will change without notice, and nothing here is an offer, a commitment or a promise of compatibility. We would love to hear about partnership, OEM and dev-kit ideas: use the contact form below.
 
-> **Note:** The band's brain is a removable cart, the **Bolltridge**. It lives in the ball, and the same cart can also go into other docks, such as the Glass Snipler. The software pages here are current with Bollawax 0.3.0. The hardware page is not: [Bollard](bollard.md) still documents the first interface, under the Boll's foot, and the specification that replaces it for the cart is not written.
+> **Note:** The band's brain is a removable cart, the **Bolltridge**. It lives in the ball, and the same cart can also go into other docks, such as the Pop Snipler. The software pages here are current with Bollawax 0.3.6. The hardware page is not: [Bollard](bollard.md) still documents the first interface, under the Boll's foot, and the specification that replaces it for the cart is not written.
 
 These pages are for people who want to build things for the Pop Boll: software that changes how the Boll writes songs, clients of its corpora, and docks and accessories. They are open specifications. You do not need our permission, a licence fee or a certification to build to them.
 
@@ -19,17 +19,18 @@ The Pop Boll is a glowing ball with a tiny band inside. Sixteen virtual musician
 
 ## The Bollard SDK
 
-The **Bollard SDK** is the open library (Apache-2.0) that every client of the platform builds on, ours included: the Pop Boll's image and popboll.com run on it. Its import name is `bollardeck`, in Python and in the browser. Bollard SDK 0.3.0 ships with Bollawax 0.3.0 and holds:
+The **Bollard SDK** is the open library (Apache-2.0) that every client of the platform builds on, ours included: the Pop Boll's image and popboll.com run on it. Its import name is `bollardeck`, in Python and in the browser. Bollard SDK 0.4.0 (shipped with Bollawax 0.3.6) holds:
 
 - **routines**: the hooks into the song factory, with a simulator and a command line;
 - **the device layer**: buttons and gestures, button cues, the keymap (with a pocket map for a cart on its own battery), device identity and maker codes, draft dock and cart descriptors, and the 13 × 8 light matrix engine, the same code on the device and on the web;
 - **the corpus client**: the one way to read a corpus, with a gate that refuses whatever a corpus's licence does not allow, now nine capabilities with `stream_render` for corpora that may be heard rendered through Pop Boll's own sounds (popboll.com plays such a corpus "played from the score" to everyone signed in; a Pop Boll renders it on the device);
 - **help**: the help framework the site runs on (help packs, offers when a person seems stuck, guided tours and captioned INTRO videos);
 - **Pop Snip files**: reading, writing and checking `.pxs`, a tracker module that carries its song's credits, licences and MIDI;
+- **Pop Snip records**: the signed records of Pop Snip apps, the third-party apps at `<name>.popsnip.app`, checked the same way in Python and in the browser;
 - **a draft deck**: a minimal deck service and client for the dock messages, in one process or over a Unix socket;
 - **schemas** for every format, with a validator.
 
-Not available yet, and planned: the deck on devices (over USB and Bluetooth, on a Pop Boll), sign-in, a sandbox for third-party apps, a signed registry, and the Glass Snipler's capability boundary. [bollardeck Part C](bollardeck.md#17-part-c-the-bollard-sdk) has the detail, and [the SDK's own page](/sdk) says where to get it and how to start.
+Not available yet, and planned: the deck on devices (over USB and Bluetooth, on a Pop Boll), sign-in, a sandbox for third-party apps, a signed registry, and the Pop Snipler's capability boundary. [bollardeck Part C](bollardeck.md#17-part-c-the-bollard-sdk) has the detail, and [the SDK's own page](/sdk) says where to get it and how to start.
 
 ## Bollard and bollardeck
 
@@ -41,20 +42,24 @@ Not available yet, and planned: the deck on devices (over USB and Bluetooth, on 
 
 | Class | What it is | Interface | Read |
 | :--- | :--- | :--- | :--- |
-| **The Bolltridge** | the cart: the computer of the Pop Boll and the Glass Snipler. It runs Bollawax, holds the corpora and the only radio, and is the USB host of whatever dock it stands in. Up to two share a dock | the Bollport | [Bollard §25](bollard.md#25-bollard-v2-what-is-decided) |
-| **Docks for the cart** | what a cart stands in: the Pop Boll, the Glass Snipler, and docks that others will build to Bollard v2 | the Bollport and a dock descriptor (not written) | [Bollard §25](bollard.md#25-bollard-v2-what-is-decided) |
+| **The Bolltridge** | the cart: the computer of the Pop Boll and the Pop Snipler. It runs Bollawax, holds the corpora and the radio, and is the USB host of whatever dock it stands in. Up to two share a dock | the Bollport | [Bollard §25](bollard.md#25-bollard-v2-what-is-decided) |
+| **Docks for the cart** | what a cart stands in: the Pop Boll, the Pop Snipler, and docks that others will build to Bollard v2 | the Bollport and a dock descriptor (not written) | [Bollard §25](bollard.md#25-bollard-v2-what-is-decided) |
 | **Bollard v1 docks** | anything that mates with the v1 foot: speakers, amps, charging stands, light bases, stackable pucks, and the passive Boll Cap. Drawn before the cart; their future is not decided | Bollard v1, one of four profiles | [Bollard §3](bollard.md#3-profiles) |
 | **Wireless accessories** | anything that talks to the deck over Bluetooth Low Energy with no physical connection (draft; no service yet) | bollardeck over BLE | [bollardeck §3](bollardeck.md#3-transports) |
 | **Routines** | software only: Python hooks into the song factory that run on your own Boll | bollardeck Part B | [bollardeck Part B](bollardeck.md#11-part-b-routines) |
-| **PWHAMSS devices** | devices a person works on alongside the band: a Workshop and context-switching keys, all drawing one frame, with a Bolltridge docked in them. The first is the Glass Snipler | a dock for the cart | [PWHAMSS](pwhamss.md) and the [Glass Snipler](glass-snipler.md) |
+| **PWHAMSS devices** | devices a person works on alongside the band: a Workshop and context-switching keys, all drawing one frame, with a Bolltridge docked in them. The first is the Pop Snipler, with its open-firmware edition, the Glass Snipler | a dock for the cart | [PWHAMSS](pwhamss.md), the [Pop Snipler](pop-snipler.md) and the [Glass Snipler](glass-snipler.md) |
 
-## PWHAMSS and the Glass Snipler
+## PWHAMSS, the Pop Snipler and the Glass Snipler
 
 The Boll plays by itself. **PWHAMSS** (Personal Workshop for Human-Device Animation and MIDI Sync Systems) is the family of Pop Boll devices where a person works alongside the band instead: the same Bollawax engine, the same sixteen musicians and seven judges, the same licensed corpora, with a person at the keys pulling material out of songs, cutting it and handing it back. Every PWHAMSS device keeps an always-visible Workshop, keys that redraw their legends with the mode, a frame that every screen and light draws from, and a personal library that follows the person through HAMS sync. The [PWHAMSS page](pwhamss.md) states those principles, the event and frame contract, and the roadmap.
 
-The **Glass Snipler** is the first PWHAMSS device: a slab whose whole face is one display under glass, with a touch Workshop across the top and, on a removable clear plate, four clear knobs (Small, Medium, Large, Huge), four mode diamonds (K, P, S, A), 48 clear keys and six side keys, each showing through to what the display draws for it. Everything you make on it is a sniplet (a stem, a riff, a loop, a beat or a macro); SNIP POP lifts material off the Workshop and SNIP PUT drops it back; the band listens to what you cue and may steal finished public sniplets into its own riff books. Its computer is a Bolltridge cart docked in its back, the same cart that lives in a Pop Boll. The Glass Snipler is a proprietary product; the [Glass Snipler page](glass-snipler.md) has the layout, the key maps, the sniplet format and what is not decided.
+The **Pop Snipler** is the first PWHAMSS device, and the physical station for Pop Snip, the music-making station inside Pompas. It is a 15.6 inch touch screen in a dock about 38 mm tall, with two slots for carts in its back and a clear, unpowered overlay on the glass: 48 keys, six modifiers, four mode keys (K, P, S, A) and four clickable knobs (Small, Medium, Large, Huge), each showing through to what the screen draws for it. It has no computer of its own: a Bolltridge cart docked in its back drives the screen, the same cart that lives in a Pop Boll. The **Glass Snipler** is its open-firmware edition: the same dock and carts, with a powered Bluetooth overlay in place of the clear one. Both are proprietary products; the [Pop Snipler page](pop-snipler.md) has the dock, the overlay, the inputs and what is not decided, and the [Glass Snipler page](glass-snipler.md) says what differs.
 
-Neither device exists in hardware. The design is built first as a web simulator at popboll.com/pwhamss, open to superusers during development, that runs the same state machine the slab will.
+Neither device exists in hardware. An earlier version of the design was built as a web simulator at popboll.com/pwhamss, open to superusers during development. The simulator is frozen while the station is rebuilt inside Pompas; the [PWHAMSS page](pwhamss.md) keeps its key maps and its frame and event contract.
+
+## File formats: XMLX stem packs
+
+**[XMLX 6.0](/xmlx)** is the Pop Snip MIDI stem pack. It is a folder (or a zip) of perfectly synced Standard MIDI Files, one per stem, plus one XML manifest. The manifest carries the tempo map, the parts, each stem's sound (a SoundFont by hash and path, with a bank and a program), where each stem came from, how the pack was made, and its licences. It contains no audio. XMLX is also the only sidecar of a `.pxs` song. Its namespace is `https://xmlx.app/ns/6`, and the specification comes with an XSD grammar and Schematron rules. The specification's text is CC BY 4.0, and its tools are Apache-2.0.
 
 ## Bollard v1 at a glance
 
@@ -92,20 +97,21 @@ Good places to start:
 - Handling the three buttons or lighting them: [buttons, gestures, cues and the keymap](bollardeck.md#18-buttons-gestures-cues-and-the-keymap).
 - Writing dock software (a draft): the [handshake](bollardeck.md#5-handshake-and-capabilities) and the [example dock](bollardeck.md#10-example-dock).
 - Building a dock for the cart: [what is decided for Bollard v2](bollard.md#25-bollard-v2-what-is-decided).
-- Writing a renderer or a tool for a PWHAMSS device: the [frame and event contract](pwhamss.md#5-the-frame-and-event-contract) and the Glass Snipler's [modes](glass-snipler.md#3-modes) and [sniplets](glass-snipler.md#5-sniplets).
+- Writing a renderer or a tool for a PWHAMSS device: the [frame and event contract](pwhamss.md#5-the-frame-and-event-contract) and the Pop Snipler's [inputs](pop-snipler.md#4-inputs-a-developer-meets), and the simulator's [modes](pwhamss.md#63-modes) and [sniplets](pwhamss.md#610-sniplets).
 
 ## Status and versioning
 
-The hardware pages are speculative drafts. No Pop Boll or dock has been built to these documents, and there is no shipping date. The software is further on: routines and the Bollard SDK are built and run in Bollawax 0.3.0. Each specification ends with an "Open items" section that lists what has not yet been validated on hardware.
+The hardware pages are speculative drafts. No Pop Boll or dock has been built to these documents, and there is no shipping date. The software is further on: routines and the Bollard SDK are built and run since Bollawax 0.3.0. Each specification ends with an "Open items" section that lists what has not yet been validated on hardware.
 
 | Document | Version | Wire identifiers |
 | :--- | :--- | :--- |
 | Bollard Physical Specification | 1.0-draft | header magic `BLD1`, JSON `"bollard": "1.0"` |
 | bollardeck API, Part A (docks) | 0.2-draft | wire protocol `bollardeck/1`, envelope `"v": 1` |
 | bollardeck API, Part B (routines) | 0.2-draft | routine API `api: 1` |
-| Bollard SDK | 0.3.0 | licence block `popboll.licence/1`, keymap `"v": 2`, `mrph5/1`, `wbol/1`, `help-pack/1`, `help-director/1`, `pxs/1` |
-| Glass Snipler: Device Specification | 0.0.2-draft | sniplet ids `sn_` + 12 hex, frame `"v": 1` |
-| PWHAMSS | 0.0.2-draft | frame and event envelope `"v": 1` |
+| Bollard SDK | 0.4.0 | licence block `popboll.licence/1`, keymap `"v": 2`, `mrph5/1`, `wbol/1`, `help-pack/1`, `help-director/1`, `pxs/1`, `popsnip/1` |
+| Pop Snipler: Device Specification | 0.1.0-draft | keys `0`–`47`, side keys `0`–`5`, knobs `S` `M` `L` `H` |
+| Glass Snipler: Device Specification | 0.1.0-draft | as the Pop Snipler |
+| PWHAMSS | 0.0.3-draft | frame and event envelope `"v": 1`, sniplet ids `sn_` + 12 hex |
 | Popsniplish | edition 0.1.0 | `popsniplish/1` |
 
 - **Bollard** minor versions only add registers, classes, profiles or JSON fields. Any mechanical change, or any change to an assigned pin, is a new major version with a new header magic.
@@ -116,10 +122,10 @@ The hardware pages are speculative drafts. No Pop Boll or dock has been built to
 
 ## Licensing
 
-The platform is licensed in layers: the text of these pages and the hardware specifications are CC BY 4.0, the hardware reference designs (the Reference Bollard, the Lux Puck and the Boll Cap) are CERN-OHL-P v2, so anyone can build and sell closed commercial docks, and the open code, the Bollard SDK with its examples, is Apache-2.0, which includes an explicit patent grant. Everything else is all rights reserved: Bollawax itself (the band, the judges and every image) runs on your device under the standing Bollawax Device Licence, free and without asking; the Glass Snipler's software and design are all rights reserved for now; and each corpus stays under its own licence and artist agreement and is never redistributable.
+The platform is licensed in layers: the text of these pages and the hardware specifications are CC BY 4.0, the hardware reference designs (the Reference Bollard, the Lux Puck and the Boll Cap) are CERN-OHL-P v2, so anyone can build and sell closed commercial docks, and the open code, the Bollard SDK with its examples, is Apache-2.0, which includes an explicit patent grant. Everything else is all rights reserved: Bollawax itself (the band, the judges and every image) runs on your device under the standing Bollawax Device Licence, free and without asking; the Sniplers' software and design are all rights reserved for now; and each corpus stays under its own licence and artist agreement and is never redistributable.
 
 - **[Bollawax Device Licence](/device-licence)**: build, sell or own a device that runs a genuine Bollawax image, with no registration and no fee.
-- **[Snipler Use Grant](/snipler-use-grant)**: fetch and run the Glass Snipler's software on a device that runs a genuine Bollawax image, with no registration and no fee.
+- **[Snipler Use Grant](/snipler-use-grant)**: fetch and run the Snipler software on a device that runs a genuine Bollawax image, with no registration and no fee.
 - **[Trademark policy](/trademarks)**: the names, and how to say "Runs Bollawax", "Bollard compatible" or "works with the Pop Boll". The licences above cover documents, designs and code, not the names and logos. You may describe a product as "built to the Bollard Physical Specification v1.0, Full profile" (or whichever profile applies).
 - **[Maker codes](/makers)**: the free registry of the 3 to 6 letter codes in device serials.
 - **[The Pop Boll Shake](https://bollawax.org/shake)** ([PDF](https://bollawax.org/shake.pdf)): the plain-English agreement artists sign to lend their music to Pop Boll.

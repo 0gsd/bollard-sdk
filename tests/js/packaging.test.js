@@ -59,7 +59,7 @@ test("bollardeck.mjs has the whole binding as named exports", () => {
     "import('./js/bollardeck.mjs').then((m) => { const b = m.default;" +
     "console.log(JSON.stringify([Object.keys(m).sort(), m.schema === b.schema, m.cues === b.cues, m.matrix === b.matrix, m.schemas === b.schemas, m.constants === b.constants," +
     " !!(" + WHOLE + "), m.schema.isValid('cue', []), b === require('./js/bollardeck.js')])); })"));
-  assert.deepEqual(out, [["constants", "corpus", "cues", "default", "gestures", "help", "keymap", "matrix", "minBollawax", "schema", "schemas", "speaks", "version"], true, true, true, true, true, true, true, true]);
+  assert.deepEqual(out, [["constants", "corpus", "cues", "default", "gestures", "help", "keymap", "matrix", "minBollawax", "popsnip", "schema", "schemas", "speaks", "version"], true, true, true, true, true, true, true, true]);
 });
 
 // ── a page: a stand-in document, and the files run as classic scripts ─────────────────────

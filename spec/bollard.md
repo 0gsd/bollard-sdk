@@ -1,12 +1,12 @@
 # Bollard Physical Specification
 
-Version 1.0-draft · Status: speculative draft, superseded in part · Updated 2026-11-10
+Version 1.0-draft · Status: speculative draft, superseded in part · Updated 2026-11-16
 
 Written for Bollawax 0.2.4 and Bollard SDK 0.1.0 on 2026-11-10. The hardware it describes has not changed since Bollawax 0.2.4, so the page stands as written.
 
 > **Speculative draft.** No Pop Boll hardware has shipped, and nothing on this page has been built or validated on hardware. Dimensions, pinouts and protocols will change without notice, and nothing here is an offer, a commitment or a promise of compatibility. We would love to hear about partnership, OEM and dev-kit ideas: use the contact form on this site.
 
-> **Note:** This page is **Bollard v1**, drawn when the Pop Boll's computer was built into the ball and docks mated with its foot. Since 2026-11-09 the band's brain is a removable cart, the **Bolltridge**: it lives in the ball, and the ball and the Glass Snipler are docks for it. That changes this page's premise, not its arithmetic. Please read it with these four corrections, and do not cut tooling to it.
+> **Note:** This page is **Bollard v1**, drawn when the Pop Boll's computer was built into the ball and docks mated with its foot. Since 2026-11-09 the band's brain is a removable cart, the **Bolltridge**: it lives in the ball, and the ball and the Pop Snipler are docks for it. That changes this page's premise, not its arithmetic. Please read it with these four corrections, and do not cut tooling to it.
 >
 > 1. **Bollard v2 will be the open specification for third-party docks.** It is built on the Bollport, the connection between a cart and its dock, and on a dock descriptor. It is not written. §25 records what is decided.
 > 2. **The cart is the USB host and takes its power from its dock.** Every rule below that makes "the Boll" the host, the power sink or the Bluetooth central describes v1.
@@ -606,7 +606,7 @@ The Boll's interior is sealed. The exposed foot contacts are designed to get wet
 
 The medallion is the Boll's front panel (the +Y direction of the interface). It has three concentric buttons (inner: play/pause, middle: online/upload, outer: power), a USB-C port and a 3.5 mm TRS headphone and line output.
 
-The three buttons have no LEDs. When the Boll wants a button lit (a button cue, bollardeck's `cues` message), the cue is rendered by its light ring, its matrix, the Glass Snipler's keys or a dock.
+The three buttons have no LEDs. When the Boll wants a button lit (a button cue, bollardeck's `cues` message), the cue is rendered by its light ring, its matrix, the Pop Snipler's keys or a dock.
 
 | Medallion USB-C use | Power role | Data role |
 | :--- | :--- | :--- |
@@ -657,7 +657,7 @@ Use these figures when you compute the tip angle of a dock or stack with a Boll 
 
 **Retired.** Earlier drafts of this chapter defined a Bolltridge as a cartridge that docked under the Boll's foot: a USB device of the Boll with its own small Linux computer, running one signed image, powering itself, chained up to four deep, with a reference design called the Dev Puck. None of that is current, and no product should be built to it.
 
-**A Bolltridge is now the core cart**: the computer of the Pop Boll and of the Glass Snipler. It is the USB host of the dock it stands in, takes its power from that dock, runs Bollawax itself, and holds the corpora, a secure element and the only radio. At most two carts share a dock, joined through the dock and never cart to cart. §25 lists what is decided. The Bolltridge's own specification is an open document and is not on this site yet.
+**A Bolltridge is now the core cart**: the computer of the Pop Boll and of the Pop Snipler. It is the USB host of the dock it stands in, takes its power from that dock, runs Bollawax itself, and holds the corpora, a secure element and the only radio. At most two carts share a dock, joined through the dock and never cart to cart. §25 lists what is decided. The Bolltridge's own specification is an open document and is not on this site yet.
 
 What went with the old class: the class bits 12–14 and the `bolltridge` descriptor object (§12), the power profiles `self`, `vstack`, `below` and `boll`, the compute tiers and the board table, the signed cartridge images, the conformance items T1–T10, and the Dev Puck. Whether add-on images and hacker mode return as software on the cart is open.
 
@@ -942,6 +942,7 @@ Not yet validated on hardware. Nothing in this specification has been built, so 
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
+| 1.0-draft, revised | 2026-11-16 | §25: the cart is now 28 mm thick and every dock's slot 28.8 mm, replacing 24 mm and 24.8 mm (decided 2026-11-15). No v1 dimension, pin or register changed. The Glass Snipler is now called the Pop Snipler (named 2026-11-11) |
 | 1.0-draft, revised | 2026-11-10 | The cartridge class of §17, its class bits, its descriptor object and its conformance items are withdrawn; the note at the top and §25 record the change to the cart; the licence is no longer "proposed". No v1 dimension, pin or register changed |
 | 1.0-draft | 2026-11-07 | First public draft. A straight BCR-10 row on the floating plate replaces the earlier contact arc; the four connector options become the Full, Lite, USB-C and Passive profiles; header magic `BLD1`; well floor corrected to 7.5 mm above Datum A, with the piston travel lengthened to 15 mm; Bolltridge class bits 12–14 and the `bolltridge` descriptor object; the Boll Cap |
 | 0.2 | 2026-11-07 | Unpublished draft: four connector options, pin 10 assigned to V_AUX, ten pogo pins on an arc on the foot face, header magic `PSK0` |
@@ -968,7 +969,7 @@ Bollard v2 is not written. These points are decided and will be in it. Everythin
 - **The cart is the USB host.** The dock is the power source and the cart the sink.
 - **Power.** Every dock offers at least 9 V at 3 A and should offer 15 V at 3 A, so that later carts fit today's docks.
 - **Screens.** A dock with a display receives DisplayPort from the cart over the same connector. A dock without one does not advertise it.
-- **Size.** A cart is 24 mm thick and a dock's slot is 24.8 mm, on every cart and every dock.
+- **Size.** A cart is 28 mm thick and a dock's slot is 28.8 mm, on every cart and every dock. (Decided 2026-11-15, replacing 24 mm and 24.8 mm.)
 
 **Docks**
 

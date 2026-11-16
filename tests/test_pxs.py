@@ -99,3 +99,44 @@ class RoundTrip(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StrictHeadJson(unittest.TestCase):
+    """pxs.loads, the JSON HEAD is read with (the PXS specification, §5): RFC 8259, float64 and int64 bounds, depth at most 32."""
+
+    def test_refuses_what_is_not_rfc_8259_or_does_not_fit(self):
+        for text in ('{"x":NaN}', '{"x":Infinity}', '{"x":-Infinity}', '{"x":1e400}', '{"x":-1e400}',
+                     '{"x":9223372036854775808}', '{"x":-9223372036854775809}', '[' * 33 + ']' * 33,
+                     '{"x":' + '[' * 32 + ']' * 32 + '}', '[' * 1000 + ']' * 1000, '[' * 100000):
+            with self.assertRaises(ValueError, msg=text[:40]):
+                pxs.loads(text)
+
+    def test_never_raises_recursion_error(self):
+        for n in (1000, 1500, 100000):
+            for text in ('[' * n + ']' * n, '{"a":' * n + '1' + '}' * n):
+                try:
+                    pxs.loads(text)
+                except ValueError:
+                    pass                                    # RecursionError is not a ValueError: it would fail here
+
+    def test_takes_the_widest_and_deepest_allowed(self):
+        self.assertEqual(pxs.loads('[9223372036854775807,-9223372036854775808]'), [(1 << 63) - 1, -(1 << 63)])
+        self.assertEqual(pxs.loads('{"x":' + '[' * 31 + ']' * 31 + '}')["x"], eval('[' * 31 + ']' * 31))
+        self.assertEqual(pxs.loads('[1.7976931348623157e308, 5e-324, -0.0]'), [1.7976931348623157e308, 5e-324, -0.0])
+
+    def test_brackets_and_escapes_inside_strings_are_not_counted(self):
+        self.assertEqual(pxs.loads('{"x":"' + '[' * 100 + '","y":"\\"[[[","z":"\\\\"}'),
+                         {"x": "[" * 100, "y": '"[[[', "z": "\\"})
+        with self.assertRaises(ValueError):
+            pxs.loads('"' + '\\"' * 60000)                  # a string that never closes: refused, and quickly
+
+    def test_validate_reports_v7_for_each(self):
+        hd = pxs.canonical_json({"schema": pxs.SCHEMA, "base": "it"})
+        module = load_tool("pxs_vectors").tiny_it()
+        for extra, valid in ((b',"x":NaN', False), (b',"x":-Infinity', False), (b',"x":1e400', False),
+                             (b',"x":9223372036854775808', False), (b',"x":' + b'[' * 32 + b']' * 32, False),
+                             (b',"x":' + b'[' * 1500 + b']' * 1500, False),
+                             (b',"x":' + b'[' * 31 + b']' * 31, True),
+                             (b',"x":[9223372036854775807,-9223372036854775808]', True)):
+            v = pxs.validate(pxs.attach(module, [("HEAD", hd[:-1] + extra + b"}")]))
+            self.assertEqual((v.valid, v.rule), (valid, "" if valid else "V7"), extra[:40])

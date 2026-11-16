@@ -2,7 +2,8 @@
 """
 Ed25519 signature verification (RFC 8032, section 5.1.7), standard library only.
 
-Verify only: this module holds no private-key code. It is not constant time and does not need to
+Verify only: this module holds no private-key code. A public key or an R of small order is refused (the 8 torsion
+points: the identity "signs" every message), as libsodium refuses them. It is not constant time and does not need to
 be, since everything it handles is public. tests/test_corpus_attest.py runs it against the
 RFC 8032 section 7.1 test vectors.
 """
@@ -73,6 +74,11 @@ _GY = 4 * pow(5, _P - 2, _P) % _P
 _G = _decode(_GY.to_bytes(32, "little"))           # the base point (its x is even)
 
 
+def _small(pt: Point) -> bool:
+    """True for the 8 points of small order (8 * pt is the identity)."""
+    return _equal(_mul(8, pt), (0, 1, 1, 0))
+
+
 def verify(public_key: bytes, message: bytes, signature: bytes) -> bool:
     """True when `signature` (64 bytes) is `public_key`'s (32 bytes) signature of `message`."""
     if not isinstance(public_key, (bytes, bytearray)) or not isinstance(signature, (bytes, bytearray)):
@@ -83,6 +89,8 @@ def verify(public_key: bytes, message: bytes, signature: bytes) -> bool:
     r = _decode(bytes(signature[:32]))
     s = int.from_bytes(signature[32:], "little")
     if a is None or r is None or s >= _L:
+        return False
+    if _small(a) or _small(r):                     # no secret behind them: the identity key "signs" anything
         return False
     h = int.from_bytes(hashlib.sha512(bytes(signature[:32]) + bytes(public_key) + bytes(message)).digest(), "little") % _L
     return _equal(_mul(s, _G), _add(r, _mul(h, a)))

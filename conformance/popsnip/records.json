@@ -1,0 +1,3056 @@
+{
+ "about": "Vectors for Pop Snip records, written by tools/popsnip_vectors.py. Both twins give these answers: check(record, signed) refuses with `error` or accepts (`signed` is true unless a vector says false); canonical() of an accepted record is `canonical` and record_id() is `id`; parse() of a text refuses with `parse_error` or gives a value whose canonical() is `canonical` or refuses with `canonical_error`. Signatures are Ed25519 over CONTEXT + canonical by the TEST keys below (seeds printed: never use them for anything real).",
+ "context": "popsnip/1\n",
+ "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
+ "keys": {
+  "dev": {
+   "pub": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+   "seed_hex": "a99f582cf7227d511ee2961b42132a5f3c0cbb4dd390220d6a8847294313289d"
+  },
+  "dev2": {
+   "pub": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+   "seed_hex": "5db2e93db0b9f5254ec23fc49bb659bab771b1a5ecb88d5b6c487aa4585366a1"
+  },
+  "dev3": {
+   "pub": "6TZHa3R78b9WPIfn3uSo6PHyRfMw-34PQeSDBBRKDO8",
+   "seed_hex": "940681745b9b5e2f07b4aaf59c0cae9f27a406a09d4fa7b182796cb562c4697c"
+  },
+  "dev4": {
+   "pub": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+   "seed_hex": "594724d8918fa66c9df42de48c26d88c66eb6c5cc1a087655865f1bf36407fea"
+  },
+  "launch": {
+   "pub": "-aWwu9ba2g4q1YfQ8P1D2ztQ2ME1jxyXKCUBt6oBs-o",
+   "seed_hex": "b250875409dbd0a40e27ad76bbed720ebb028c52c09ca5ed8c824cedd9333167"
+  },
+  "release": {
+   "pub": "Lc0xEdOCOrT_9TFIMU0VuMFwmWttlkwzt95C7QAayIc",
+   "seed_hex": "448ab51bf4ea6d954dc43d98f2be2ab1dd7b00a9972c9249dd5b0b55e13e3aa7"
+  }
+ },
+ "records": [
+  {
+   "canonical": "{\"kid\":\"launch-test1\",\"kind\":\"popsnip.launch-key\",\"not_after\":\"2027-12-21T00:00:00Z\",\"not_before\":\"2026-11-16T00:00:00Z\",\"pub\":\"-aWwu9ba2g4q1YfQ8P1D2ztQ2ME1jxyXKCUBt6oBs-o\",\"v\":1}",
+   "error": null,
+   "id": "238712c13739951ee4d5c7de3bd7286c2527403038f577c75cc4348fa362b466",
+   "name": "launch-key certificate",
+   "record": {
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key",
+    "not_after": "2027-12-21T00:00:00Z",
+    "not_before": "2026-11-16T00:00:00Z",
+    "pub": "-aWwu9ba2g4q1YfQ8P1D2ztQ2ME1jxyXKCUBt6oBs-o",
+    "signature": "ccVoxL4kvuHZR17eeUF1-RE1t-jU1CGn6nq1bF1ZcnEmmca2JQ6BUNWvZVDrTxawySG9Wa8eqyF8C6zMxqHRBw",
+    "v": 1
+   },
+   "signed_by": "release"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"dev_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"files\":{\"app.js\":\"7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d\",\"index.html\":\"6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5\",\"sounds/kick.ogg\":\"0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e\"},\"kind\":\"popsnip.release\",\"permissions\":[\"audio-in\",\"midi\"],\"prev\":null,\"v\":1,\"version\":1}",
+   "error": null,
+   "id": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+   "name": "release v1",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   },
+   "signed_by": "dev"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"csp\":\"img-src 'self'\",\"dev_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"files\":{\"app.js\":\"4ffb600af9696ed4a8472acf5be7c320907a3c8576dd04b29ca040ad18bd789b\",\"index.html\":\"6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5\",\"sounds/kick.ogg\":\"0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e\"},\"kind\":\"popsnip.release\",\"permissions\":[\"audio-in\",\"midi\"],\"prev\":\"7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe\",\"v\":1,\"version\":2}",
+   "error": null,
+   "id": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003",
+   "name": "release v2",
+   "record": {
+    "app": "drumtoy",
+    "csp": "img-src 'self'",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "4ffb600af9696ed4a8472acf5be7c320907a3c8576dd04b29ca040ad18bd789b",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "signature": "q1pDkFQ5Pszk66HsVLJufEbv-StoIB-P_6jSytkTAxGClpVQsCBSES3F6YhUpkEv2Jm78EvF4GsrRSG896NSCQ",
+    "v": 1,
+    "version": 2
+   },
+   "signed_by": "dev"
+  },
+  {
+   "canonical": "{\"account\":\"acct_TEST0001\",\"app\":\"drumtoy\",\"dev_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.launch\",\"launched_at\":\"2026-11-16T12:00:00Z\",\"pass_active\":true,\"pass_kind\":\"standard\",\"prev\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"release0\":\"7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe\",\"seq\":1,\"v\":1}",
+   "error": null,
+   "id": "9bc99cf88245b6d291b06f4a3c3bfd1d4bde251997a167a5d860cc83ad31257b",
+   "name": "log 1 popsnip.launch",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"dev_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.publish\",\"manifest\":\"7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe\",\"prev\":\"9bc99cf88245b6d291b06f4a3c3bfd1d4bde251997a167a5d860cc83ad31257b\",\"published_at\":\"2026-11-16T12:00:00Z\",\"seq\":2,\"v\":1,\"version\":1}",
+   "error": null,
+   "id": "0e38b08873b1ece7602a7deef1743151e0fc5ba26c755281a2e12a23ab2d6dba",
+   "name": "log 2 popsnip.publish",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "prev": "9bc99cf88245b6d291b06f4a3c3bfd1d4bde251997a167a5d860cc83ad31257b",
+    "published_at": "2026-11-16T12:00:00Z",
+    "seq": 2,
+    "signature": "VbIgNAg41VDCvdv0nYDgBuhmgbwtiIT4-hyda0wgxZ3zRRJ25Yk7XnqJJgHeF5RGegaXsWBKZ4W3MwLvQ9RiBg",
+    "v": 1,
+    "version": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"dev_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.publish\",\"manifest\":\"0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003\",\"prev\":\"0e38b08873b1ece7602a7deef1743151e0fc5ba26c755281a2e12a23ab2d6dba\",\"published_at\":\"2026-11-16T12:05:00Z\",\"seq\":3,\"v\":1,\"version\":2}",
+   "error": null,
+   "id": "51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf",
+   "name": "log 3 popsnip.publish",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003",
+    "prev": "0e38b08873b1ece7602a7deef1743151e0fc5ba26c755281a2e12a23ab2d6dba",
+    "published_at": "2026-11-16T12:05:00Z",
+    "seq": 3,
+    "signature": "Vb3m_JFB19yEp_TK_31DHitXX8uRwY8nzFH4n2LFSHwlb9y6I9C_EvwQaSKCPCDO_cekZEuPyfoIk77LF4OQDw",
+    "v": 1,
+    "version": 2
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"challenge\":\"AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw\",\"effective_at\":\"2026-11-17T09:00:00Z\",\"from_account\":\"acct_TEST0001\",\"from_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.rekey\",\"old_key_sig\":\"0leAOnqN48569cqV4KhW-yKz3emn3Z4lxHfyZcqYGmmLTAb8a0QpuaoqQ8WdPsJaTHWlXSqaxr_V0MjCcm7dCA\",\"path\":\"old_key\",\"prev\":\"51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf\",\"requested_at\":\"2026-11-17T09:00:00Z\",\"seq\":4,\"to_account\":\"acct_TEST0001\",\"to_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\",\"v\":1}",
+   "error": null,
+   "id": "139b8b53f7a7c33694c65749c207f2dde3e34b78321ea2268a5808e00e343eea",
+   "name": "log 4 popsnip.rekey",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "effective_at": "2026-11-17T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "0leAOnqN48569cqV4KhW-yKz3emn3Z4lxHfyZcqYGmmLTAb8a0QpuaoqQ8WdPsJaTHWlXSqaxr_V0MjCcm7dCA",
+    "path": "old_key",
+    "prev": "51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf",
+    "requested_at": "2026-11-17T09:00:00Z",
+    "seq": 4,
+    "signature": "leLutC3w9pVT9ZbvWlse0Fiocmu3pZ0O9kuYyxd6tEHFMyfEtRdAiyFOrr9sJpX8Md77rPmwEHerLg6ToD8cBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"challenge\":\"sWs2v_bQuu-1zaX4ANd4yFLLg4_Nyow18rySFBcq49E\",\"effective_at\":\"2026-11-25T09:00:00Z\",\"from_account\":\"acct_TEST0001\",\"from_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.rekey\",\"path\":\"account_only\",\"prev\":\"139b8b53f7a7c33694c65749c207f2dde3e34b78321ea2268a5808e00e343eea\",\"requested_at\":\"2026-11-18T09:00:00Z\",\"seq\":5,\"to_account\":\"acct_TEST0001\",\"to_key\":\"6TZHa3R78b9WPIfn3uSo6PHyRfMw-34PQeSDBBRKDO8\",\"v\":1}",
+   "error": null,
+   "id": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+   "name": "log 5 popsnip.rekey",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "sWs2v_bQuu-1zaX4ANd4yFLLg4_Nyow18rySFBcq49E",
+    "effective_at": "2026-11-25T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "path": "account_only",
+    "prev": "139b8b53f7a7c33694c65749c207f2dde3e34b78321ea2268a5808e00e343eea",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 5,
+    "signature": "N7j3PbXG41y_fKjUrLvhRu7_ivht6Y2FsSEGm3zmd1TC4ba7Fjb9sqCWkORFx5os6Fwzv7biKdwtEo6uBUIRAw",
+    "to_account": "acct_TEST0001",
+    "to_key": "6TZHa3R78b9WPIfn3uSo6PHyRfMw-34PQeSDBBRKDO8",
+    "v": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"cancels\":5,\"cancels_id\":\"3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.rekey-cancel\",\"prev\":\"3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec\",\"requested_at\":\"2026-11-19T10:00:00Z\",\"seq\":6,\"v\":1}",
+   "error": null,
+   "id": "de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d",
+   "name": "log 6 popsnip.rekey-cancel",
+   "record": {
+    "app": "drumtoy",
+    "cancels": 5,
+    "cancels_id": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey-cancel",
+    "prev": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+    "requested_at": "2026-11-19T10:00:00Z",
+    "seq": 6,
+    "signature": "-pORBHX49w2jij4pvx8RygpUqbndOh958uKUkDt2CQcjzqizPk38piJS-Z6cAKe7bKkbM1L01nmpAczv2F0-Dg",
+    "v": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"at\":\"2026-11-19T10:00:00Z\",\"head_hash\":\"de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.head\",\"seq\":6,\"v\":1}",
+   "error": null,
+   "id": "1006a4940ebee9976d1780456dff662e52a4c6139b8240c6f9e7b331178d9cda",
+   "name": "head",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "head_hash": "de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d",
+    "kid": "launch-test1",
+    "kind": "popsnip.head",
+    "seq": 6,
+    "signature": "DRlHJWwuY0sra8UFYbQlIdmCLoYUmyoi7AykHCTzG8n5O5Be5msE61pr14muAp050JBAxExHpKj5brqmq5MbAQ",
+    "v": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"challenge\":\"KYAGGUoo1Oan1Ka5VzPrGV-fr-WjUUajSnd99j4b1F4\",\"effective_at\":\"2026-11-25T09:00:00Z\",\"from_account\":\"acct_TEST0001\",\"from_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.rekey\",\"old_key_sig\":\"KIuUUjbfWuEh2HM0-SgYNgxTPq9zNUtmUUJ2-e_sWtwcSi47PAgV_ERs9IyTAZ-EaKm_MLWVaBYdegoIkvoBCA\",\"path\":\"old_key\",\"prev\":\"de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d\",\"requested_at\":\"2026-11-18T09:00:00Z\",\"seq\":7,\"to_account\":\"acct_TEST0002\",\"to_key\":\"k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc\",\"v\":1}",
+   "error": null,
+   "id": "407b4c12e47552ff0531f306c87464454b709ab4127a781a55c7b68a82b0600d",
+   "name": "transfer",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "KYAGGUoo1Oan1Ka5VzPrGV-fr-WjUUajSnd99j4b1F4",
+    "effective_at": "2026-11-25T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "KIuUUjbfWuEh2HM0-SgYNgxTPq9zNUtmUUJ2-e_sWtwcSi47PAgV_ERs9IyTAZ-EaKm_MLWVaBYdegoIkvoBCA",
+    "path": "old_key",
+    "prev": "de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 7,
+    "signature": "TQZ65QaOh68zdjpKbB3fFKmt-ORwnCi_q6iG9pHNt4Nq92bmjEnlHWP004InhrgqKaaGJTepuEo5oziB6Sz1AA",
+    "to_account": "acct_TEST0002",
+    "to_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "v": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"at\":\"2026-11-19T10:00:00Z\",\"entries\":[{\"action\":\"revoke\",\"at\":\"2026-11-17T09:00:00Z\",\"by\":\"owner\",\"ground\":\"malware\",\"n\":1,\"notice\":\"https://popboll.com/dev/notices/2026-0001\",\"target\":{\"release\":\"0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003\"}},{\"action\":\"reinstate\",\"at\":\"2026-11-18T09:00:00Z\",\"by\":\"owner\",\"ground\":\"malware\",\"n\":2,\"notice\":\"https://popboll.com/dev/notices/2026-0001\",\"target\":{\"release\":\"0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003\"}},{\"action\":\"revoke\",\"after_seq\":3,\"at\":\"2026-11-19T10:00:00Z\",\"by\":\"delegate\",\"ground\":\"key_compromise\",\"n\":3,\"notice\":\"https://popboll.com/dev/notices/2026-0002\",\"target\":{\"dev_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\"}},{\"action\":\"revoke\",\"at\":\"2026-11-19T10:00:00Z\",\"by\":\"developer\",\"ground\":\"withdrawn_by_developer\",\"n\":4,\"notice\":\"https://popboll.com/dev/notices/2026-0003\",\"target\":{\"app\":\"drumtoy\"}}],\"kid\":\"launch-test1\",\"kind\":\"popsnip.revocations\",\"prev\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"seq\":1,\"v\":1}",
+   "error": null,
+   "id": "4c95217a96ccaa9129db3b918ac457c76b75eb3a52c403097d74c29c3bcf3c74",
+   "name": "revocations",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "at": "2026-11-17T09:00:00Z",
+      "by": "owner",
+      "ground": "malware",
+      "n": 1,
+      "notice": "https://popboll.com/dev/notices/2026-0001",
+      "target": {
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     },
+     {
+      "action": "reinstate",
+      "at": "2026-11-18T09:00:00Z",
+      "by": "owner",
+      "ground": "malware",
+      "n": 2,
+      "notice": "https://popboll.com/dev/notices/2026-0001",
+      "target": {
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     },
+     {
+      "action": "revoke",
+      "after_seq": 3,
+      "at": "2026-11-19T10:00:00Z",
+      "by": "delegate",
+      "ground": "key_compromise",
+      "n": 3,
+      "notice": "https://popboll.com/dev/notices/2026-0002",
+      "target": {
+       "dev_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM"
+      }
+     },
+     {
+      "action": "revoke",
+      "at": "2026-11-19T10:00:00Z",
+      "by": "developer",
+      "ground": "withdrawn_by_developer",
+      "n": 4,
+      "notice": "https://popboll.com/dev/notices/2026-0003",
+      "target": {
+       "app": "drumtoy"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   },
+   "signed_by": "launch"
+  },
+  {
+   "canonical": "{\"after_seq\":5,\"at\":\"2026-11-19T10:00:00Z\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.launch-key-revoked\",\"v\":1}",
+   "error": null,
+   "id": "17fc2ef0205c931fd0ce476b8969e7aafb4c555a29141adf1515839215a5b67d",
+   "name": "launch key revoked",
+   "record": {
+    "after_seq": 5,
+    "at": "2026-11-19T10:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key-revoked",
+    "signature": "KBLsQJlOsMRR6C8vxqMxYrB8FFwecmaoFMX61E8U3m1nI_HuNBsXkuyEaAzzSN3CCmsJjOb2-vWuvIamSz9BAw",
+    "v": 1
+   },
+   "signed_by": "release"
+  },
+  {
+   "canonical": "{\"at\":\"2026-11-19T10:00:00Z\",\"kid\":\"launch-test1\",\"kind\":\"popsnip.reaffirm\",\"reaffirmed\":[{\"id\":\"de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d\",\"seq\":6}],\"v\":1}",
+   "error": null,
+   "id": "29437fc4f603dbf8aed55e7bc3ada009634ce901f93804704e32189ad39c74ea",
+   "name": "reaffirm",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.reaffirm",
+    "reaffirmed": [
+     {
+      "id": "de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d",
+      "seq": 6
+     }
+    ],
+    "signature": "aYvX-EiZeSrc7AyLjMj6ONni4qHv21sr7RqeMLZlVrXfOgUKY3pz_vBR2IMZ9ghK4DA1L_86cUDHfQY3gLPnAQ",
+    "v": 1
+   },
+   "signed_by": "release"
+  },
+  {
+   "canonical": "{\"account\":\"acct_TEST0001\",\"challenge\":\"BBFcs-FRXe8fJtuGr_i_YrM-VoFbOLQqJax5gkt7TOE\",\"dev_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"kind\":\"popsnip.key-proof\",\"v\":1}",
+   "error": null,
+   "id": "1e422562e2b3b7b99231edeb2cd20418ab03fe33bd09fbf3c004cf7ee74f9f45",
+   "name": "key proof",
+   "record": {
+    "account": "acct_TEST0001",
+    "challenge": "BBFcs-FRXe8fJtuGr_i_YrM-VoFbOLQqJax5gkt7TOE",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.key-proof",
+    "signature": "AF1q5I_JYFRSyaaT56ALYLk3ww5G5Nu505F23WtoK0amgH_ttDBZ8RhNrH4pTKmbaETt3gmB55DQ4Il5lKmSAg",
+    "v": 1
+   },
+   "signed_by": "dev"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"challenge\":\"AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw\",\"from_account\":\"acct_TEST0001\",\"from_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"kind\":\"popsnip.rekey-request\",\"path\":\"old_key\",\"to_account\":\"acct_TEST0001\",\"to_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\",\"v\":1}",
+   "error": null,
+   "id": "08ba64a6d2ce17d6851cfdc16fa99bb4145d569304adc766c799e29e932024c3",
+   "name": "rekey request for seq 4",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.rekey-request",
+    "path": "old_key",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   "signed_by": null
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"challenge\":\"KYAGGUoo1Oan1Ka5VzPrGV-fr-WjUUajSnd99j4b1F4\",\"from_account\":\"acct_TEST0001\",\"from_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\",\"kind\":\"popsnip.rekey-request\",\"path\":\"old_key\",\"to_account\":\"acct_TEST0002\",\"to_key\":\"k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc\",\"v\":1}",
+   "error": null,
+   "id": "8816161003dcc9eb70b7d1d14f67639d72a746e2322254ad83020040b4797a7d",
+   "name": "rekey request for the transfer",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "KYAGGUoo1Oan1Ka5VzPrGV-fr-WjUUajSnd99j4b1F4",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kind": "popsnip.rekey-request",
+    "path": "old_key",
+    "to_account": "acct_TEST0002",
+    "to_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "v": 1
+   },
+   "signed_by": null
+  },
+  {
+   "error": "bad_field:app",
+   "name": "an app name with a capital",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "Drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:app",
+   "name": "an app name with two hyphens",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drum--toy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:app",
+   "name": "an app name too short",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "dt",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:pass_active",
+   "name": "pass_active false",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": false,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:pass_active",
+   "name": "pass_active 1, not true",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": 1,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:pass_kind",
+   "name": "an unknown pass kind",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "lifetime",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "missing_field:release0",
+   "name": "release0 missing",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "missing_field:signature",
+   "name": "the signature missing",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "v": 1
+   }
+  },
+  {
+   "error": "unknown_field:note",
+   "name": "a field no launch has",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "note": "hi",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "unknown_field:zzz",
+   "name": "an unknown field wins over a bad one",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "BAD",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1,
+    "zzz": 1
+   }
+  },
+  {
+   "error": "bad_field:account",
+   "name": "bad fields are tried in sorted order",
+   "record": {
+    "account": "acct_x",
+    "app": "BAD",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_version",
+   "name": "v 2",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 2
+   }
+  },
+  {
+   "error": "bad_version",
+   "name": "v true",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": true
+   }
+  },
+  {
+   "error": "bad_version",
+   "name": "v missing",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg"
+   }
+  },
+  {
+   "error": "unknown_kind",
+   "name": "an unknown kind",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.lunch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "unknown_kind",
+   "name": "no kind",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:genesis",
+   "name": "seq 1 with a prev that isn't genesis",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:genesis",
+   "name": "seq 2 with the genesis prev",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 2,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:seq",
+   "name": "seq 0",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 0,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_number",
+   "name": "seq past 2**53 - 1",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 9007199254740992,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:prev",
+   "name": "prev in capitals",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "7829AD6E1DBF09D24887A602DC75B4095C9890FC2A6648453B462F0D362B5BFE",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:prev",
+   "name": "prev null in a chain",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": null,
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:launched_at",
+   "name": "30 February",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-02-30T00:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:launched_at",
+   "name": "hour 24",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T24:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:launched_at",
+   "name": "a space for T",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16 12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:launched_at",
+   "name": "fractional seconds",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00.5Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:launched_at",
+   "name": "an offset",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00+00:00",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:launched_at",
+   "name": "before 1970",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "1969-12-31T23:59:59Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:genesis",
+   "name": "29 February in a leap year is a day",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2028-02-29T00:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 3,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:account",
+   "name": "an account too short",
+   "record": {
+    "account": "acct_short",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a key with padding",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk=",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a key in standard base64's alphabet",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "+I8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a key whose unused low bits are set",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yB",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a key one character short",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16y",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:signature",
+   "name": "a signature one character short",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQB",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:kid",
+   "name": "a kid in capitals",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "Launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "not_ascii",
+   "name": "a non-ASCII letter",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "dr\u00fcmtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "not_ascii",
+   "name": "DEL in a string",
+   "record": {
+    "account": "acct_TEST\u007f0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "not_ascii",
+   "name": "a tab in a string",
+   "record": {
+    "account": "acct_TEST\t0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "not_ascii",
+   "name": "a non-ASCII key",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1,
+    "\u00e9": 1
+   }
+  },
+  {
+   "error": "not_ascii",
+   "name": "non-ASCII beats an unknown kind",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.l\u00e4unch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:first_release",
+   "name": "version 1 with a prev",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003",
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "rule:first_release",
+   "name": "version 2 with no prev",
+   "record": {
+    "app": "drumtoy",
+    "csp": "img-src 'self'",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "4ffb600af9696ed4a8472acf5be7c320907a3c8576dd04b29ca040ad18bd789b",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "q1pDkFQ5Pszk66HsVLJufEbv-StoIB-P_6jSytkTAxGClpVQsCBSES3F6YhUpkEv2Jm78EvF4GsrRSG896NSCQ",
+    "v": 1,
+    "version": 2
+   }
+  },
+  {
+   "error": "bad_field:version",
+   "name": "version 0",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 0
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "a parent folder in a path",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "../x.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "an absolute path",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "/app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "a dot file",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     ".htaccess": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "a space in a path",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "a b.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "an empty segment",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "a//b.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "a backslash",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "a\\b.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "two names that differ only in case",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "App.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "a name that is also a folder",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "sounds": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "sounds/kick.ogg": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "a name that is also a folder, in another case",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "Sounds": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "sounds/kick.ogg": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "no files",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {},
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:files",
+   "name": "a file hash in capitals",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7B87772365EDCD031B54B67C95E7CD2FD85E7279B3673D95FCBB57C9676F858D"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:permissions",
+   "name": "permissions out of order",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "midi",
+     "audio-in"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:permissions",
+   "name": "a permission twice",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "midi",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:permissions",
+   "name": "a permission in capitals",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "Midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "bad_field:csp",
+   "name": "an empty csp",
+   "record": {
+    "app": "drumtoy",
+    "csp": "",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "4ffb600af9696ed4a8472acf5be7c320907a3c8576dd04b29ca040ad18bd789b",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "signature": "q1pDkFQ5Pszk66HsVLJufEbv-StoIB-P_6jSytkTAxGClpVQsCBSES3F6YhUpkEv2Jm78EvF4GsrRSG896NSCQ",
+    "v": 1,
+    "version": 2
+   }
+  },
+  {
+   "error": "unknown_field:pass_kind",
+   "name": "a launch's field on a release",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "pass_kind": "standard",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "signature": "scAzI1Nlb2LzI5GQxWjUBAbF2eROZU-Ly1DwXVobafLJ8VaLTfrYZy4TdCBT2s_1Vqhc1SCdVvc3sGBkfy79AA",
+    "v": 1,
+    "version": 1
+   }
+  },
+  {
+   "error": "rule:old_key_sig",
+   "name": "old_key without old_key_sig",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "effective_at": "2026-11-17T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "path": "old_key",
+    "prev": "51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf",
+    "requested_at": "2026-11-17T09:00:00Z",
+    "seq": 4,
+    "signature": "leLutC3w9pVT9ZbvWlse0Fiocmu3pZ0O9kuYyxd6tEHFMyfEtRdAiyFOrr9sJpX8Md77rPmwEHerLg6ToD8cBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:old_key_sig",
+   "name": "account_only with old_key_sig",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "sWs2v_bQuu-1zaX4ANd4yFLLg4_Nyow18rySFBcq49E",
+    "effective_at": "2026-11-25T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "0leAOnqN48569cqV4KhW-yKz3emn3Z4lxHfyZcqYGmmLTAb8a0QpuaoqQ8WdPsJaTHWlXSqaxr_V0MjCcm7dCA",
+    "path": "account_only",
+    "prev": "139b8b53f7a7c33694c65749c207f2dde3e34b78321ea2268a5808e00e343eea",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 5,
+    "signature": "N7j3PbXG41y_fKjUrLvhRu7_ivht6Y2FsSEGm3zmd1TC4ba7Fjb9sqCWkORFx5os6Fwzv7biKdwtEo6uBUIRAw",
+    "to_account": "acct_TEST0001",
+    "to_key": "6TZHa3R78b9WPIfn3uSo6PHyRfMw-34PQeSDBBRKDO8",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:delay",
+   "name": "account_only taking effect at once",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "sWs2v_bQuu-1zaX4ANd4yFLLg4_Nyow18rySFBcq49E",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "path": "account_only",
+    "prev": "139b8b53f7a7c33694c65749c207f2dde3e34b78321ea2268a5808e00e343eea",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 5,
+    "signature": "N7j3PbXG41y_fKjUrLvhRu7_ivht6Y2FsSEGm3zmd1TC4ba7Fjb9sqCWkORFx5os6Fwzv7biKdwtEo6uBUIRAw",
+    "to_account": "acct_TEST0001",
+    "to_key": "6TZHa3R78b9WPIfn3uSo6PHyRfMw-34PQeSDBBRKDO8",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:delay",
+   "name": "account_only a second short of 7 days",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "sWs2v_bQuu-1zaX4ANd4yFLLg4_Nyow18rySFBcq49E",
+    "effective_at": "2026-11-25T08:59:59Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "path": "account_only",
+    "prev": "139b8b53f7a7c33694c65749c207f2dde3e34b78321ea2268a5808e00e343eea",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 5,
+    "signature": "N7j3PbXG41y_fKjUrLvhRu7_ivht6Y2FsSEGm3zmd1TC4ba7Fjb9sqCWkORFx5os6Fwzv7biKdwtEo6uBUIRAw",
+    "to_account": "acct_TEST0001",
+    "to_key": "6TZHa3R78b9WPIfn3uSo6PHyRfMw-34PQeSDBBRKDO8",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:delay",
+   "name": "old_key on one account with a delay",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "effective_at": "2026-11-24T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "0leAOnqN48569cqV4KhW-yKz3emn3Z4lxHfyZcqYGmmLTAb8a0QpuaoqQ8WdPsJaTHWlXSqaxr_V0MjCcm7dCA",
+    "path": "old_key",
+    "prev": "51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf",
+    "requested_at": "2026-11-17T09:00:00Z",
+    "seq": 4,
+    "signature": "leLutC3w9pVT9ZbvWlse0Fiocmu3pZ0O9kuYyxd6tEHFMyfEtRdAiyFOrr9sJpX8Md77rPmwEHerLg6ToD8cBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:delay",
+   "name": "a transfer taking effect at once",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "KYAGGUoo1Oan1Ka5VzPrGV-fr-WjUUajSnd99j4b1F4",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "KIuUUjbfWuEh2HM0-SgYNgxTPq9zNUtmUUJ2-e_sWtwcSi47PAgV_ERs9IyTAZ-EaKm_MLWVaBYdegoIkvoBCA",
+    "path": "old_key",
+    "prev": "de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 7,
+    "signature": "TQZ65QaOh68zdjpKbB3fFKmt-ORwnCi_q6iG9pHNt4Nq92bmjEnlHWP004InhrgqKaaGJTepuEo5oziB6Sz1AA",
+    "to_account": "acct_TEST0002",
+    "to_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:same_key",
+   "name": "rotating to the same key",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "effective_at": "2026-11-17T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "0leAOnqN48569cqV4KhW-yKz3emn3Z4lxHfyZcqYGmmLTAb8a0QpuaoqQ8WdPsJaTHWlXSqaxr_V0MjCcm7dCA",
+    "path": "old_key",
+    "prev": "51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf",
+    "requested_at": "2026-11-17T09:00:00Z",
+    "seq": 4,
+    "signature": "leLutC3w9pVT9ZbvWlse0Fiocmu3pZ0O9kuYyxd6tEHFMyfEtRdAiyFOrr9sJpX8Md77rPmwEHerLg6ToD8cBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:path",
+   "name": "an unknown path",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "effective_at": "2026-11-17T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "0leAOnqN48569cqV4KhW-yKz3emn3Z4lxHfyZcqYGmmLTAb8a0QpuaoqQ8WdPsJaTHWlXSqaxr_V0MjCcm7dCA",
+    "path": "email",
+    "prev": "51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf",
+    "requested_at": "2026-11-17T09:00:00Z",
+    "seq": 4,
+    "signature": "leLutC3w9pVT9ZbvWlse0Fiocmu3pZ0O9kuYyxd6tEHFMyfEtRdAiyFOrr9sJpX8Md77rPmwEHerLg6ToD8cBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:cancels",
+   "name": "a cancel naming itself",
+   "record": {
+    "app": "drumtoy",
+    "cancels": 6,
+    "cancels_id": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey-cancel",
+    "prev": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+    "requested_at": "2026-11-19T10:00:00Z",
+    "seq": 6,
+    "signature": "-pORBHX49w2jij4pvx8RygpUqbndOh958uKUkDt2CQcjzqizPk38piJS-Z6cAKe7bKkbM1L01nmpAczv2F0-Dg",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:cancels",
+   "name": "a cancel naming a later entry",
+   "record": {
+    "app": "drumtoy",
+    "cancels": 9,
+    "cancels_id": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey-cancel",
+    "prev": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+    "requested_at": "2026-11-19T10:00:00Z",
+    "seq": 6,
+    "signature": "-pORBHX49w2jij4pvx8RygpUqbndOh958uKUkDt2CQcjzqizPk38piJS-Z6cAKe7bKkbM1L01nmpAczv2F0-Dg",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:window",
+   "name": "a certificate that ends before it starts",
+   "record": {
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key",
+    "not_after": "2026-11-15T00:00:00Z",
+    "not_before": "2026-11-16T00:00:00Z",
+    "pub": "-aWwu9ba2g4q1YfQ8P1D2ztQ2ME1jxyXKCUBt6oBs-o",
+    "signature": "ccVoxL4kvuHZR17eeUF1-RE1t-jU1CGn6nq1bF1ZcnEmmca2JQ6BUNWvZVDrTxawySG9Wa8eqyF8C6zMxqHRBw",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:window",
+   "name": "a certificate that ends as it starts",
+   "record": {
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key",
+    "not_after": "2026-11-16T00:00:00Z",
+    "not_before": "2026-11-16T00:00:00Z",
+    "pub": "-aWwu9ba2g4q1YfQ8P1D2ztQ2ME1jxyXKCUBt6oBs-o",
+    "signature": "ccVoxL4kvuHZR17eeUF1-RE1t-jU1CGn6nq1bF1ZcnEmmca2JQ6BUNWvZVDrTxawySG9Wa8eqyF8C6zMxqHRBw",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "revocation entries out of number",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "reinstate",
+      "at": "2026-11-18T09:00:00Z",
+      "by": "owner",
+      "ground": "malware",
+      "n": 2,
+      "notice": "https://popboll.com/dev/notices/2026-0001",
+      "target": {
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "a developer revoking for malware",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "at": "2026-11-17T09:00:00Z",
+      "by": "developer",
+      "ground": "malware",
+      "n": 1,
+      "notice": "https://popboll.com/dev/notices/2026-0001",
+      "target": {
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "the owner withdrawing for a developer",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "at": "2026-11-19T10:00:00Z",
+      "by": "owner",
+      "ground": "withdrawn_by_developer",
+      "n": 1,
+      "notice": "https://popboll.com/dev/notices/2026-0003",
+      "target": {
+       "app": "drumtoy"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "a notice off popboll.com",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "at": "2026-11-17T09:00:00Z",
+      "by": "owner",
+      "ground": "malware",
+      "n": 1,
+      "notice": "http://popboll.com/dev/notices/x",
+      "target": {
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "a target naming two things",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "at": "2026-11-17T09:00:00Z",
+      "by": "owner",
+      "ground": "malware",
+      "n": 1,
+      "notice": "https://popboll.com/dev/notices/2026-0001",
+      "target": {
+       "app": "drumtoy",
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "an unknown ground",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "at": "2026-11-17T09:00:00Z",
+      "by": "owner",
+      "ground": "lapsed",
+      "n": 1,
+      "notice": "https://popboll.com/dev/notices/2026-0001",
+      "target": {
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "an entry with a stray field",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "at": "2026-11-17T09:00:00Z",
+      "by": "owner",
+      "ground": "malware",
+      "n": 1,
+      "note": "x",
+      "notice": "https://popboll.com/dev/notices/2026-0001",
+      "target": {
+       "release": "0754d0a3c838528a10c0b821f0a87aa02052ad09874aacbbb6416c0390174003"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "a negative after_seq",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "after_seq": -1,
+      "at": "2026-11-19T10:00:00Z",
+      "by": "delegate",
+      "ground": "key_compromise",
+      "n": 1,
+      "notice": "https://popboll.com/dev/notices/2026-0002",
+      "target": {
+       "dev_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": null,
+   "name": "an empty list is a list",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:reaffirmed",
+   "name": "reaffirmed out of order",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.reaffirm",
+    "reaffirmed": [
+     {
+      "id": "de622e8a1b0dbb4ede112e31255a68530c7f29be849e7dbd4dcf6e3a75742f5d",
+      "seq": 6
+     },
+     {
+      "id": "3afd9ef72adac86b16dac3a8b0bc70dc0c0349ef3200f6ca0ee36765343628ec",
+      "seq": 5
+     }
+    ],
+    "signature": "aYvX-EiZeSrc7AyLjMj6ONni4qHv21sr7RqeMLZlVrXfOgUKY3pz_vBR2IMZ9ghK4DA1L_86cUDHfQY3gLPnAQ",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:reaffirmed",
+   "name": "nothing reaffirmed",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.reaffirm",
+    "reaffirmed": [],
+    "signature": "aYvX-EiZeSrc7AyLjMj6ONni4qHv21sr7RqeMLZlVrXfOgUKY3pz_vBR2IMZ9ghK4DA1L_86cUDHfQY3gLPnAQ",
+    "v": 1
+   }
+  },
+  {
+   "error": null,
+   "name": "unsigned: a launch about to be signed",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "v": 1
+   },
+   "signed": false
+  },
+  {
+   "error": null,
+   "name": "unsigned: a release about to be signed",
+   "record": {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "files": {
+     "app.js": "7b87772365edcd031b54b67c95e7cd2fd85e7279b3673d95fcbb57c9676f858d",
+     "index.html": "6b46a9de4c8122663604e4863f03ab7b96019242163c953c1f20e52a9acbf2c5",
+     "sounds/kick.ogg": "0db10f2c2f332cd27cf1407fa16c686337b2b23f46125d6e17740dbfc6df427e"
+    },
+    "kind": "popsnip.release",
+    "permissions": [
+     "audio-in",
+     "midi"
+    ],
+    "prev": null,
+    "v": 1,
+    "version": 1
+   },
+   "signed": false
+  },
+  {
+   "error": "unknown_field:signature",
+   "name": "unsigned: a signature already there",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   },
+   "signed": false
+  },
+  {
+   "error": "missing_field:kid",
+   "name": "unsigned: the kid is still required",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "v": 1
+   },
+   "signed": false
+  },
+  {
+   "error": "bad_field:app",
+   "name": "unsigned: the shape still counts",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "Bad",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "v": 1
+   },
+   "signed": false
+  },
+  {
+   "error": "missing_field:signature",
+   "name": "signed: no signature",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "v": 1
+   }
+  },
+  {
+   "error": "missing_field:signature",
+   "name": "signed: null is signed (only false is unsigned)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "v": 1
+   },
+   "signed": null
+  },
+  {
+   "error": "rule:request_path",
+   "name": "a rekey request for an account_only rotation",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.rekey-request",
+    "path": "account_only",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   }
+  },
+  {
+   "error": "rule:same_key",
+   "name": "a rekey request to the same key",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.rekey-request",
+    "path": "old_key",
+    "to_account": "acct_TEST0001",
+    "to_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "v": 1
+   }
+  },
+  {
+   "error": "unknown_field:signature",
+   "name": "a rekey request with a signature",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.rekey-request",
+    "path": "old_key",
+    "signature": "leLutC3w9pVT9ZbvWlse0Fiocmu3pZ0O9kuYyxd6tEHFMyfEtRdAiyFOrr9sJpX8Md77rPmwEHerLg6ToD8cBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (1 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (2 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (3 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (4 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "JuiVj8KyJ7BFw_SJ8u-Y8NXfrAXTxjM5sTgCiG1T_AU",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (5 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "JuiVj8KyJ7BFw_SJ8u-Y8NXfrAXTxjM5sTgCiG1T_IU",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (6 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "xxdqcD1N2E-6PAt2DRBnDyogU_osOczGTsf9d5KsA3o",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (7 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "xxdqcD1N2E-6PAt2DRBnDyogU_osOczGTsf9d5KsA_o",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a small-order developer key (8 of 8)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "7P_______________________________________38",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a key proof for the identity point",
+   "record": {
+    "account": "acct_TEST0001",
+    "challenge": "BBFcs-FRXe8fJtuGr_i_YrM-VoFbOLQqJax5gkt7TOE",
+    "dev_key": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "kind": "popsnip.key-proof",
+    "signature": "AF1q5I_JYFRSyaaT56ALYLk3ww5G5Nu505F23WtoK0amgH_ttDBZ8RhNrH4pTKmbaETt3gmB55DQ4Il5lKmSAg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:pub",
+   "name": "a certificate for the identity point",
+   "record": {
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key",
+    "not_after": "2027-12-21T00:00:00Z",
+    "not_before": "2026-11-16T00:00:00Z",
+    "pub": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "signature": "ccVoxL4kvuHZR17eeUF1-RE1t-jU1CGn6nq1bF1ZcnEmmca2JQ6BUNWvZVDrTxawySG9Wa8eqyF8C6zMxqHRBw",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:to_key",
+   "name": "a rotation to the identity point",
+   "record": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "effective_at": "2026-11-17T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "0leAOnqN48569cqV4KhW-yKz3emn3Z4lxHfyZcqYGmmLTAb8a0QpuaoqQ8WdPsJaTHWlXSqaxr_V0MjCcm7dCA",
+    "path": "old_key",
+    "prev": "51c493dd79b77cd8ce18696aece091b4457d1cac62132d6228e17f30b888a7bf",
+    "requested_at": "2026-11-17T09:00:00Z",
+    "seq": 4,
+    "signature": "leLutC3w9pVT9ZbvWlse0Fiocmu3pZ0O9kuYyxd6tEHFMyfEtRdAiyFOrr9sJpX8Md77rPmwEHerLg6ToD8cBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:entries",
+   "name": "a revocation naming the identity point",
+   "record": {
+    "at": "2026-11-19T10:00:00Z",
+    "entries": [
+     {
+      "action": "revoke",
+      "after_seq": 3,
+      "at": "2026-11-19T10:00:00Z",
+      "by": "delegate",
+      "ground": "key_compromise",
+      "n": 1,
+      "notice": "https://popboll.com/dev/notices/2026-0002",
+      "target": {
+       "dev_key": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+     }
+    ],
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "HeSf63sLpgX0Tsx-sC-KgNfqU2qQg7SOJOBtx8tzzX_ugI-rqWcbeVPas_2MVN7KPRP_Yg2CTVVKDkGVDWkEAA",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a non-canonical key (y = p)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "7f_______________________________________38",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a non-canonical key (y = p + 1)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "7v_______________________________________38",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a non-canonical key (y = p + 18)",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "_________________________________________38",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "x = 0 with the sign bit set",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": "bad_field:dev_key",
+   "name": "a key off the curve",
+   "record": {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-16T12:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+    "seq": 1,
+    "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+    "v": 1
+   }
+  },
+  {
+   "error": null,
+   "name": "a challenge of zero bytes is only bytes",
+   "record": {
+    "account": "acct_TEST0001",
+    "challenge": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.key-proof",
+    "signature": "AF1q5I_JYFRSyaaT56ALYLk3ww5G5Nu505F23WtoK0amgH_ttDBZ8RhNrH4pTKmbaETt3gmB55DQ4Il5lKmSAg",
+    "v": 1
+   }
+  },
+  {
+   "error": "not_object",
+   "name": "a list is not a record",
+   "record": [
+    {
+     "account": "acct_TEST0001",
+     "app": "drumtoy",
+     "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+     "kid": "launch-test1",
+     "kind": "popsnip.launch",
+     "launched_at": "2026-11-16T12:00:00Z",
+     "pass_active": true,
+     "pass_kind": "standard",
+     "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+     "release0": "7829ad6e1dbf09d24887a602dc75b4095c9890fc2a6648453b462f0d362b5bfe",
+     "seq": 1,
+     "signature": "7jq4c-FWnKuT38JLGlEl8jXe2wkmYDKbcKe775_3k3yTD0GO6Fk_Scfd8KGiyeXUpwpfM4TqJVMYYdCL2PPQBg",
+     "v": 1
+    }
+   ]
+  },
+  {
+   "error": "not_object",
+   "name": "a string is not a record",
+   "record": "popsnip.launch"
+  }
+ ],
+ "rekey_requests": [
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"challenge\":\"AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw\",\"from_account\":\"acct_TEST0001\",\"from_key\":\"TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk\",\"kind\":\"popsnip.rekey-request\",\"path\":\"old_key\",\"to_account\":\"acct_TEST0001\",\"to_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\",\"v\":1}",
+   "entry_seq": 4,
+   "request": {
+    "app": "drumtoy",
+    "challenge": "AjIS0f1PCjrQPEXFKkCHH0aKvEFuwYH27r_DImzEdTw",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kind": "popsnip.rekey-request",
+    "path": "old_key",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   "signed_by": "dev"
+  },
+  {
+   "canonical": "{\"app\":\"drumtoy\",\"challenge\":\"KYAGGUoo1Oan1Ka5VzPrGV-fr-WjUUajSnd99j4b1F4\",\"from_account\":\"acct_TEST0001\",\"from_key\":\"70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM\",\"kind\":\"popsnip.rekey-request\",\"path\":\"old_key\",\"to_account\":\"acct_TEST0002\",\"to_key\":\"k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc\",\"v\":1}",
+   "entry_seq": 7,
+   "request": {
+    "app": "drumtoy",
+    "challenge": "KYAGGUoo1Oan1Ka5VzPrGV-fr-WjUUajSnd99j4b1F4",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kind": "popsnip.rekey-request",
+    "path": "old_key",
+    "to_account": "acct_TEST0002",
+    "to_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "v": 1
+   },
+   "signed_by": "dev2"
+  }
+ ],
+ "small_order": [
+  "0000000000000000000000000000000000000000000000000000000000000000",
+  "0000000000000000000000000000000000000000000000000000000000000080",
+  "0100000000000000000000000000000000000000000000000000000000000000",
+  "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+  "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+  "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+  "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+  "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"
+ ],
+ "texts": [
+  {
+   "canonical": "{\"a\":{\"c\":null,\"d\":[3,{\"c\":\"x\"}]},\"b\":1}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"b\":1,\"a\":{\"d\":[3,{\"c\":\"x\"}],\"c\":null}}"
+  },
+  {
+   "canonical": "{\"a\":true,\"b\":false}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": " {\n\t\"a\" : true ,\r\n \"b\":false}\n"
+  },
+  {
+   "canonical": "{\"a\":\"q\\\"b\\\\c/d\"}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":\"q\\\"b\\\\c/d\"}"
+  },
+  {
+   "canonical": "{\"a\":\"/A\"}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":\"\\/\\u0041\"}"
+  },
+  {
+   "canonical": "{\"__proto__\":1,\"constructor\":2}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"__proto__\":1,\"constructor\":2}"
+  },
+  {
+   "canonical": "{\"a\":0}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":-0}"
+  },
+  {
+   "canonical": "{\"a\":9007199254740991,\"b\":-9007199254740991}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":9007199254740991,\"b\":-9007199254740991}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "bad_number",
+   "parse_error": null,
+   "text": "{\"a\":9007199254740992}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "bad_number",
+   "parse_error": null,
+   "text": "{\"a\":90071992547409930000}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "not_ascii",
+   "parse_error": null,
+   "text": "{\"a\":\"\\u007f\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "not_ascii",
+   "parse_error": null,
+   "text": "{\"a\":\"\\u00e9\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "not_ascii",
+   "parse_error": null,
+   "text": "{\"a\":\"\\ud83d\\ude00\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "not_ascii",
+   "parse_error": null,
+   "text": "{\"a\":\"\\n\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "not_ascii",
+   "parse_error": null,
+   "text": "{\"a\":\"\u00e9\"}"
+  },
+  {
+   "canonical": "{\"a\":1}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"signature\":\"\u00e9\",\"a\":1}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "duplicate_key",
+   "text": "{\"a\":1,\"a\":2}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "duplicate_key",
+   "text": "{\"a\":{\"b\":1,\"b\":2},\"a\":3}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_number",
+   "text": "{\"a\":1,\"a\":1.5}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_number",
+   "text": "{\"a\":1.0}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_number",
+   "text": "{\"a\":1e3}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_number",
+   "text": "{\"a\":1E+2}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":NaN}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":Infinity}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":-Infinity}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":01}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":.5}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":+1}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":1.}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":-}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":1,}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\" 1}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{'a':1}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":tru}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":\"\u0001\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":\"\\x41\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":\"\\u12\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":\"open}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "\ufeff{}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{} {}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{}\u00a0"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": ""
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "not_object",
+   "text": "[1]"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "not_object",
+   "text": "\"x\""
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "not_object",
+   "text": "1"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "not_object",
+   "text": "null"
+  },
+  {
+   "canonical": "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+  },
+  {
+   "canonical": "{\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{\"b\":1,\"b\":2}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[1.5]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"x}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"b\":1,\"b\":2,\"a\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+  },
+  {
+   "canonical": "{\"a\":\"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":\"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"}"
+  },
+  {
+   "canonical": "{\"a\":\"\\\"{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{\"}",
+   "canonical_error": null,
+   "parse_error": null,
+   "text": "{\"a\":\"\\\"{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{\"}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":\"\\\\\",\"b\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "]]]]]]{}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "bad_number",
+   "parse_error": null,
+   "text": "{\"a\":11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "bad_number",
+   "parse_error": null,
+   "text": "{\"a\":-9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "bad_number",
+   "parse_error": null,
+   "text": "{\"a\":12345678901234567}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": "bad_number",
+   "parse_error": null,
+   "text": "{\"a\":-9007199254740992}"
+  },
+  {
+   "canonical": null,
+   "canonical_error": null,
+   "parse_error": "bad_json",
+   "text": "{\"a\":000000000000000000000}"
+  }
+ ]
+}

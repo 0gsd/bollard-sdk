@@ -24,7 +24,7 @@ from bollardeck import schema  # noqa: E402
 JS = ROOT / "js"
 CONFORMANCE = ROOT / "conformance"
 NODE = shutil.which("node")
-PARTS = ("schemas", "schema", "cues", "matrix", "gestures", "keymap", "corpus", "help", "dom")
+PARTS = ("schemas", "schema", "cues", "matrix", "gestures", "keymap", "corpus", "help", "popsnip", "dom")
 MATRIX_CALLS = {"film", "playback", "idle", "corpus", "glyph", "dj", "text", "premiere", "tone",
                 "dj_beat", "dj_crossfader", "dj_camelot", "text_pass_ms", "str_seed", "ascii"}
 
