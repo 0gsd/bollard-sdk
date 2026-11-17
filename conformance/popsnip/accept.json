@@ -1,0 +1,1883 @@
+{
+ "about": "Vectors for accept(), the device check for a Pop Snip app, written by tools/popsnip_vectors.py: each case names its app, release, files, log, head, root records, revocation list and pinned keys (\"release\": the test release key; \"other\": a key that signed nothing here), the head and the list the device already holds (null: nothing), and the code accept() gives (null: accepted). Files are ASCII text; null files are not a mapping.",
+ "cases": [
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "version 1, by the launch key",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r2",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "version 2",
+   "pinned": "release",
+   "release": "r2",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "version 3, by the key rotated to",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "wrong_key",
+   "files": "r3",
+   "head": "wrongkey",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "wrongkey",
+   "name": "a version-3 publish by the key rotated away",
+   "pinned": "release",
+   "release": "r3_old",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "not_published",
+   "files": "r3",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a release the log never published",
+   "pinned": "release",
+   "release": "r3_old",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "release_signature",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a release whose signature is another's",
+   "pinned": "release",
+   "release": "r1_badsig",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "files",
+   "files": "r1_missing",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a file missing",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "files",
+   "files": "r1_extra",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a file too many",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "files",
+   "files": "r1_changed",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a file changed",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "head",
+   "files": "r1",
+   "head": "short",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a head that is not the snapshot's end",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "log",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "tampered",
+   "name": "an entry changed after signing",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "cert",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "certificates no pinned key signed",
+   "pinned": "other",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "repeated_challenge",
+   "files": "r2",
+   "head": "twice",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "twice",
+   "name": "a rotation challenge used twice",
+   "pinned": "release",
+   "release": "r2",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "rekey_sig",
+   "files": "r1",
+   "head": "badsig",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "badsig",
+   "name": "a rotation the old key did not sign",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "beattoy",
+   "code": "no_binding",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "an app never launched",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "launch_key_revoked",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "the launch key revoked after seq 3",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "revoked_after_3"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "... and entries 4 and 5 reaffirmed",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "revoked_after_3_reaffirmed"
+  },
+  {
+   "app": "drumtoy",
+   "code": "revoked_release",
+   "files": "r2",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "release2",
+   "log": "main",
+   "name": "the release revoked",
+   "pinned": "release",
+   "release": "r2",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "release2",
+   "log": "main",
+   "name": "another release stands",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "revoked_app",
+   "files": "r3",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "app",
+   "log": "main",
+   "name": "the app revoked",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "app_reinstated",
+   "log": "main",
+   "name": "the app revoked, then reinstated",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "k1_after_2",
+   "log": "main",
+   "name": "the key revoked after seq 2: version 1 stands",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "revoked_key",
+   "files": "r2",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "k1_after_2",
+   "log": "main",
+   "name": "the key revoked after seq 2: version 2 does not",
+   "pinned": "release",
+   "release": "r2",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "revoked_key",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "k1_all",
+   "log": "main",
+   "name": "the key revoked outright",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "k1_all",
+   "log": "main",
+   "name": "the new key is not the revoked one",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "list_pages",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "pages_wrong",
+   "log": "main",
+   "name": "the list's index with another list's page",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "list_key_revoked",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "release2",
+   "log": "main",
+   "name": "the list signed by a revoked key",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "revoked_after_3_reaffirmed"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "main_by_test2",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a head by another certified key",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "launch_key_revoked",
+   "files": "r3",
+   "head": "main_by_test2",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a head by a key revoked before it",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "test2_revoked_after_2"
+  },
+  {
+   "app": "drumtoy",
+   "code": "launch_key_revoked",
+   "files": "forged",
+   "head": "forged",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "forged",
+   "name": "a short log from seq 1 by a revoked key, nothing held",
+   "pinned": "release",
+   "release": "forged",
+   "roots": "revoked_after_500"
+  },
+  {
+   "app": "drumtoy",
+   "code": "launch_key_revoked",
+   "files": "forged",
+   "head": "forged",
+   "held_head": "main",
+   "held_list": null,
+   "list": null,
+   "log": "forged",
+   "name": "the same, held head at 5",
+   "pinned": "release",
+   "release": "forged",
+   "roots": "revoked_after_500"
+  },
+  {
+   "app": "drumtoy",
+   "code": "launch_key_revoked",
+   "files": "r2",
+   "head": "fork",
+   "held_head": "held2",
+   "held_list": null,
+   "list": null,
+   "log": "fork",
+   "name": "held at 2, true 1-2 and 3-4 forged by the revoked key below its cut",
+   "pinned": "release",
+   "release": "fork_r2",
+   "roots": "revoked_after_500"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a head by the revoked key that the owner reaffirmed",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "revoked_after_500_head_reaffirmed"
+  },
+  {
+   "app": "drumtoy",
+   "code": "rollback",
+   "files": "r1",
+   "head": "short",
+   "held_head": "main",
+   "held_list": null,
+   "list": null,
+   "log": "short",
+   "name": "a good log behind the head the device holds",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "main",
+   "held_head": "short",
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "the log the device holds, extended",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "list_rollback",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": "release2_then_app",
+   "list": "release2",
+   "log": "main",
+   "name": "an older list than the one held",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "list_rollback",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": "release2",
+   "list": null,
+   "log": "main",
+   "name": "no list, and the device holds one",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "revoked_app",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": "release2",
+   "list": "release2_then_app",
+   "log": "main",
+   "name": "the held list, extended",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "revoked_release",
+   "files": "r2",
+   "head": "main",
+   "held_head": null,
+   "held_list": "release2",
+   "list": "release2",
+   "log": "main",
+   "name": "the held list itself",
+   "pinned": "release",
+   "release": "r2",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": null,
+   "files": "r3",
+   "head": "cancels",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "cancels",
+   "name": "a valid cancel, then a cancel under another id: still cancelled",
+   "pinned": "release",
+   "release": "r3_old",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "malformed",
+   "files": "none",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "files that are not a mapping",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "roots",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a root record no pinned key signed",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "unsigned"
+  },
+  {
+   "app": "drumtoy",
+   "code": "roots",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a malformed root record",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "malformed"
+  }
+ ],
+ "certs": [
+  {
+   "kid": "launch-test1",
+   "kind": "popsnip.launch-key",
+   "not_after": "2027-12-21T00:00:00Z",
+   "not_before": "2026-11-16T00:00:00Z",
+   "pub": "-aWwu9ba2g4q1YfQ8P1D2ztQ2ME1jxyXKCUBt6oBs-o",
+   "signature": "ccVoxL4kvuHZR17eeUF1-RE1t-jU1CGn6nq1bF1ZcnEmmca2JQ6BUNWvZVDrTxawySG9Wa8eqyF8C6zMxqHRBw",
+   "v": 1
+  },
+  {
+   "kid": "launch-test2",
+   "kind": "popsnip.launch-key",
+   "not_after": "2027-12-21T00:00:00Z",
+   "not_before": "2026-11-16T00:00:00Z",
+   "pub": "6TZHa3R78b9WPIfn3uSo6PHyRfMw-34PQeSDBBRKDO8",
+   "signature": "T6OYTttVxHFM3qX0VU26KWjNnDwuHC1U0UBOMHRwXEybj1GtRHZ0TkbsZI49U9j2IR7CfEqwBzB8FxP_h6qJCA",
+   "v": 1
+  }
+ ],
+ "files": {
+  "forged": {
+   "app.js": "v1",
+   "index.html": "<!doctype html>v1"
+  },
+  "none": null,
+  "r1": {
+   "app.js": "v1",
+   "index.html": "<!doctype html>v1"
+  },
+  "r1_changed": {
+   "app.js": "v1!",
+   "index.html": "<!doctype html>v1"
+  },
+  "r1_extra": {
+   "app.js": "v1",
+   "index.html": "<!doctype html>v1",
+   "x.js": "x"
+  },
+  "r1_missing": {
+   "index.html": "<!doctype html>v1"
+  },
+  "r2": {
+   "app.js": "v2",
+   "index.html": "<!doctype html>v2"
+  },
+  "r3": {
+   "app.js": "v3",
+   "index.html": "<!doctype html>v3"
+  }
+ },
+ "heads": {
+  "badsig": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "272e76e6e55b20b301a80516a3a4c279bd69723374d8666066db4a256234b48d",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 5,
+   "signature": "9baOy3XoIpSaTf919h29lfUaCPQTZgHkd0B1fNxTierUAE5Fr4qBAvDkU2nGZb4VBtKmpxt3ZcopKEFtnWp9Dg",
+   "v": 1
+  },
+  "cancels": {
+   "at": "2026-11-27T09:00:00Z",
+   "head_hash": "2a5b0beedb92adf4242ae15527d20a1c75faceb66211962b202ccda272a36606",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 7,
+   "signature": "EHVoPOhCy-VA1e-mXsuAWcLpmBy2SU8MdQZJcXAV9klrXIjMWbd1UjORJE5Z9jjswW2RD_w6VZtl8wSAdyHrAQ",
+   "v": 1
+  },
+  "forged": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "52022293fb107b16b6d9f5af2405ed5c3419385c37b024f3a569e6c8d78f9155",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 2,
+   "signature": "jRz6w_WjJDXdzHBT7paWq-PGBHP3feOvbMAXEF-48l6fHyKyT6Wu62-_Xuvh3xHi7TvPYpc305-bXMlUaD6cAw",
+   "v": 1
+  },
+  "fork": {
+   "at": "2026-11-26T09:00:00Z",
+   "head_hash": "269b26ad2e2f1b442e0ab5a09879a2b2ad612959170cf792805aaa8b92f2a5b1",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 4,
+   "signature": "OvLM6SbZrVf1NCw23AlEMy9om9wLQV11vV99-ro2iTmqb8Zl3o-B2DIM8NB0NSONlwwO9VdnIjyDwOllq986AQ",
+   "v": 1
+  },
+  "held2": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 2,
+   "signature": "9ISgYRgWCyDy5-GU8vtEdFZo5yJk7VMxfm9iqFM7Uu6wQlUVPLOMjMDZIzLakr6wl_b1b-31WmBLodhV-BMLBg",
+   "v": 1
+  },
+  "main": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "8115324b216ba2f9b648498a9049e528d02d77ab77698a1025bca03d92de4b21",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 5,
+   "signature": "nx0-JAN9rAsXnOmyZQgdg7l7B5v297zJbHIjfTTG9UcI38lyti5Q8Gbewm7FBYgFUfbSo7oLmM8JZE9cydmaAA",
+   "v": 1
+  },
+  "main_by_test2": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "8115324b216ba2f9b648498a9049e528d02d77ab77698a1025bca03d92de4b21",
+   "kid": "launch-test2",
+   "kind": "popsnip.head",
+   "seq": 5,
+   "signature": "5bIjO4283SfTR8NeSDOHqXWQXKHKmmBGJQKgtlnidxWifRQ6QasyYGHOUrh0y1_6W5OnbkL7Vnq11bhkI981BA",
+   "v": 1
+  },
+  "short": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "2a6fc8dc454116770d9d0236577a28a4569e73ed81b85a1fa6a2e6201e935e50",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 4,
+   "signature": "r_y9JBHAgJ6NrTTsL8h1izThBcw-H_tDx37_qMU9LxJpr7un_n5Kt2DbrqZPx73z8xhyon3OM_UvDBKa62OECQ",
+   "v": 1
+  },
+  "tampered": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "8115324b216ba2f9b648498a9049e528d02d77ab77698a1025bca03d92de4b21",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 5,
+   "signature": "nx0-JAN9rAsXnOmyZQgdg7l7B5v297zJbHIjfTTG9UcI38lyti5Q8Gbewm7FBYgFUfbSo7oLmM8JZE9cydmaAA",
+   "v": 1
+  },
+  "twice": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "8ed1a173030b33a1ddbab6348a9d1a4a60e27352209ac96a8ebfea3749ebec82",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 5,
+   "signature": "u4dATHHx_SjnojBSVOmtWv527sAr994AgE5B1wDokSWqEdK7eC_ThX7z_c1pX5c6Q0Qll8l-KrAX5W8y9lVkCg",
+   "v": 1
+  },
+  "wrongkey": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "17782ec6854e57bdde536f9faa1f95ce3c53a17d24fad3a34a16181ede5c9dc8",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 5,
+   "signature": "Kq744q1yBYv9Q6gf6Dv8AB8zp7pyvW0r4M99kuUD15ZWZGBPg-THgMYTxhnKzWge9jGtE5W7d6TqBvGuhLZiBg",
+   "v": 1
+  }
+ },
+ "lists": {
+  "app": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 1,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "48e213117d75769632eb3108e995d994b67d73d639de2f7e926f07d9baa53048"
+    ],
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "vS6aIlwDvPaz9RhwkSLoRua7ndajuRQpGDQv05JBLcLotG3C-6AwYxGf4zKaOfaVtj4tS22k_Wgh1eJn0ElgCg",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
+       "target": {
+        "app": "drumtoy"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  },
+  "app_reinstated": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 2,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "d82c4c9861579f597682ee117edff26e7b1fb566444de0fe3ace74c0a9461ea7"
+    ],
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "zA37kVR79w2WiMn_7EXw6E63uSinMmbKBLKcSdiVMSyTMiHQZWdR7SSPEZroiRngQo2dPEfujf2ew44uMiYHCQ",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
+       "target": {
+        "app": "drumtoy"
+       }
+      },
+      {
+       "action": "reinstate",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 2,
+       "notice": "https://popboll.com/dev/notices/r2",
+       "target": {
+        "app": "drumtoy"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  },
+  "k1_after_2": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 1,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "cc02bba57b27946d8865aa07b2974d14f8bbc54745820424e17bc97cc258b9e7"
+    ],
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "9m_L4KHVfk5LPf5KsVyhry7gDNmvn_mDdBmMxh4gcur7OydGR2M0h1_-AfBMOqs999OtWxeF8m2Po24P4UelCA",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "after_seq": 2,
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "key_compromise",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
+       "target": {
+        "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  },
+  "k1_all": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 1,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "f7dcfb3f29263b8ed1675ee7241d1128324614e2c47a0477f19fa935b97fca73"
+    ],
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "y9DMEijktEWJgxx8uigGEMMgOPjp7eV53o3BjXgHNlOE-dF_Suwq5PhuSJRDgWN82YK5D8Az3rTgcNLLjendBA",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "key_compromise",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
+       "target": {
+        "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  },
+  "pages_wrong": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 1,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "48e213117d75769632eb3108e995d994b67d73d639de2f7e926f07d9baa53048"
+    ],
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "vS6aIlwDvPaz9RhwkSLoRua7ndajuRQpGDQv05JBLcLotG3C-6AwYxGf4zKaOfaVtj4tS22k_Wgh1eJn0ElgCg",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
+       "target": {
+        "release": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  },
+  "release2": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 1,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "c7bcf0cd005aab107d528533fba8b23716f84d429a5ed0caa16144e0109bd9f5"
+    ],
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "UYrKguDo7f3HkrzyzV6Ut9GFxpHAhj_5EBTUwDoSmW2YSO3iACWVW2QPnWrzRcCBGR7dSFI9vDl07-or_GLICw",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
+       "target": {
+        "release": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  },
+  "release2_then_app": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 2,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "91cb564201636af913993ae9020cb07c4fbca42293e3da4c3e365aba81b2be30"
+    ],
+    "prev": "1b2c2c66d95c08f424d4d4e6c609a7e51e52fb3f1f3e33e18e3e21368341c189",
+    "seq": 2,
+    "signature": "lUPdL1dxvKpdrZrdrXUH6DGaQze01Y94uRkl5S94NG2HAKkFlF71Mt65Xh-pGTvhEcCGmtJ6zqwlrG5xprhzDw",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
+       "target": {
+        "release": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e"
+       }
+      },
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 2,
+       "notice": "https://popboll.com/dev/notices/r2",
+       "target": {
+        "app": "drumtoy"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  }
+ },
+ "logs": {
+  "badsig": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "4QJG7ykZ6vlVT5Vem4wLg6As8MLbMw_pAhbtre7fsWrc7sjUEaFQLBeXr1DYbb9hEKsXgULrLWoeITuN9keMBw",
+    "v": 1,
+    "version": 2
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "z535uZ_AokvhN0fpuhRMcwyImvgEvBq7sb6JGOXNMOI",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "6yXH8QlWSfWPHp3dUwP8eCAocK7TM3WpBFIctMy5-h5Gxz7D2m0lWDSe2Vd-ETNXo4xMpQOSQqJT6oQ4fnKjDQ",
+    "path": "old_key",
+    "prev": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 4,
+    "signature": "tC3lTBd0wpt-BLSEZ__S__2nXuDSKuf8gMhK69Gf7sLAeSJ1t-9QAC_ClyamqcREsKBg7Ywm_5xzNP-TqaZIBA",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "e5f36d2edd775debc76cb3233e8030f045e3a02bf0e00997161c812b7e379640",
+    "prev": "05dfc2a7690d0b21515aff24f98176949c799ac745970130a7d1de23567d5e50",
+    "published_at": "2026-11-19T09:00:00Z",
+    "seq": 5,
+    "signature": "iWdqNV6rTS_Ur-eD5Iic38fkzhPuIiLuDRZjAEqItSs6vWF0V1D9k0pEvUhwvma4tgHq_xvTWXT-B3rFCiyeAw",
+    "v": 1,
+    "version": 3
+   }
+  ],
+  "cancels": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "4QJG7ykZ6vlVT5Vem4wLg6As8MLbMw_pAhbtre7fsWrc7sjUEaFQLBeXr1DYbb9hEKsXgULrLWoeITuN9keMBw",
+    "v": 1,
+    "version": 2
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "p1mQq36_2KmGvTW3RMeBwvV4U5mx3zCeEGULzUFu9oY",
+    "effective_at": "2026-11-25T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "path": "account_only",
+    "prev": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 4,
+    "signature": "OdZM5aMghG0bzKkimOjc_C_E0pTetV5oeZRGrHcLlT2L_lZVUTMywQEYxGiUQglnFHthRkvTdqspjyQYEJs1Bw",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "cancels": 4,
+    "cancels_id": "eb0e2f0b073495094783644d88ddb408b1fc3f27f45a7c7461567ebe02f2d007",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey-cancel",
+    "prev": "eb0e2f0b073495094783644d88ddb408b1fc3f27f45a7c7461567ebe02f2d007",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 5,
+    "signature": "bVYG-IxJKw4pe9R9PinljTdPwZUiZU0JTpHLu6ZoZznsyt_B4-0pSfDB7TkjA1jd_9kQMbKnnQxs1ceLtMzrAQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "cancels": 4,
+    "cancels_id": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey-cancel",
+    "prev": "63bb004d7bf538baa8140594eea7ccc2179fe264c68a6a08e80999db3b91b8b6",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 6,
+    "signature": "z-4RvSQCNnK4Sjm0-mt8o74r03AcLppLEfZ-91KGVIQMqATlS3TB4-o5MQbFOc5ZKrM3rqf16h1Xfjv1f_KJAQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "7800128846d0c4ffc8afa63866f5358801124abe58b1f9f0f3d379e291c9430a",
+    "prev": "34e098fc458716e8180e3e0d927a9fc7eb808e532fa882758311a4cf96d527e7",
+    "published_at": "2026-11-26T09:00:00Z",
+    "seq": 7,
+    "signature": "cbvnyzUOrILByJo12vuvw44gvd1G_Ik0KS7ZWLtjL82gy-sl3d8VZ4lzofKP8uReqI6Ud52C3fpNTa_3aFB1DA",
+    "v": 1,
+    "version": 3
+   }
+  ],
+  "forged": [
+   {
+    "account": "acct_TEST0009",
+    "app": "drumtoy",
+    "dev_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "5791eb5670d60b3fb9ab2945446285848f9116b081aee8c9c246f58635ce79d9",
+    "seq": 1,
+    "signature": "MLrtsiIyb062ECxYjFsGs_PMt1enQkQQaMGutJS3Z8P58KxnRUdQG2z4ixcFI_uhdiJ2w5OGGDC1LgN6IIihBw",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5791eb5670d60b3fb9ab2945446285848f9116b081aee8c9c246f58635ce79d9",
+    "prev": "09769896944ffb30ad25bb35c544319a4f8d1166be2632da5992ce2e4d212440",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "pahjijLdkKfCShI9tDRYxI-G0WCTC3Z_glsjMml2wpTnKbQEZaK16mM0mL24UyctUB3L9lZSq5qVChBPuHrvAA",
+    "v": 1,
+    "version": 1
+   }
+  ],
+  "fork": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "cbQdbdSNxY66j1z57fMP72WX_fKFpSG7j8utSz1QiH0",
+    "effective_at": "2026-11-24T10:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "path": "account_only",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "requested_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "JRQeVgZjAiK6xFY114a_RJB9SqUIcSAXqmv1GNbJ7ruIpPZJYQYUZiBCubBEz7_do8chy8S_mF5IAAJNUbRfBw",
+    "to_account": "acct_TEST0001",
+    "to_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "d31d827eed62bef03c39e1126ea43c0ce8a568a58f9b552e36ce2c780515d747",
+    "prev": "feb864c4e3b51401f9cb8e34e2ce18cadad9d4200e7e33fd3b6d856464a64055",
+    "published_at": "2026-11-25T10:00:00Z",
+    "seq": 4,
+    "signature": "m4I4A_GaoKI_6_7EvbEEYrDebJxrG32E_5OCyGFtTLLLe3jbpm1U8RARMPmc82XmL1uxIxgDezKo2BeYB_95Bg",
+    "v": 1,
+    "version": 2
+   }
+  ],
+  "main": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "4QJG7ykZ6vlVT5Vem4wLg6As8MLbMw_pAhbtre7fsWrc7sjUEaFQLBeXr1DYbb9hEKsXgULrLWoeITuN9keMBw",
+    "v": 1,
+    "version": 2
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "z535uZ_AokvhN0fpuhRMcwyImvgEvBq7sb6JGOXNMOI",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "Vi8mfxqYkOwAsJmur2oTQnkt0ADR_o_EOvVfNm6q1EGW618mrRBn8X1btDNn5y9YNt3Bb-TJjhEqx36_eb44Dw",
+    "path": "old_key",
+    "prev": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 4,
+    "signature": "mA0fEpNpu-OgDVnP0nMBhPzLcZXBwhxaXZGf7gcBay0QvaVfYJKwKsmLDIoYqWTO62FQBYKSIDZwuz4EsmskBQ",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "e5f36d2edd775debc76cb3233e8030f045e3a02bf0e00997161c812b7e379640",
+    "prev": "2a6fc8dc454116770d9d0236577a28a4569e73ed81b85a1fa6a2e6201e935e50",
+    "published_at": "2026-11-19T09:00:00Z",
+    "seq": 5,
+    "signature": "pqqe43SD2Juf3wmQrSXEOuqWKSI0sErO_TCjoJbP2TGG8jBkt7IP50BYsyAt4WCwaScSK-DgLjv882prhXwlAw",
+    "v": 1,
+    "version": 3
+   }
+  ],
+  "short": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "4QJG7ykZ6vlVT5Vem4wLg6As8MLbMw_pAhbtre7fsWrc7sjUEaFQLBeXr1DYbb9hEKsXgULrLWoeITuN9keMBw",
+    "v": 1,
+    "version": 2
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "z535uZ_AokvhN0fpuhRMcwyImvgEvBq7sb6JGOXNMOI",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "Vi8mfxqYkOwAsJmur2oTQnkt0ADR_o_EOvVfNm6q1EGW618mrRBn8X1btDNn5y9YNt3Bb-TJjhEqx36_eb44Dw",
+    "path": "old_key",
+    "prev": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 4,
+    "signature": "mA0fEpNpu-OgDVnP0nMBhPzLcZXBwhxaXZGf7gcBay0QvaVfYJKwKsmLDIoYqWTO62FQBYKSIDZwuz4EsmskBQ",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   }
+  ],
+  "tampered": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-18T09:00:00Z",
+    "seq": 3,
+    "signature": "4QJG7ykZ6vlVT5Vem4wLg6As8MLbMw_pAhbtre7fsWrc7sjUEaFQLBeXr1DYbb9hEKsXgULrLWoeITuN9keMBw",
+    "v": 1,
+    "version": 2
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "z535uZ_AokvhN0fpuhRMcwyImvgEvBq7sb6JGOXNMOI",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "Vi8mfxqYkOwAsJmur2oTQnkt0ADR_o_EOvVfNm6q1EGW618mrRBn8X1btDNn5y9YNt3Bb-TJjhEqx36_eb44Dw",
+    "path": "old_key",
+    "prev": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 4,
+    "signature": "mA0fEpNpu-OgDVnP0nMBhPzLcZXBwhxaXZGf7gcBay0QvaVfYJKwKsmLDIoYqWTO62FQBYKSIDZwuz4EsmskBQ",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "e5f36d2edd775debc76cb3233e8030f045e3a02bf0e00997161c812b7e379640",
+    "prev": "2a6fc8dc454116770d9d0236577a28a4569e73ed81b85a1fa6a2e6201e935e50",
+    "published_at": "2026-11-19T09:00:00Z",
+    "seq": 5,
+    "signature": "pqqe43SD2Juf3wmQrSXEOuqWKSI0sErO_TCjoJbP2TGG8jBkt7IP50BYsyAt4WCwaScSK-DgLjv882prhXwlAw",
+    "v": 1,
+    "version": 3
+   }
+  ],
+  "twice": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "4QJG7ykZ6vlVT5Vem4wLg6As8MLbMw_pAhbtre7fsWrc7sjUEaFQLBeXr1DYbb9hEKsXgULrLWoeITuN9keMBw",
+    "v": 1,
+    "version": 2
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "z535uZ_AokvhN0fpuhRMcwyImvgEvBq7sb6JGOXNMOI",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "Vi8mfxqYkOwAsJmur2oTQnkt0ADR_o_EOvVfNm6q1EGW618mrRBn8X1btDNn5y9YNt3Bb-TJjhEqx36_eb44Dw",
+    "path": "old_key",
+    "prev": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 4,
+    "signature": "mA0fEpNpu-OgDVnP0nMBhPzLcZXBwhxaXZGf7gcBay0QvaVfYJKwKsmLDIoYqWTO62FQBYKSIDZwuz4EsmskBQ",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "z535uZ_AokvhN0fpuhRMcwyImvgEvBq7sb6JGOXNMOI",
+    "effective_at": "2026-11-19T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "kyGUj42s9jt4D02gCSO9_Vn2AuVQH3J941Ot7CPg-VPw_rtzyRYpDOOEzhhkBDf-P_EAJiU6xtqSQmlpIZWwBw",
+    "path": "old_key",
+    "prev": "2a6fc8dc454116770d9d0236577a28a4569e73ed81b85a1fa6a2e6201e935e50",
+    "requested_at": "2026-11-19T09:00:00Z",
+    "seq": 5,
+    "signature": "qSwQ7yGKKCbPB4VtPkpNkmFtyHHRlpMOhTB25OkGEItx4qb22APCdAS3alHj2ZzI7lZKGKKpPYGLMFV2uxbjAg",
+    "to_account": "acct_TEST0001",
+    "to_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "v": 1
+   }
+  ],
+  "wrongkey": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "4QJG7ykZ6vlVT5Vem4wLg6As8MLbMw_pAhbtre7fsWrc7sjUEaFQLBeXr1DYbb9hEKsXgULrLWoeITuN9keMBw",
+    "v": 1,
+    "version": 2
+   },
+   {
+    "app": "drumtoy",
+    "challenge": "z535uZ_AokvhN0fpuhRMcwyImvgEvBq7sb6JGOXNMOI",
+    "effective_at": "2026-11-18T09:00:00Z",
+    "from_account": "acct_TEST0001",
+    "from_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.rekey",
+    "old_key_sig": "Vi8mfxqYkOwAsJmur2oTQnkt0ADR_o_EOvVfNm6q1EGW618mrRBn8X1btDNn5y9YNt3Bb-TJjhEqx36_eb44Dw",
+    "path": "old_key",
+    "prev": "92d8e4f40a373d7264bc308d6b8cea534b0fd2138e32c61a38bde797d298f452",
+    "requested_at": "2026-11-18T09:00:00Z",
+    "seq": 4,
+    "signature": "mA0fEpNpu-OgDVnP0nMBhPzLcZXBwhxaXZGf7gcBay0QvaVfYJKwKsmLDIoYqWTO62FQBYKSIDZwuz4EsmskBQ",
+    "to_account": "acct_TEST0001",
+    "to_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "7800128846d0c4ffc8afa63866f5358801124abe58b1f9f0f3d379e291c9430a",
+    "prev": "2a6fc8dc454116770d9d0236577a28a4569e73ed81b85a1fa6a2e6201e935e50",
+    "published_at": "2026-11-19T09:00:00Z",
+    "seq": 5,
+    "signature": "Rzpo_mz80KoAK6hskAg5ZYjV0PtCZIwwP6PPvSPM1AJpIWZq8V8C8GDYwFPxOJVUKyWMqjea8wLJjrryIFHyAA",
+    "v": 1,
+    "version": 3
+   }
+  ]
+ },
+ "pinned": {
+  "other": [
+   "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc"
+  ],
+  "release": [
+   "Lc0xEdOCOrT_9TFIMU0VuMFwmWttlkwzt95C7QAayIc"
+  ]
+ },
+ "releases": {
+  "forged": {
+   "app": "drumtoy",
+   "dev_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+   "files": {
+    "app.js": "3bfc269594ef649228e9a74bab00f042efc91d5acc6fbee31a382e80d42388fe",
+    "index.html": "b7b55844d1fbee109d97fc91d6bc9ce98cadf93870bf6c8270bb266ff986f757"
+   },
+   "kind": "popsnip.release",
+   "permissions": [
+    "midi"
+   ],
+   "prev": null,
+   "signature": "2KeNVSwLEqV13wrBSsMuLIeDLNHUVzcie71uqe9Dgd9f2WSwgclVffQSspi_wX1YaNKzDLIe6KSqPVYhv9TkCA",
+   "v": 1,
+   "version": 1
+  },
+  "fork_r2": {
+   "app": "drumtoy",
+   "dev_key": "k6rMBTv1Z4NBJHXLMlzQmVjNo5tduzOc4kuWr-aMyLc",
+   "files": {
+    "app.js": "fb04dcb6970e4c3d1873de51fd5a50d7bb46b3383113602665c350ec40b5f990",
+    "index.html": "ac329c0f77826e3ab4c8a98dba3da9f79fb03292f3a27d3da27bcdab0662ef0c"
+   },
+   "kind": "popsnip.release",
+   "permissions": [
+    "midi"
+   ],
+   "prev": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+   "signature": "Br9zscz0f5i5tLMPdkMR-XIngIViq32fcaCJtcb6qHht_Mq2lAuSSIVObYhdpYJKOCg9gYKdXIPHui-e_iboDQ",
+   "v": 1,
+   "version": 2
+  },
+  "r1": {
+   "app": "drumtoy",
+   "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+   "files": {
+    "app.js": "3bfc269594ef649228e9a74bab00f042efc91d5acc6fbee31a382e80d42388fe",
+    "index.html": "b7b55844d1fbee109d97fc91d6bc9ce98cadf93870bf6c8270bb266ff986f757"
+   },
+   "kind": "popsnip.release",
+   "permissions": [
+    "midi"
+   ],
+   "prev": null,
+   "signature": "mRR7DwH9I4AMTMzgaVut85vd5hU665Pfrj7CdFk55EjP1B5_xIjqanhbSUcDL3m8_NtEGenCLIvAkRkNwxjpDQ",
+   "v": 1,
+   "version": 1
+  },
+  "r1_badsig": {
+   "app": "drumtoy",
+   "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+   "files": {
+    "app.js": "3bfc269594ef649228e9a74bab00f042efc91d5acc6fbee31a382e80d42388fe",
+    "index.html": "b7b55844d1fbee109d97fc91d6bc9ce98cadf93870bf6c8270bb266ff986f757"
+   },
+   "kind": "popsnip.release",
+   "permissions": [
+    "midi"
+   ],
+   "prev": null,
+   "signature": "6yXH8QlWSfWPHp3dUwP8eCAocK7TM3WpBFIctMy5-h5Gxz7D2m0lWDSe2Vd-ETNXo4xMpQOSQqJT6oQ4fnKjDQ",
+   "v": 1,
+   "version": 1
+  },
+  "r2": {
+   "app": "drumtoy",
+   "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+   "files": {
+    "app.js": "fb04dcb6970e4c3d1873de51fd5a50d7bb46b3383113602665c350ec40b5f990",
+    "index.html": "ac329c0f77826e3ab4c8a98dba3da9f79fb03292f3a27d3da27bcdab0662ef0c"
+   },
+   "kind": "popsnip.release",
+   "permissions": [
+    "midi"
+   ],
+   "prev": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+   "signature": "6yXH8QlWSfWPHp3dUwP8eCAocK7TM3WpBFIctMy5-h5Gxz7D2m0lWDSe2Vd-ETNXo4xMpQOSQqJT6oQ4fnKjDQ",
+   "v": 1,
+   "version": 2
+  },
+  "r3": {
+   "app": "drumtoy",
+   "dev_key": "70PtyFjvEVkuOc5wRpaUuFsuFUj2gCsS_6dN2F8k_hM",
+   "files": {
+    "app.js": "e0d2747b9ab7abb6eb65e0373fa1b428a28bd6d8a2380106dcc080f58005ee14",
+    "index.html": "44e63e757043e513250b09ab4fdc24291c0adfe1a39a73be5a5d16805000c15f"
+   },
+   "kind": "popsnip.release",
+   "permissions": [
+    "midi"
+   ],
+   "prev": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+   "signature": "jCbzikkiN-l6ENkvRSSA-A32WIibjdeUrpmkJPxy6U5VZeXKqWBUCMLVYXhP9u8K9jGB2SxG8gIN3SCNQgsSBQ",
+   "v": 1,
+   "version": 3
+  },
+  "r3_old": {
+   "app": "drumtoy",
+   "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+   "files": {
+    "app.js": "e0d2747b9ab7abb6eb65e0373fa1b428a28bd6d8a2380106dcc080f58005ee14",
+    "index.html": "44e63e757043e513250b09ab4fdc24291c0adfe1a39a73be5a5d16805000c15f"
+   },
+   "kind": "popsnip.release",
+   "permissions": [
+    "midi"
+   ],
+   "prev": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+   "signature": "fHmxWDoMVXLiWcBj6GUrgqBMbOQD9pSgNLh3Ftt6D1dv1Te5wIzGVynXsiL4QiGFo_T5Nirxnuj_90I_ekqaAg",
+   "v": 1,
+   "version": 3
+  }
+ },
+ "roots": {
+  "malformed": [
+   {
+    "kid": "launch-test1",
+    "kind": "popsnip.reaffirm",
+    "v": 1
+   }
+  ],
+  "none": [],
+  "revoked_after_3": [
+   {
+    "after_seq": 3,
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key-revoked",
+    "signature": "WU4NfjmoazeCQSeCcyeS4yAJfVAr3AHrwj_R8jYjYPl11I5ezpj_gaHO8eHcKBsTpTh7t76OPTXitYlaJVKzDg",
+    "v": 1
+   }
+  ],
+  "revoked_after_3_reaffirmed": [
+   {
+    "after_seq": 3,
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key-revoked",
+    "signature": "WU4NfjmoazeCQSeCcyeS4yAJfVAr3AHrwj_R8jYjYPl11I5ezpj_gaHO8eHcKBsTpTh7t76OPTXitYlaJVKzDg",
+    "v": 1
+   },
+   {
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.reaffirm",
+    "reaffirmed": [
+     {
+      "id": "2a6fc8dc454116770d9d0236577a28a4569e73ed81b85a1fa6a2e6201e935e50",
+      "seq": 4
+     },
+     {
+      "id": "8115324b216ba2f9b648498a9049e528d02d77ab77698a1025bca03d92de4b21",
+      "seq": 5
+     }
+    ],
+    "signature": "hPVrezEzPf2oTcNDHtr5ePG565qOzW3cBsDuCAGQ1IhfwJOmO_p2q3ogKYyAXPvUU6Q1XiXAnOu4icuOO4iOAA",
+    "v": 1
+   }
+  ],
+  "revoked_after_500": [
+   {
+    "after_seq": 500,
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key-revoked",
+    "signature": "g6ByI731LUfGEVDIJ99LfsVpwCIuNWUqUeVHb2d6ya9AXsdW9SGMvPBL9vyMkjVJcViN4IzkgpVphBiSJT7vAw",
+    "v": 1
+   }
+  ],
+  "revoked_after_500_head_reaffirmed": [
+   {
+    "after_seq": 500,
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key-revoked",
+    "signature": "g6ByI731LUfGEVDIJ99LfsVpwCIuNWUqUeVHb2d6ya9AXsdW9SGMvPBL9vyMkjVJcViN4IzkgpVphBiSJT7vAw",
+    "v": 1
+   },
+   {
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.reaffirm",
+    "reaffirmed": [
+     {
+      "id": "8115324b216ba2f9b648498a9049e528d02d77ab77698a1025bca03d92de4b21",
+      "seq": 5
+     }
+    ],
+    "signature": "kGOh3mFw96cqqxbrXuprCJjv5UpN2AIUDCyIIc-eZQ7WuazPEg9w6Q55K48NnLDKJlLB4qV4WDLnzLz1g1kRBw",
+    "v": 1
+   }
+  ],
+  "test2_revoked_after_2": [
+   {
+    "after_seq": 2,
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test2",
+    "kind": "popsnip.launch-key-revoked",
+    "signature": "cWewrCByce8Eh11qvDdiKvRX462iRrKC2fxKxYdcRT4rRlgxoqP3jIeLJ6VDK_48179e1IaBEngAXydPDhZECw",
+    "v": 1
+   }
+  ],
+  "unsigned": [
+   {
+    "after_seq": 3,
+    "at": "2026-11-20T09:00:00Z",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch-key-revoked",
+    "signature": "TJkHXNEJduN1FBiksbv3JrKaU5GtGfW0HP-IOjrHmU2sog9zKWS-kAiY--ydXY9-f6LKa4cmEA1l8EjvPk4GAg",
+    "v": 1
+   }
+  ]
+ }
+}

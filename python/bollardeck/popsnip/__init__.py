@@ -10,6 +10,9 @@ bollardeck.popsnip: Pop Snip apps, the third-party apps that live at <name>.pops
 conformance/popsnip/records.json, which the JavaScript twin (js/bollardeck.popsnip.js) passes too.
 """
 from . import records
-from .records import RecordError, canonical, check, parse, record_id, rekey_request, signed_message
+from .accept import Verdict, accept
+from .records import (RecordError, canonical, check, check_extends, check_list, paginate, parse, record_id,
+                      rekey_request, signed_message)
 
-__all__ = ["records", "RecordError", "canonical", "check", "parse", "record_id", "rekey_request", "signed_message"]
+__all__ = ["records", "accept", "Verdict", "RecordError", "canonical", "check", "check_extends", "check_list", "paginate", "parse", "record_id",
+           "rekey_request", "signed_message"]

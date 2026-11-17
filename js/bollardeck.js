@@ -31,7 +31,7 @@
   // A part loaded before this file has already made the object: fill it in, do not replace it.
   var bollardeck = (root.bollardeck && typeof root.bollardeck === "object") ? root.bollardeck : {};
   var core = {
-    version: "0.4.0",
+    version: "0.5.0",
     speaks: {
       bollardeck: "bollardeck/1",
       routine_api: 1,
@@ -43,7 +43,7 @@
       pxs: "pxs/1",
       popsnip: "popsnip/1",
     },
-    minBollawax: "0.3.0",
+    minBollawax: "0.3.7",
   };
   Object.keys(core).forEach(function (k) { bollardeck[k] = core[k]; });
   // BEGIN GENERATED CONSTANTS (tools/generate.py writes this block from constants/constants.json)

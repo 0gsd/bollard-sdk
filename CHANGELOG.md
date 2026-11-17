@@ -1,7 +1,60 @@
 # Changelog
 
 What each version of the Bollawax Bollard SDK added and changed. The SDK has its own version, and
-its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`); it is not the Bollawax image version.
+its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`, `0.5.0`); it is not the Bollawax image version.
+
+## 0.5.0 (2026-11-17)
+
+Shipped with Bollawax 0.3.7. **One break, in `bollardeck.popsnip`: the revocation list is paged (format B).** The SDK
+has no outside users yet, so nothing else changes for anyone. Breaks first:
+
+- **Changed: `popsnip.revocations` no longer carries `entries`.** It is now a signed index: `{seq, prev, at, count,
+  page_size: 256, pages: [<id of page 0>, …], kid, signature}`. One signature over the whole list stopped working at
+  about 285 entries (Cloud KMS signs at most 64 KiB), and a cart would have fetched every entry on every sync. Now a
+  full page never changes again, so a sync fetches the index and, usually, one page. `rule:pages`: the index names
+  exactly `ceil(count / page_size)` pages.
+- **New kind: `popsnip.revocation-page` `{page, entries}`**, with no signature: the index names its id. A page holds
+  1 to 256 entries numbered one after another, page *k* starting at entry `256k + 1` (`rule:page_numbers`). Its
+  signer in `SIGNER` is `"index"`.
+- **New: `paginate(entries)` and `check_list(index, pages)`** in both twins (JS: `paginate`, and `checkList`, a
+  Promise). `check_list` gives every entry when the pages are exactly the ones a checked index names: the right ids,
+  in order, every page but the last full, `count` entries in all; anything else is `rule:list`.
+- **New: `bollardeck.popsnip.accept(app, release, files, log, head, certs, root_records, revocations, pinned)`**, the
+  device check for a Pop Snip app, in Python: `Verdict(ok, code, detail)`, the first refusal
+  naming the code (`cert`, `head`, `log`, `launch_key_revoked`, `no_binding`, `rekey_sig`, `repeated_challenge`,
+  `not_published`, `version`, `wrong_key`, `release_signature`, `files`, `list_signature`, `list_key_revoked`,
+  `list_pages`, `revoked_release`, `revoked_app`, `revoked_key`). It reads nothing but its arguments (no environment,
+  disk or network), has no unsigned mode, and takes no pass. `conformance/popsnip/accept.json`: a signed history and
+  its variants, and 43 cases. The JavaScript twin follows in a later version.
+  - **`held_head` and `held_list`**: what the device already holds. A log or a
+    list that does not extend them is refused (`rollback`, `list_rollback`), so a shorter log written from seq 1 by a
+    compromised key, an older list or no list never wins. None means nothing held yet; images should bake both in.
+  - **Any head signed by a root-revoked key is refused, at any seq, unless a reaffirmation names that head's seq and
+    `head_hash`** (below `after_seq` too, or a device behind the cut could be forked by true
+    entries plus forged ones under a head by the revoked key). Entries at or below `after_seq` still count under a
+    good head. 43 cases
+    (`launch_key_revoked`); every valid cancel counts, whatever other cancel names the same seq; a root record no
+    pinned key signed refuses (`roots`); malformed arguments refuse (`malformed`), never raise.
+- **New optional field on `popsnip.revocations`: `resigned_after`**, the revoked launch key whose list this index
+  re-signs. After a root revocation the service's new key re-signs the pages as they are, and
+  the owner corrects with new entries; the field says so to every reader. A key never re-signs its own list
+  (`rule:resigned_after`).
+- **New: `check_extends(old, old_entries, new, new_entries)`** (JS `checkExtends`): a newer list grows the one held,
+  with a higher seq, no fewer entries, the held entries first and unchanged, and the same full pages; otherwise
+  `rule:extends`. A reader never takes a list that drops or rewrites what it holds, even when every index in it is
+  validly signed. `lists.extensions`: 7 cases.
+- **New vectors, `states`: an app's account and key at a log position** (the key walk the device check
+  and the service's registry share). A change counts for an entry only if its seq is lower and its `effective_at`
+  is not after the entry's time; changes take effect in `effective_at` order, then seq. A real signed log of 7
+  entries and 9 hand-written answers, including a release logged in the same second as a rotation, and a delayed
+  change overtaken by an immediate one.
+- `conformance/popsnip/records.json`: 143 records (the revocation cases now on pages, 11 new), `page_size`, and
+  `lists`: 8 whole-list cases over pages and indexes written once by name (two pages of 257 entries, an empty list,
+  pages swapped, missing or changed, a short page before the last, a count the pages don't hold).
+- **`MIN_BOLLAWAX` is now 0.3.7**, the Bollawax this version was tested against: Bollawax 0.3.6 writes the revocation
+  list unpaged. **`SPEAKS` is unchanged** (`popsnip: "popsnip/1"`): Bollawax 0.3.6 shipped its Pop Snip service
+  switched off, so no unpaged list was ever published, and a 0.4.0 reader refuses a paged list rather than misreading
+  it.
 
 ## 0.4.0 (2026-11-16)
 

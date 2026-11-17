@@ -4,14 +4,15 @@ The SDK for building on the Pop Boll platform: docks, routines, apps and tools t
 Bollawax device or to its web twin, and that read corpora the way the platform does, respecting
 each corpus's licence and settings.
 
-**Status: 0.4.0, shipped with Bollawax 0.3.6 (0.3.0 shipped with 0.3.0, 0.2.0 with 0.2.5, and 0.1.0, the first
-version, with 0.2.4). Its interfaces may still change between 0.x versions.** The corpus client, the device layer, routines,
+**Status: 0.5.0, shipped with Bollawax 0.3.7 (0.4.0 shipped with 0.3.6, 0.3.0 with 0.3.0, 0.2.0 with 0.2.5, and 0.1.0,
+the first version, with 0.2.4). Its interfaces may still change between 0.x versions.** The corpus client, the device layer, routines,
 the matrix engine and the browser binding are built, and so are a cart's additions (a pocket
 context for the keymap, power sources, file playback and its decoders, audio routes, Bluetooth, the
 cart and dock descriptors), tested against the simulated board. 0.3.0 adds help content and tours, the
 `.pxs` format, a minimal deck service and client (a draft, as the dock protocol is), and the now-playing
 and transport schemas. 0.4.0 adds `bollardeck.popsnip`, the signed records of Pop Snip apps, and reads a `.pxs`
-`HEAD` as strict JSON. The Glass Snipler types are placeholders. Of the specifications under `spec/`, the software
+`HEAD` as strict JSON. 0.5.0 pages the Pop Snip revocation list and adds `bollardeck.popsnip.accept`, the device
+check for a Pop Snip app (in Python; the JavaScript twin follows). The Glass Snipler types are placeholders. Of the specifications under `spec/`, the software
 pages are current with this version and the hardware pages are speculative drafts: `bollard.md` is
 version 1, the interface under the Boll's foot, and the specification for the cart and its docks is
 not written (`spec/bollardeck.md` §20 records what is decided).
@@ -143,7 +144,7 @@ their expected values), and `tools/generate.py` writes `js/bollardeck.schemas.js
 
 ## Versions
 
-The SDK has its own version, and its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`). It is not the Bollawax
+The SDK has its own version, and its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`, `0.5.0`). It is not the Bollawax
 image version.
 `bollardeck.SPEAKS` lists the wire and format versions this SDK speaks, and
 `bollardeck.MIN_BOLLAWAX` is the oldest Bollawax release it is tested against.

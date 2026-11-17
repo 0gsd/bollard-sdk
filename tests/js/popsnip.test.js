@@ -15,6 +15,29 @@ function code(fn) {
 test("the constants are the vectors'", () => {
   assert.equal(P.CONTEXT, V.context);
   assert.equal(P.GENESIS, V.genesis);
+  assert.equal(P.PAGE_SIZE, V.page_size);
+});
+
+test("every revocation list (format B): check_list's answer, and paginate makes the pages the index names", async () => {
+  const L = V.lists;
+  const resolve = (c) => [L.indexes[c.index], Array.isArray(c.pages) ? c.pages.map((n) => L.pages[n]) : c.pages];
+  for (const c of L.cases) {
+    const [index, pages] = resolve(c);
+    let got = null, entries = null;
+    try { entries = await P.checkList(index, pages); } catch (e) { if (!(e instanceof P.RecordError)) throw e; got = e.code; }
+    assert.equal(got, c.error, c.name);
+    if (c.error === null) assert.equal(entries.length, c.count, c.name);
+  }
+  for (const c of L.extensions) {
+    const old = L.indexes[c.old[0]], nw = L.indexes[c.new[0]];
+    const oldE = await P.checkList(old, c.old[1].map((n) => L.pages[n]));
+    const newE = await P.checkList(nw, c.new[1].map((n) => L.pages[n]));
+    assert.equal(code(() => P.checkExtends(old, oldE, nw, newE)), c.error, c.name);
+  }
+  const [index, pages] = resolve(L.cases[0]);
+  const entries = await P.checkList(index, pages);
+  assert.deepEqual(P.paginate(entries), pages);
+  assert.deepEqual(P.paginate([]), []);
 });
 
 test("every record vector: the verdict, and for an accepted one its canonical bytes, id and signed message", async () => {

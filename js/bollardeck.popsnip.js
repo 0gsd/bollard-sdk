@@ -35,6 +35,7 @@
   var PASS_KINDS = ["standard", "glass_lifetime"];
   var LOG_KINDS = ["popsnip.launch", "popsnip.publish", "popsnip.rekey", "popsnip.rekey-cancel"];
   var MAX_FILES = 4096, MAX_PERMISSIONS = 32, MAX_CSP = 2048, MAX_REVOCATIONS = 100000, MAX_DEPTH = 32;
+  var PAGE_SIZE = 256, MAX_PAGES = Math.ceil(MAX_REVOCATIONS / PAGE_SIZE);   // revocation pages (format B)
 
   function RecordError(code) {
     var e = new Error(code);
@@ -407,21 +408,26 @@
 
   var REVOCATION_FIELDS = ["n", "target", "action", "ground", "at", "by", "notice", "after_seq"];
 
+  // a page's entries: 1 to PAGE_SIZE, numbered one after another (where they start is the page's rule)
   function revocationEntries(v) {
-    if (!Array.isArray(v) || v.length > MAX_REVOCATIONS) return false;
+    if (!Array.isArray(v) || v.length < 1 || v.length > PAGE_SIZE) return false;
     for (var j = 0; j < v.length; j++) {
       var e = v[j];
       if (!isObj(e)) return false;
       var keys = Object.keys(e);
       if (!keys.every(function (k) { return oneOf(k, REVOCATION_FIELDS); })) return false;
       if (!REVOCATION_FIELDS.every(function (k) { return k === "after_seq" || has(e, k); })) return false;
-      if (e.n !== j + 1 || !isInt(e.n, 1, MAX_INT) || !target(e.target)) return false;
+      if (!isInt(e.n, 1, MAX_REVOCATIONS) || (j > 0 && e.n !== v[j - 1].n + 1) || !target(e.target)) return false;
       if (!oneOf(e.action, ["revoke", "reinstate"]) || !oneOf(e.ground, GROUNDS) || !time(e.at)) return false;
       if (!oneOf(e.by, ["owner", "delegate", "developer"]) || typeof e.notice !== "string" || !NOTICE.test(e.notice)) return false;
       if ((e.by === "developer") !== (e.ground === "withdrawn_by_developer")) return false;
       if (has(e, "after_seq") && !isInt(e.after_seq, 0, MAX_INT)) return false;
     }
     return true;
+  }
+
+  function pageIds(v) {
+    return Array.isArray(v) && v.length <= MAX_PAGES && v.every(function (x) { return hex64(x); });
   }
 
   function reaffirmed(v) {
@@ -458,6 +464,10 @@
     files: files, permissions: permissions,
     csp: function (v) { return typeof v === "string" && v.length >= 1 && v.length <= MAX_CSP; },
     entries: revocationEntries, reaffirmed: reaffirmed,
+    count: function (v) { return isInt(v, 0, MAX_REVOCATIONS); },
+    page_size: function (v) { return isInt(v, PAGE_SIZE, PAGE_SIZE); },
+    pages: pageIds, page: function (v) { return isInt(v, 0, MAX_PAGES - 1); },
+    resigned_after: str(KID),
     prev: hex64
   };
   var KIND_FIELD_CHECKS = { "popsnip.release prev": function (v) { return v === null || hex64(v); } };
@@ -473,7 +483,10 @@
       "effective_at", "challenge"].concat(LOG), ["old_key_sig"]],
     "popsnip.rekey-cancel": ["launch", ["app", "cancels", "cancels_id", "requested_at"].concat(LOG), []],
     "popsnip.head": ["launch", ["seq", "head_hash", "at", "kid", "signature"], []],
-    "popsnip.revocations": ["launch", ["seq", "prev", "at", "entries", "kid", "signature"], []],
+    // resigned_after: the revoked launch key whose list this index re-signs
+    "popsnip.revocations": ["launch", ["seq", "prev", "at", "count", "page_size", "pages", "kid", "signature"], ["resigned_after"]],
+    // one page of the list, covered by the index's hash of it (format B): no signature of its own
+    "popsnip.revocation-page": ["index", ["page", "entries"], []],
     "popsnip.release": ["dev", ["app", "version", "prev", "files", "permissions", "dev_key", "signature"], ["csp"]],
     "popsnip.key-proof": ["dev", ["account", "dev_key", "challenge", "signature"], []],
     // what an old_key rotation's old key signs (its signature travels as the rotation's old_key_sig)
@@ -501,6 +514,9 @@
       if (delay !== (waits ? REKEY_DELAY : 0)) return "delay";
     }
     if (kind === "popsnip.rekey-cancel" && r.cancels >= r.seq) return "cancels";
+    if (kind === "popsnip.revocations" && r.pages.length !== Math.ceil(r.count / r.page_size)) return "pages";
+    if (kind === "popsnip.revocations" && has(r, "resigned_after") && r.resigned_after === r.kid) return "resigned_after";
+    if (kind === "popsnip.revocation-page" && r.entries[0].n !== r.page * PAGE_SIZE + 1) return "page_numbers";
     return null;
   }
 
@@ -540,11 +556,59 @@
     return out;
   }
 
+  // the entries (numbered from 1) as popsnip.revocation-page records, PAGE_SIZE each, the last one short
+  function paginate(entries) {
+    var out = [];
+    for (var k = 0; k < entries.length; k += PAGE_SIZE) {
+      out.push(check({ v: V, kind: "popsnip.revocation-page", page: k / PAGE_SIZE, entries: entries.slice(k, k + PAGE_SIZE) }));
+    }
+    return out;
+  }
+
+  // every entry of the list, when the pages are the (checked, signature-verified) index's own: each a checked page
+  // whose id is the index's next one, numbered 0, 1, 2..., every page but the last full, `count` in all. A Promise
+  // (ids are hashed with crypto.subtle); it rejects with RecordError("rule:list").
+  function checkList(index, pages) {
+    return Promise.resolve().then(function () {
+      check(index);
+      if (index.kind !== "popsnip.revocations" || !Array.isArray(pages) || pages.length !== index.pages.length) {
+        throw new RecordError("rule:list");
+      }
+      pages.forEach(function (page, k) {
+        try { check(page); } catch (e) { throw new RecordError("rule:list"); }
+        var last = k === pages.length - 1;
+        if (page.kind !== "popsnip.revocation-page" || page.page !== k || (!last && page.entries.length !== PAGE_SIZE)) {
+          throw new RecordError("rule:list");
+        }
+      });
+      return Promise.all(pages.map(recordId));
+    }).then(function (ids) {
+      var out = [];
+      ids.forEach(function (id, k) {
+        if (id !== index.pages[k]) throw new RecordError("rule:list");
+        out = out.concat(pages[k].entries);
+      });
+      if (out.length !== index.count) throw new RecordError("rule:list");
+      return out;
+    });
+  }
+
+  // a newer list grows the one held: a higher seq, a count no lower, every held entry first and unchanged, and the
+  // held full pages named again by the same ids (both lists checked, their signatures verified); else rule:extends
+  function checkExtends(old, oldEntries, nw, newEntries) {
+    var full = Math.floor(old.count / PAGE_SIZE);
+    var same = oldEntries.length === old.count && newEntries.length >= oldEntries.length &&
+      oldEntries.every(function (e, i) { return canonicalText(e) === canonicalText(newEntries[i]); }) &&
+      old.pages.slice(0, full).every(function (p, i) { return nw.pages[i] === p; });
+    if (nw.seq <= old.seq || nw.count < old.count || !same) throw new RecordError("rule:extends");
+  }
+
   var api = {
     V: V, CONTEXT: CONTEXT, GENESIS: GENESIS, MAX_INT: MAX_INT, REKEY_DELAY: REKEY_DELAY, GROUNDS: GROUNDS,
     PASS_KINDS: PASS_KINDS, LOG_KINDS: LOG_KINDS, SMALL_ORDER: SMALL_ORDER.slice(), isPublicKey: point, KINDS: Object.keys(KINDS), SIGNER: SIGNER, TIME_FIELD: TIME_FIELD,
     RecordError: RecordError, canonical: canonical, canonicalText: canonicalText, signedMessage: signedMessage,
-    recordId: recordId, parse: parse, check: check, rekeyRequest: rekeyRequest, toSeconds: toSeconds
+    recordId: recordId, parse: parse, check: check, rekeyRequest: rekeyRequest, toSeconds: toSeconds,
+    PAGE_SIZE: PAGE_SIZE, paginate: paginate, checkList: checkList, checkExtends: checkExtends
   };
 
   var bollardeck = (typeof root.bollardeck === "object" && root.bollardeck) ||

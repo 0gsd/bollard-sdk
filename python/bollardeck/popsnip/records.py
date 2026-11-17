@@ -18,6 +18,13 @@ app from those records alone, and never asks whether a developer's pass is activ
     check(record, signed)   the record's shape for its kind, or RecordError(code); the first failure decides the code
                             (signed=False: a record about to be signed, without its signature)
     rekey_request(entry)    what a rotation's `old_key_sig` covers (signed by the old developer key)
+    paginate(entries)       the revocation entries as popsnip.revocation-page records of PAGE_SIZE each (the last one
+                            short), whose ids a popsnip.revocations index names in order
+    check_list(index, pages) the entries of a revocation list, when the pages are exactly the ones the (checked) index
+                            names: right ids, in order, every page but the last full, `count` entries in all
+    check_extends(old, old_entries, new, new_entries)  a newer list grows the one held: a higher seq, no fewer
+                            entries, the held entries first and the same full pages (rule:extends); a reader never
+                            takes a list that drops or rewrites what it already holds
 
 Why the form is narrower than JSON. Python's json.dumps(ensure_ascii=True) and JavaScript's JSON.stringify agree byte
 for byte only on printable ASCII strings and safe integers: Python escapes DEL (0x7f) and every non-ASCII character,
@@ -34,7 +41,9 @@ A verifier never hashes or verifies the bytes it received: it parses them strict
 the signature over CONTEXT + canonical(record) as made here. Two spellings of one record are one record.
 
 Who signs what (SIGNER): "release" is the pinned release key (offline), "launch" a launch key certified by it (the
-countersigning service, in a KMS), "dev" the developer key named in the record. This module checks shapes only; it
+countersigning service, in a KMS), "dev" the developer key named in the record, "index" nobody: a revocation page is
+covered by the signed index that names its id (format B: the list grows past what one signature
+covers, so the launch key signs the page ids, and a full page never changes). This module checks shapes only; it
 never verifies a signature and reads no clock, store or network.
 """
 from __future__ import annotations
@@ -62,6 +71,8 @@ MAX_FILES = 4096
 MAX_PERMISSIONS = 32
 MAX_CSP = 2048
 MAX_REVOCATIONS = 100000
+PAGE_SIZE = 256                          # revocation entries a page (a full page never changes again)
+MAX_PAGES = -(-MAX_REVOCATIONS // PAGE_SIZE)
 MAX_DEPTH = 32                           # objects and arrays nested deeper are refused as bad_json
 
 
@@ -304,12 +315,13 @@ _REVOCATION_FIELDS = {"n", "target", "action", "ground", "at", "by", "notice", "
 
 
 def _revocation_entries(v: Any) -> bool:
-    if not isinstance(v, list) or len(v) > MAX_REVOCATIONS:
+    """A page's entries: 1 to PAGE_SIZE, numbered one after another (where they start is the page's rule)."""
+    if not isinstance(v, list) or not 1 <= len(v) <= PAGE_SIZE:
         return False
     for i, e in enumerate(v):
         if not isinstance(e, dict) or not set(e) <= _REVOCATION_FIELDS or not (_REVOCATION_FIELDS - {"after_seq"}) <= set(e):
             return False
-        if e["n"] != i + 1 or not _is_int(e["n"], 1, MAX_INT) or not _target(e["target"]):
+        if not _is_int(e["n"], 1, MAX_REVOCATIONS) or (i and e["n"] != v[i - 1]["n"] + 1) or not _target(e["target"]):
             return False
         if e["action"] not in ("revoke", "reinstate") or e["ground"] not in GROUNDS or not _time(e["at"]):
             return False
@@ -321,6 +333,10 @@ def _revocation_entries(v: Any) -> bool:
         if "after_seq" in e and not _is_int(e["after_seq"], 0, MAX_INT):
             return False
     return True
+
+
+def _page_ids(v: Any) -> bool:
+    return isinstance(v, list) and len(v) <= MAX_PAGES and all(_hex64(x) for x in v)
 
 
 def _reaffirmed(v: Any) -> bool:
@@ -358,6 +374,9 @@ FIELD_CHECKS: Dict[str, Callable[[Any], bool]] = {
     "files": _files, "permissions": _permissions,
     "csp": lambda v: isinstance(v, str) and 1 <= len(v) <= MAX_CSP,
     "entries": _revocation_entries, "reaffirmed": _reaffirmed,
+    "count": lambda v: _is_int(v, 0, MAX_REVOCATIONS), "page_size": lambda v: _is_int(v, PAGE_SIZE, PAGE_SIZE),
+    "pages": _page_ids, "page": lambda v: _is_int(v, 0, MAX_PAGES - 1),
+    "resigned_after": lambda v: isinstance(v, str) and _KID.fullmatch(v) is not None,
     "prev": _hex64,                                          # a chain's: GENESIS at seq 1 (a rule)
 }
 # a field whose shape depends on the kind: a release's `prev` is null for version 1 (a rule) and a hash after
@@ -378,7 +397,12 @@ KINDS: Dict[str, Tuple[str, Tuple[str, ...], Tuple[str, ...]]] = {
                                  "effective_at", "challenge") + _LOG, ("old_key_sig",)),
     "popsnip.rekey-cancel": ("launch", ("app", "cancels", "cancels_id", "requested_at") + _LOG, ()),
     "popsnip.head": ("launch", ("seq", "head_hash", "at", "kid", "signature"), ()),
-    "popsnip.revocations": ("launch", ("seq", "prev", "at", "entries", "kid", "signature"), ()),
+    # `resigned_after`: the revoked launch key whose list this index re-signs (after a root
+    # revocation, the service's new key re-signs the pages as they are, and the owner corrects with new entries)
+    "popsnip.revocations": ("launch", ("seq", "prev", "at", "count", "page_size", "pages", "kid", "signature"),
+                            ("resigned_after",)),
+    # one page of the list, covered by the index's hash of it (format B): no signature of its own
+    "popsnip.revocation-page": ("index", ("page", "entries"), ()),
     "popsnip.release": ("dev", ("app", "version", "prev", "files", "permissions", "dev_key", "signature"), ("csp",)),
     "popsnip.key-proof": ("dev", ("account", "dev_key", "challenge", "signature"), ()),
     # what an old_key rotation's old key signs (its signature travels as the rotation's old_key_sig)
@@ -415,6 +439,12 @@ def _rules(r: Dict[str, Any]) -> Optional[str]:
             return "delay"
     if kind == "popsnip.rekey-cancel" and r["cancels"] >= r["seq"]:
         return "cancels"
+    if kind == "popsnip.revocations" and len(r["pages"]) != -(-r["count"] // r["page_size"]):
+        return "pages"
+    if kind == "popsnip.revocations" and r.get("resigned_after") == r["kid"]:
+        return "resigned_after"                                  # a key never re-signs its own list
+    if kind == "popsnip.revocation-page" and r["entries"][0]["n"] != r["page"] * PAGE_SIZE + 1:
+        return "page_numbers"
     return None
 
 
@@ -464,6 +494,50 @@ def rekey_request(entry: Dict[str, Any]) -> Dict[str, Any]:
             raise RecordError("missing_field:" + f)
         out[f] = entry[f]
     return out
+
+
+def paginate(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """The entries (numbered from 1) as popsnip.revocation-page records, PAGE_SIZE each, the last one short."""
+    out = []
+    for k in range(0, len(entries), PAGE_SIZE):
+        out.append(check({"v": V, "kind": "popsnip.revocation-page", "page": k // PAGE_SIZE,
+                          "entries": entries[k:k + PAGE_SIZE]}))
+    return out
+
+
+def check_list(index: Dict[str, Any], pages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Every entry of the list, when `pages` are the index's own: each a checked page whose id is the index's next one,
+    numbered 0, 1, 2..., every page but the last full, and `count` entries in all. The index must already be checked
+    and its signature verified (this reads shapes and hashes only). Else RecordError("rule:list")."""
+    check(index)
+    if index["kind"] != "popsnip.revocations" or not isinstance(pages, list) or len(pages) != len(index["pages"]):
+        raise RecordError("rule:list")
+    out: List[Dict[str, Any]] = []
+    for k, (page, want) in enumerate(zip(pages, index["pages"])):
+        try:
+            check(page)
+        except RecordError:
+            raise RecordError("rule:list") from None
+        last = k == len(pages) - 1
+        if page["kind"] != "popsnip.revocation-page" or page["page"] != k or record_id(page) != want \
+                or (not last and len(page["entries"]) != PAGE_SIZE):
+            raise RecordError("rule:list")
+        out.extend(page["entries"])
+    if len(out) != index["count"]:
+        raise RecordError("rule:list")
+    return out
+
+
+def check_extends(old: Dict[str, Any], old_entries: List[Dict[str, Any]], new: Dict[str, Any],
+                  new_entries: List[Dict[str, Any]]) -> None:
+    """None when `new` (with its entries) grows `old`: a higher seq, a count no lower, every entry of `old` first and
+    unchanged, and the full pages of `old` named again by the same ids. Both lists checked already (check_list, and
+    their signatures verified); this reads shapes only. Else RecordError("rule:extends")."""
+    full = old["count"] // PAGE_SIZE
+    if new["seq"] <= old["seq"] or new["count"] < old["count"] or len(old_entries) != old["count"] \
+            or new["pages"][:full] != old["pages"][:full] \
+            or [canonical(e) for e in new_entries[:len(old_entries)]] != [canonical(e) for e in old_entries]:
+        raise RecordError("rule:extends")
 
 
 def utc_now() -> str:

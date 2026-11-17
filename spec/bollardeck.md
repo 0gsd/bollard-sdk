@@ -1,6 +1,6 @@
 # bollardeck API
 
-Version 0.2-draft · Status: speculative draft · Updated 2026-11-17 · As of Bollawax 0.3.6 and Bollard SDK 0.4.0
+Version 0.2-draft · Status: speculative draft · Updated 2026-11-17 · As of Bollawax 0.3.7 and Bollard SDK 0.5.0
 
 > **Speculative draft.** No Pop Boll hardware has shipped, and most of this API has not run against a real Boll yet. Message names, fields and limits will change without notice, and nothing here is an offer, a commitment or a promise of compatibility. We would love to hear about partnership, OEM and dev-kit ideas: use the contact form on this site.
 
@@ -19,7 +19,7 @@ bollardeck is the software side of Bollard: everything above the physical connec
 | Item | Version |
 | :--- | :--- |
 | This document | 0.2-draft |
-| Bollard SDK | 0.4.0 (the first, 0.1.0, shipped with Bollawax 0.2.4) |
+| Bollard SDK | 0.5.0 (the first, 0.1.0, shipped with Bollawax 0.2.4) |
 | Wire protocol (Part A) | `bollardeck/1` |
 | Message envelope | `"v": 1` |
 | Routine API (Part B) | `api: 1` |
@@ -792,7 +792,7 @@ The earlier Part C described a cartridge that docked under the Boll's foot as a 
 
 ### 17.1 What the SDK contains
 
-Bollard SDK 0.4.0, shipped with Bollawax 0.3.6, adds `bollardeck.popsnip`: the signed records of Pop Snip apps (the third-party apps at `<name>.popsnip.app`), with one canonical form, strict parsers and the same refusal codes in Python and in the browser, and vectors in `conformance/popsnip/`. It also refuses an Ed25519 public key of small order, as libsodium does. Bollard SDK 0.3.0, first shipped with Bollawax 0.3.0, brought `bollardeck.help`, `bollardeck.pxs`, the draft deck, the `nowplaying`, `transport`, `help-pack` and `help-director` schemas and the ninth licence capability, and changed how attestation and a person's hub answers work (§19). The cart's pieces (the optional hal parts, the pocket keymap, the dock and cart descriptors, the decoders) were added in Bollard SDK 0.2.0, which shipped with Bollawax 0.2.5.
+Bollard SDK 0.5.0, shipped with Bollawax 0.3.7, pages the Pop Snip revocation list (a signed index of pages of 256 entries, so that a full page never changes) and adds `bollardeck.popsnip.accept`, the check a device makes before it runs a Pop Snip app, in Python. Bollard SDK 0.4.0, shipped with Bollawax 0.3.6, adds `bollardeck.popsnip`: the signed records of Pop Snip apps (the third-party apps at `<name>.popsnip.app`), with one canonical form, strict parsers and the same refusal codes in Python and in the browser, and vectors in `conformance/popsnip/`. It also refuses an Ed25519 public key of small order, as libsodium does. Bollard SDK 0.3.0, first shipped with Bollawax 0.3.0, brought `bollardeck.help`, `bollardeck.pxs`, the draft deck, the `nowplaying`, `transport`, `help-pack` and `help-director` schemas and the ninth licence capability, and changed how attestation and a person's hub answers work (§19). The cart's pieces (the optional hal parts, the pocket keymap, the dock and cart descriptors, the decoders) were added in Bollard SDK 0.2.0, which shipped with Bollawax 0.2.5.
 
 | Module | What it is | State |
 | :--- | :--- | :--- |
@@ -994,6 +994,7 @@ Not yet validated on hardware. Nothing in Part A has run on a Boll.
 
 ### Changes
 
+- **2026-11-17.** Brought up to Bollawax 0.3.7 and Bollard SDK 0.5.0: the paged Pop Snip revocation list and the device check (§17.1). No message, field or schema of `bollardeck/1` changed.
 - **2026-11-16.** Brought up to Bollawax 0.3.6 and Bollard SDK 0.4.0: `bollardeck.popsnip`, the Pop Snip records (§17.1). No message, field or schema of `bollardeck/1` changed.
 - **2026-11-16.** The Glass Snipler is now called the Pop Snipler, its open-firmware edition keeping the name Glass Snipler (named 2026-11-11). No message, field or schema changed.
 - **2026-11-12.** Brought up to Bollawax 0.3.0 and Bollard SDK 0.3.0: the SDK's help, Pop Snip files and draft deck (§17.1), six more schemas (§17.2), the ninth licence capability `stream_render`, `gate.listen` and renders on popboll.com (§19.1), the pocket keymap (§18.4), a person's hub answers held in memory (§19.3), attestation by signed fields (§19.4), and signed image releases (§17.3).

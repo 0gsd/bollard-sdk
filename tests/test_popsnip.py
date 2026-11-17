@@ -89,6 +89,62 @@ class TheVectors(unittest.TestCase):
         self.assertEqual(code_of(lambda: R.rekey_request({})), "missing_field:app")
 
 
+class TheRevocationList(unittest.TestCase):
+    """Format B: a signed index of page ids, pages of PAGE_SIZE entries, a full page never changing."""
+
+    def test_the_page_size_is_the_vectors(self):
+        self.assertEqual(R.PAGE_SIZE, VECTORS["page_size"])
+        self.assertEqual(R.MAX_PAGES * R.PAGE_SIZE >= R.MAX_REVOCATIONS > (R.MAX_PAGES - 1) * R.PAGE_SIZE, True)
+
+    @staticmethod
+    def case(c):
+        L = VECTORS["lists"]
+        pages = [L["pages"][name] for name in c["pages"]] if isinstance(c["pages"], list) else c["pages"]
+        return L["indexes"][c["index"]], pages
+
+    def test_every_list(self):
+        for c in VECTORS["lists"]["cases"]:
+            index, pages = self.case(c)
+            self.assertEqual(code_of(lambda: R.check_list(index, pages)), c["error"], c["name"])
+            if c["error"] is None:
+                self.assertEqual(len(R.check_list(index, pages)), c["count"], c["name"])
+
+    def test_every_extension(self):
+        L = VECTORS["lists"]
+        for c in L["extensions"]:
+            (oi, op), (ni, np_) = c["old"], c["new"]
+            old, new = L["indexes"][oi], L["indexes"][ni]
+            old_e = R.check_list(old, [L["pages"][n] for n in op])
+            new_e = R.check_list(new, [L["pages"][n] for n in np_])
+            self.assertEqual(code_of(lambda: R.check_extends(old, old_e, new, new_e)), c["error"], c["name"])
+
+    def test_paginate_makes_the_pages_the_index_names(self):
+        index, pages = self.case(VECTORS["lists"]["cases"][0])
+        entries = R.check_list(index, pages)
+        self.assertEqual(R.paginate(entries), pages)
+        self.assertEqual(R.paginate([]), [])
+        self.assertEqual([len(p["entries"]) for p in R.paginate(entries)], [R.PAGE_SIZE, 1])
+
+
+class TheStateVectors(unittest.TestCase):
+    """The key walk's vectors are a real signed log: the device check and the service's registry answer them."""
+
+    def test_the_log_is_a_signed_chain(self):
+        entries = VECTORS["states"]["entries"]
+        prev = R.GENESIS
+        for n, e in enumerate(entries, 1):
+            R.check(e)
+            self.assertEqual((e["seq"], e["prev"]), (n, prev))
+            prev = R.record_id(e)
+            if e.get("path") == "old_key":
+                old = dec(VECTORS["keys"][next(r for r, k in VECTORS["keys"].items() if k["pub"] == e["from_key"])]["pub"])
+                self.assertTrue(_ed25519.verify(old, R.signed_message(R.rekey_request(e)), dec(e["old_key_sig"])))
+        apps = {e["app"] for e in entries}
+        for q in VECTORS["states"]["queries"]:
+            self.assertIn(q["app"], apps, q["name"])
+            self.assertTrue(q["seq"] is None or 1 <= q["seq"] <= len(entries) + 1, q["name"])
+
+
 class TheSignatures(unittest.TestCase):
     def test_every_signed_vector_verifies_over_the_context_only(self):
         n = 0
@@ -153,7 +209,8 @@ class SmallOrder(unittest.TestCase):
 class TheForm(unittest.TestCase):
     def test_every_kind_has_a_signer_and_log_kinds_a_time(self):
         self.assertEqual(set(R.SIGNER), set(R.KINDS))
-        self.assertTrue(set(R.SIGNER.values()) <= {"release", "launch", "dev"})
+        self.assertTrue(set(R.SIGNER.values()) <= {"release", "launch", "dev", "index"})
+        self.assertEqual([k for k, v in R.SIGNER.items() if v == "index"], ["popsnip.revocation-page"])
         self.assertEqual(set(R.TIME_FIELD), set(R.LOG_KINDS))
         for kind in R.LOG_KINDS:
             self.assertIn(R.TIME_FIELD[kind], R.KINDS[kind][1])
