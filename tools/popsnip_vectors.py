@@ -30,6 +30,7 @@ from bollardeck.popsnip import records as R  # noqa: E402
 
 OUT = ROOT / "conformance" / "popsnip" / "records.json"
 OUT_ACCEPT = ROOT / "conformance" / "popsnip" / "accept.json"
+OUT_ED25519 = ROOT / "conformance" / "popsnip" / "ed25519.json"
 
 
 class sign_release:                                          # noqa: N801 - a namespace, read like a module below
@@ -684,13 +685,19 @@ def acceptance() -> Dict[str, Any]:
                   dict(rotate, to_key=pub("dev4"), path="account_only", requested_at=B,          # by the revoked key
                        effective_at="2026-11-24T10:00:00Z", challenge=nonce("forge")),
                   publish(fork_r2, "2026-11-25T10:00:00Z")])
+    badversion = chain([launch, publish(r1, A), dict(publish(r2, B), version=3)])   # r2's id logged as version 3
+    timeback = chain([launch, publish(r1, B), publish(r2, A)])                       # entry 3 earlier than entry 2
     tampered = [dict(e) for e in main]
     tampered[2] = dict(tampered[2], published_at=C)                        # changed after signing
     logs = {"main": main, "wrongkey": wrongkey, "twice": twice, "badsig": badsig, "tampered": tampered,
-            "cancels": cancels, "forged": forged, "fork": fork, "short": main[:4]}
+            "cancels": cancels, "forged": forged, "fork": fork, "short": main[:4], "badversion": badversion,
+            "timeback": timeback}
     heads = {"main": head(main, E), "wrongkey": head(wrongkey, E), "twice": head(twice, E), "badsig": head(badsig, E),
              "tampered": head(main, E), "short": head(main[:4], E), "cancels": head(cancels, "2026-11-27T09:00:00Z"),
              "forged": head(forged, E), "held2": head(main[:2], E), "fork": head(fork, "2026-11-26T09:00:00Z"),
+             "badversion": head(badversion, E), "timeback": head(timeback, E),
+             "held_other3": head(chain([launch, publish(r1, A), publish(r1_v2_other := rel("r3", 2, R.record_id(r1),
+                                                                                              "dev"), B)]), E),
              "main_by_test2": signed({"v": 1, "kind": "popsnip.head", "seq": len(main), "head_hash": R.record_id(main[-1]),
                                       "at": E, "kid": "launch-test2"}, "dev3")}
 
@@ -726,6 +733,9 @@ def acceptance() -> Dict[str, Any]:
              "k1_all": lst([entry(1, {"dev_key": k1}, ground="key_compromise")])}
     lists["release2_then_app"] = lst([entry(1, {"release": R.record_id(r2)}), entry(2, {"app": "drumtoy"})], 2,
                                      R.record_id(lists["release2"]["index"]))
+    unsigned = lst([entry(1, {"app": "drumtoy"})])
+    lists["badsig"] = {"index": signed({k: v for k, v in unsigned["index"].items() if k != "signature"}, "dev"),
+                       "pages": unsigned["pages"]}                                # signed by a key with no certificate
     broken = lst([entry(1, {"app": "drumtoy"})])
     lists["pages_wrong"] = {"index": broken["index"], "pages": [lists["release2"]["pages"][0]]}
     releases = {"r1": r1, "r2": r2, "r3": r3, "r3_old": r3_old, "r1_badsig": r1_badsig, "forged": forged_rel,
@@ -795,6 +805,14 @@ def acceptance() -> Dict[str, Any]:
         case("files that are not a mapping", "malformed", fls="none"),
         case("a root record no pinned key signed", "roots", rts="unsigned"),
         case("a malformed root record", "roots", rts="malformed"),
+        # the codes and shapes the first set left out
+        case("a publish entry whose version is not the release's", "version", "r2", log="badversion"),
+        case("a list index signed by a key with no certificate", "list_signature", "r1", lst_="badsig"),
+        case("a log entry earlier than the one before", "log", log="timeback"),
+        case("a held head at seq 3 of another history (a fork at the held seq)", "rollback", "r3",
+             held_head="held_other3"),
+        case("the release is fine, the head is not: the head's refusal comes first", "head", "r1_badsig", "r1",
+             hd="short"),
     ]
     return {"about": ("Vectors for accept(), the device check for a Pop Snip app, written by "
                       "tools/popsnip_vectors.py: each case names its app, release, files, log, head, root records, "
@@ -805,9 +823,99 @@ def acceptance() -> Dict[str, Any]:
             "heads": heads, "releases": releases, "files": files, "roots": roots, "lists": lists, "cases": cases}
 
 
+# RFC 8032, section 7.1, tests 1-3: (public key, message, signature), hex. They must verify.
+RFC8032 = [
+    ("d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a", "",
+     "e5564300c360ac729086e2cc806e828a84877f1eb8e5d974d873e06522490155"
+     "5fb8821590a33bacc61e39701cf9b46bd25bf5f0595bbe24655141438e7a100b"),
+    ("3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c", "72",
+     "92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da"
+     "085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00"),
+    ("fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025", "af82",
+     "6291d657deec24024827e69c3abe01a30ce548a284743a445e3680d7db5ac3ac"
+     "18ff9b538d16f290ae67f760984dc6594a7c15e9716ed28dc027beceea1ec40a"),
+]
+
+
+def signatures() -> Dict[str, Any]:
+    """The one verify equation both twins use, pinned: cofactorless ([S]B == R + [h]A, RFC 8032 section 5.1.7 without
+    the optional cofactor), S below L, A and R canonical points, and A or R of small order refused. Ed25519 verifiers
+    differ exactly here (cofactored or not, small order, mixed order), and the platform's own (WebCrypto, OpenSSL)
+    may change between versions, so neither twin uses one: these cases are what keeps the two the same."""
+    S = sign_release
+    P, L = E._P, E._L
+
+    def enc(pt) -> bytes:
+        return S._encode(pt)
+
+    def scalar_sig(a: int, a_pub: bytes, r: int, r_pt, msg: bytes) -> bytes:
+        big_r = enc(r_pt)
+        h = int.from_bytes(hashlib.sha512(big_r + a_pub + msg).digest(), "little") % L
+        return big_r + ((r + h * a) % L).to_bytes(32, "little")
+
+    def h8(r_enc: bytes, a_pub: bytes, msg: bytes) -> int:
+        return int.from_bytes(hashlib.sha512(r_enc + a_pub + msg).digest(), "little") % L % 8
+
+    # a point of order 8 (the torsion part of a mixed-order key)
+    t8 = next(E._decode(bytes.fromhex(x)) for x in small_order()
+              if not E._equal(E._mul(4, E._decode(bytes.fromhex(x))), (0, 1, 1, 0)))
+    a, _prefix = S._expand(seed("mixed"))
+    a_pt = E._mul(a, E._G)
+    mixed_pub = enc(E._add(a_pt, t8))                            # aB + T: on the curve, not of small order
+    r = 12345678901234567890
+    r_pt = E._mul(r, E._G)
+    msgs = [("mixed-%d" % n).encode("ascii") for n in range(200)]
+    m_off = next(m for m in msgs if h8(enc(r_pt), mixed_pub, m) != 0)          # h*T is not the identity
+    m_on = next(m for m in msgs if h8(enc(r_pt), mixed_pub, m) == 0)           # h*T is the identity
+    mixed_r = E._add(r_pt, t8)
+    good_pub = S.public_key(seed("dev"))
+    signbit_seed = next(seed("sign-%d" % n) for n in range(64) if S.public_key(seed("sign-%d" % n))[31] & 0x80)
+    signbit_pub = S.public_key(signbit_seed)
+    signbit_sig = S.sign(signbit_seed, b"popsnip/1\nthe equation")
+    msg = b"popsnip/1\nthe equation"
+    good = S.sign(seed("dev"), msg)
+    s_plus_l = good[:32] + (int.from_bytes(good[32:], "little") + L).to_bytes(32, "little")
+    y_big = (P + 1).to_bytes(32, "little")                       # y >= p: not a canonical encoding (of y = 1)
+    ident = (1).to_bytes(32, "little")
+    off = base64.urlsafe_b64decode(off_curve() + "=")
+    cases = [(  "RFC 8032 test %d" % (n + 1), pk, m, sg, True) for n, (pk, m, sg) in enumerate(RFC8032)]
+    cases += [
+        ("a test key's signature", good_pub.hex(), msg.hex(), good.hex(), True),
+        ("another message", good_pub.hex(), (msg + b"!").hex(), good.hex(), False),
+        ("S + L, the same S not reduced", good_pub.hex(), msg.hex(), s_plus_l.hex(), False),
+        ("S = 2^256 - 1", good_pub.hex(), msg.hex(), (good[:32] + b"\xff" * 32).hex(), False),
+        ("a key with y = p + 1 (a non-canonical spelling of the identity: refused as small order as well)",
+         y_big.hex(), msg.hex(), good.hex(), False),
+        ("R with y = p + 1 (the same; no valid vector can pin the canonical-y rule alone)", good_pub.hex(), msg.hex(),
+         (y_big + good[32:]).hex(), False),
+        ("a valid signature by a key whose sign bit is set", signbit_pub.hex(), msg.hex(), signbit_sig.hex(), True),
+        ("a key that is no point", off.hex(), msg.hex(), good.hex(), False),
+        ("the identity as key, R and S = 0: the equation holds, the key is refused", ident.hex(), msg.hex(),
+         (ident + bytes(32)).hex(), False),
+        ("a key of order 8, R the identity, S = 0", enc(t8).hex(), msg.hex(), (ident + bytes(32)).hex(), False),
+        ("a good key, R of small order", good_pub.hex(), msg.hex(), (enc(t8) + good[32:]).hex(), False),
+        ("a mixed-order key, h*T not the identity: cofactored would accept, cofactorless refuses", mixed_pub.hex(),
+         m_off.hex(), scalar_sig(a, mixed_pub, r, r_pt, m_off).hex(), False),
+        ("a mixed-order key, h*T the identity: both equations accept", mixed_pub.hex(), m_on.hex(),
+         scalar_sig(a, mixed_pub, r, r_pt, m_on).hex(), True),
+        ("a mixed-order R: cofactored would accept, cofactorless refuses", good_pub.hex(), msg.hex(),
+         scalar_sig(S._expand(seed("dev"))[0], good_pub, r, mixed_r, msg).hex(), False),
+        ("a key of 31 bytes", good_pub[:31].hex(), msg.hex(), good.hex(), False),
+        ("a signature of 63 bytes", good_pub.hex(), msg.hex(), good[:63].hex(), False),
+    ]
+    for name, pk, m, sg, ok in cases:                            # the rule, checked against the Python twin here
+        assert E.verify(bytes.fromhex(pk), bytes.fromhex(m), bytes.fromhex(sg)) is ok, name
+    return {"about": ("Ed25519 verification as both twins do it (bollardeck.corpus._ed25519 and "
+                      "bollardeck.popsnip.verify), written by tools/popsnip_vectors.py: `valid` is the answer for "
+                      "the public key, message and signature (hex). The equation is cofactorless, S must be below L, "
+                      "A and R must be canonical points, and an A or R of small order is refused."),
+            "cases": [{"name": n, "pub": pk, "message": m, "signature": sg, "valid": ok} for n, pk, m, sg, ok in cases]}
+
+
 def main(argv: List[str]) -> int:
     outs = [(OUT, json.dumps(build(), indent=1, sort_keys=True, ensure_ascii=True) + "\n"),
-            (OUT_ACCEPT, json.dumps(acceptance(), indent=1, sort_keys=True, ensure_ascii=True) + "\n")]
+            (OUT_ACCEPT, json.dumps(acceptance(), indent=1, sort_keys=True, ensure_ascii=True) + "\n"),
+            (OUT_ED25519, json.dumps(signatures(), indent=1, sort_keys=True, ensure_ascii=True) + "\n")]
     if "--check" in argv:
         for out, text in outs:
             if not out.exists() or out.read_text(encoding="ascii") != text:

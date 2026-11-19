@@ -4,7 +4,7 @@
 #ifndef BOLLARDECK_H
 #define BOLLARDECK_H
 
-#define BOLLARDECK_SDK_VERSION "0.5.0"
+#define BOLLARDECK_SDK_VERSION "0.6.0"
 #define BOLLARDECK_WIRE "bollardeck/1"
 
 #endif /* BOLLARDECK_H */

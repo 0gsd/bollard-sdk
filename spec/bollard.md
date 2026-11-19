@@ -6,7 +6,7 @@ Written for Bollawax 0.2.4 and Bollard SDK 0.1.0 on 2026-11-10. The hardware it 
 
 > **Speculative draft.** No Pop Boll hardware has shipped, and nothing on this page has been built or validated on hardware. Dimensions, pinouts and protocols will change without notice, and nothing here is an offer, a commitment or a promise of compatibility. We would love to hear about partnership, OEM and dev-kit ideas: use the contact form on this site.
 
-> **Note:** This page is **Bollard v1**, drawn when the Pop Boll's computer was built into the ball and docks mated with its foot. Since 2026-11-09 the band's brain is a removable cart, the **Bolltridge**: it lives in the ball, and the ball and the Pop Snipler are docks for it. That changes this page's premise, not its arithmetic. Please read it with these four corrections, and do not cut tooling to it.
+> **Note:** This page is **Bollard v1**, drawn when the Pop Boll's computer was built into the ball and docks mated with its foot. Since 2026-11-09 the band's brain is a removable cart, the **Poptridge**: it lives in the ball, and the ball and the Pop Snipler are docks for it. That changes this page's premise, not its arithmetic. Please read it with these four corrections, and do not cut tooling to it.
 >
 > 1. **Bollard v2 will be the open specification for third-party docks.** It is built on the Bollport, the connection between a cart and its dock, and on a dock descriptor. It is not written. §25 records what is decided.
 > 2. **The cart is the USB host and takes its power from its dock.** Every rule below that makes "the Boll" the host, the power sink or the Bluetooth central describes v1.
@@ -657,7 +657,7 @@ Use these figures when you compute the tip angle of a dock or stack with a Boll 
 
 **Retired.** Earlier drafts of this chapter defined a Bolltridge as a cartridge that docked under the Boll's foot: a USB device of the Boll with its own small Linux computer, running one signed image, powering itself, chained up to four deep, with a reference design called the Dev Puck. None of that is current, and no product should be built to it.
 
-**A Bolltridge is now the core cart**: the computer of the Pop Boll and of the Pop Snipler. It is the USB host of the dock it stands in, takes its power from that dock, runs Bollawax itself, and holds the corpora, a secure element and the only radio. At most two carts share a dock, joined through the dock and never cart to cart. §25 lists what is decided. The Bolltridge's own specification is an open document and is not on this site yet.
+**A Poptridge (called the Bolltridge until 2026-11-17) is now the core cart**: the computer of the Pop Boll and of the Pop Snipler. It is the USB host of the dock it stands in, takes its power from that dock, runs Bollawax itself, and holds the corpora, a secure element and the only radio. At most two carts share a dock, joined through the dock and never cart to cart. §25 lists what is decided. The Poptridge's own specification is an open document and is not on this site yet.
 
 What went with the old class: the class bits 12–14 and the `bolltridge` descriptor object (§12), the power profiles `self`, `vstack`, `below` and `boll`, the compute tiers and the board table, the signed cartridge images, the conformance items T1–T10, and the Dev Puck. Whether add-on images and hacker mode return as software on the cart is open.
 
@@ -981,10 +981,10 @@ Bollard v2 is not written. These points are decided and will be in it. Everythin
 **Carts**
 
 - A cart carries a secure element that holds its edition and its licences.
-- The device serial belongs to the cart. A dock reports a model and a serial of its own in its descriptor.
+- The device serial belongs to the cart until its owner registers it with their account; from then on the cart carries the account's PB number. A dock reports a model and a serial of its own in its descriptor.
 - **Two carts at most.** The cart in a dock's first slot is the brain and the USB host. A second cart is a guest: a USB device of the first, connected through the dock. A guest lends its corpora and its computing while it is seated, and drives no screen and no sound of its own.
-- This round's carts are built on the Arduino Uno Q. The Raspberry Pi family stays in the open Bolltridge specification for other makers and later rounds.
+- This round's carts are built on the Arduino Uno Q. The Raspberry Pi family stays in the open Poptridge specification for other makers and later rounds.
 
-**Since 0.2.5.** Since Bollawax 0.2.5, the image has carried the cart's software for pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor, and the Bollard SDK has carried draft dock and cart descriptor schemas. No cart exists yet, and none of it is verified on hardware. This section describes the cart as it was introduced in Bollawax 0.2.4; nothing in it has changed since.
+**Since 0.2.5.** Since Bollawax 0.2.5, the image has carried the cart's software for pocket mode (a cart running with no dock, on a battery of its own) and a revised dock descriptor, and the Bollard SDK has carried draft dock and cart descriptor schemas. No cart exists yet, and none of it is verified on hardware. This section describes the cart as it was introduced in Bollawax 0.2.4; the one change since is the device serial's rule, revised in Bollawax 0.4.2.
 
 **Not decided, or not written:** the dock classes and the descriptor's fields; the Bollport's tolerances, magnets and cycle life; whether any of the v1 foot interface survives; the Pop Boll's dimensions as a dock; and a conformance checklist.

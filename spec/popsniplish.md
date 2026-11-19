@@ -1,12 +1,12 @@
 # Popsniplish: what a band says to itself
 
-Version 0.1.0 · Status: speculative draft · Updated 2026-11-10
+Version 0.2.1 · Status: speculative draft · Updated 2026-11-19
 
 > **Speculative draft.** No Pop Boll hardware has shipped, and nothing on this page has been built or validated on hardware. Names, kinds, fields and moves will change without notice, and nothing here is an offer, a commitment or a promise of compatibility. We would love to hear about partnership, OEM and dev-kit ideas: use the contact form on this site.
 
-This page is Popsniplish as its one text says it (edition 0.1.0, revised 2026-11-10), told the way a MiniCOSM is documented on cosmoes.org: the text itself; the reference, generated from its manifest and its programs; and its atem, an outline and a glossary. The [overview page](index.md) introduces the rest of the Pop Boll ecosystem.
+This page is Popsniplish as its one text says it (edition 0.2.1, revised 2026-11-19), told the way a MiniCOSM is documented on cosmoes.org: the text itself; the reference, generated from its manifest and its programs; and its atem, an outline and a glossary. The [overview page](index.md) introduces the rest of the Pop Boll ecosystem.
 
-*Edition 0.1.0 · revised 2026-11-10 · home: Pop Boll's private repository, until the owner calls it stable and it
+*Edition 0.2.1 · revised 2026-11-19 · home: Pop Boll's private repository, until the owner calls it stable and it
 gets a cosmoes.org host of its own*
 
 *This edition describes the `popsniplish/1` MiniCOSM and the moves it declares for `thym 1`.*
@@ -51,8 +51,8 @@ The page adds, generated from the manifest and the programs: [the reference, gen
 **Must and may.** *Must* is a rule the package keeps and a check enforces. *May* is a permission. *Should* is advice.
 
 **The family of words.** A **holder** is who owns a personal sheet and speaks on the talkback: a musician (`m01` to
-`m16`, the riff book's ids), a judge (`j1` to `j7`) or DJ PB (`djpb`). A **call** is a musician's message before a
-take, a **response** a judge's after a lock vote, a **notice** the house's message of an event. The **Studio Cheat
+`m16`, the riff book's ids), a judge (`j1` to `j7`) or DJ PB (`djpb`), and a Boll's own DJ (`djboll`) for the meanings of the songs it grows. A **call** is a musician's message before a
+take, a **response** a judge's after a lock vote, a **notice** the house's message of an event, a **meaning** a song's one line, told as a tiny story. The **Studio Cheat
 Sheet** (SCS) is the band's sheet, a page per band day, unanimous; a **personal public cheat sheet** (PPCS) is one
 holder's own. An **entry** is one item of a sheet: a constructed fabula file and its short. A **knob** is a factory
 input an agreement may name, from a closed lexicon. **Holomorph**, **isomorph** and **reading** are Thym's.
@@ -92,7 +92,7 @@ Graham Smith: the language and its name are his, and this specification's text i
 - The **vote** is the core's dialectic with a bank of one question, answered by rules (section 7).
 - A **morph** is Thym's, measured by rules on the seven statistics scales, with the judgement scales pinned by the
   holder's persona; `voice` renders one without a model (section 8).
-- Every move **transcodes** (section 10). The checks are the generic ones and seven of Popsniplish's own (section 11).
+- Every move **transcodes** (section 10). The checks are the generic ones and twelve of Popsniplish's own (section 11).
 
 ## 3. The design rules
 
@@ -119,7 +119,7 @@ Graham Smith: the language and its name are his, and this specification's text i
 |---|---|---|
 | `studio` | `studio.cosm` at the root of a folder; `days/<day>/<nn>-<slug>.fabulan.cosm` and the shorts beside it; module files `S/ K/ H/ V/ F/ D/` | the band's Studio Cheat Sheet: the adopted entries by day, the knobs, the holders, the votes, the dialectic |
 | `personal` | `personal.cosm`; `entries/<day>-<n>-<slug>.fabulan.cosm`; `<holder>.morph.cosm` beside the folder, never inside; `public/` the projection | one holder's personal public cheat sheet, their holomorph, their releases |
-| `talkback` | `<song>.talkback.cosm`, one file, or a folder `<song>/<part>/take-<n>/` of fabulas and shorts | one song's calls, responses and notices |
+| `talkback` | `<song>.talkback.cosm`, one file, or a folder `<song>/<part>/take-<n>/` of fabulas and shorts | one song's calls, responses and notices, and its meaning |
 
 **The catalog's keys**, in order: `oes` (`popsniplish/1`), `macrocosm`, `id` (`popsniplish/<slug>`), `name`,
 `kind`, `band` (the soul fingerprint, never a serial), `device`, `holder` and `handle` (a personal volume),
@@ -131,8 +131,8 @@ and `morphs` (a personal volume, as Ascribe records them), `song` and `day` (a t
 
 | Letter | Module | Kind | What it holds |
 |---|---|---|---|
-| S | Sheet | `entry` | one entry's row: `holder`, `day`, `kind`, `fabula` and `short` (file names), `atem` (the line, copied), `visibility`; an agreement's `force` and `knob`; `adopted`, `proposed` (the question), `weakened-from`; `forms` |
-| K | Knobs | `knob` | one factory input: `key`, `family` (`directive`, `writer`, `plan`, `study`, `roster`), `reads`, `range`, `says` |
+| S | Sheet | `entry` | one entry's row: `holder`, `day`, `kind`, `fabula` and `short` (file names), `atem` (the line, copied), `visibility`; an agreement's `force` and `knob` (or, for a tale variant, a null knob and its `variant`); another reading's `reading`; `adopted`, `proposed` (the question), `weakened-from`; `forms` |
+| K | Knobs | `knob` | one factory input: `key`, `family` (`directive`, `writer`, `plan`, `study`, `roster`, `meaning`), `reads`, `range`, `says` |
 | H | Holders | `holder` | `role` (`musician`, `judge`, `dj`, `panel` for the seven as one voice, `house` for the factory), `channel` or `judge`, `pronouns`, `pins` (the judgement scales the holder pins), `active` |
 | V | Votes | `vote` | `holder`, `entry`, `question`, `value` (`yes`, `no`, `unknown`), `says` (the holder's words, voiced), `seed`, `day`; its provenance is `dialectic` |
 | F | Forms | `form` | the music things entries are about, as Ascribe's forms: `feed: {word, pos, origin}` or `{pending: "not in FEED"}` |
@@ -142,9 +142,9 @@ and `morphs` (a personal volume, as Ascribe records them), `song` and `day` (a t
 `links` (the fabula's nine relations, closed) and Thym's `made`. Every item a rules pass reads exactly carries
 `{mode: derived, confidence: 1}`; what a vote wrote carries `{mode: dialectic, sources: [D:session/<id>]}`.
 
-**Closed lists.** `kind`: on a studio sheet `tip`, `trick`, `agreement`; on a personal sheet Ascribe's ten,
+**Closed lists.** `kind`: on a studio sheet `tip`, `trick`, `agreement`, `another-reading`; on a personal sheet Ascribe's ten,
 `affinity belief concern experience interest opinion quale skill understanding yearning`, used as the ten kinds of
-thing a holder can say; in a talkback `call`, `response`, `notice`. `force`: `must should may`. `role`, `value`,
+thing a holder can say; in a talkback `call`, `response`, `notice`, `meaning` (at most one). `force`: `must should may`. `role`, `value`,
 `family` and `feed.origin` as above.
 
 ## 6. Entries: constructed fabulas and their shorts
@@ -173,6 +173,48 @@ devices, parts), *who made it*, *how it can be read*, and the terms. The footer 
 `*a short of <slug>.fabulan.cosm, a standalone fabula, told by weight, compiled on <day> by rules, without a model*`.
 The file is `<slug>.short-<YYYY-MM-DD-HHMM>.md` beside the fabula, `-2` on a collision; the fabula records it in
 `shorts:` without a byte of the rest changing.
+
+### 6.1 A song's meaning
+
+Every original song a Boll makes has a **meaning**: one plain English line of at most 140 characters that tells the
+song as a tiny story. It is a talkback entry of kind `meaning` (`S:entry/<song>-meaning`, at most one per talkback),
+whose holder is its author: the `panel` for a band song, the Boll's own DJ (`djboll`, role `dj`) for a song its DJ grew.
+Its fabula is a standalone fabulan built by the move `mean` from the song record and two tables:
+
+- `E:person`: the hero, a name the Boll already says (a musician of the roster, or the DJ's name), never a real person;
+- `E:work`: one tale type of the Aarne-Thompson-Uther index, named `ATU <n>: <title>`, and an `I:allusion` to it
+  (`stance: deduced`, a `cue`): the song tells that tale without saying so;
+- three `T:event`s, one beat of the hero's journey per act, each with `journey: {beat, act}`, `agent` the hero, and
+  `after` the one before; the beats are read from what the music does in each act;
+- the atem: the **line** (the meaning), the focus (the tale and the middle beat), the push (the author's aim) and the
+  pull (how the judges heard the song).
+
+`mean` builds the items; the move `tell-line` then writes the atem into the same fabula, by rules: the line is the three
+beats as one sentence, the hero named once (the builder's rule), a role said once (`roles-once`), every word from the
+fabula's items or the tables' phrasings and a FEED word (`nothing-added`), richest phrasings first and shorter ones
+until it fits (`fits-140`); the focus, push and pull are one or two sentences each (`meaning-atem`). It is not `tell`:
+`tell` is the fabula's own move and gives a short. The tables, the journey's beats with their phrasings and the tale types with their
+roles and the song features that call them up, ship as data beside the code, each with an edition the meaning names;
+this text says how they are shaped and used, not what is in them. The line is the only part people see and edit. Once
+the Boll's owner edits it, nothing automated changes it again; that rule, the check before a share and how the line is
+shown live with the application, not the language.
+
+### 6.2 Another reading
+
+A musician may read a song another way. **Another reading** is a studio entry of kind `another-reading`, put to the
+band like any entry and adopted only by a unanimous vote. Its holder is the musician who reads, and its row names the
+reading: `reading: {song, channel, kind}`, where `kind` is `tale` (the song told as another tale type) or `spine`
+(the same tale type with other beats), a closed list (`reading.kind`). It carries no `force` and no `knob`: nothing in
+the factory follows it. Its claim quotes the reading's line, so the band votes on what it would read.
+
+The reading's fabula is built by the move `read-again` from the song record and its meaning, with the same tables and
+the same rules as `mean` and `tell-line`: an `E:person` (the musician who reads, as the hero), one `E:work` and its
+`I:allusion`, three `T:event`s and an atem whose line answers to `fits-140`, `meaning-atem`, `nothing-added`,
+`roles-once`, `journey-ordered` and `one-tale`. Once the entry is adopted, that fabula is kept as a standalone file
+beside the song (`<song>.reading-m<channel>-<kind>.fabulan.cosm`) and the song names it. When the move finds a
+musician whose own hearing of the song stands apart from the panel's, and where a reading is shown, live with the
+application.
+A reading never replaces the song's meaning or touches it.
 
 ## 7. The dialectic, applied: the vote
 
@@ -233,23 +275,34 @@ Declared in the manifest's moves sidecar, `popsniplish.moves.cosm`, for `thym 1`
 | `adopt` | volume → volume | `addressed` `only-the-asked` `unanimous` `weakens-only` `provenance` |
 | `voice` | fabula → short; `with` morph; `in` context | `coverage` `no-invention` `stance-kept` `scales-met` `labelled` `never-source` `nothing-added` `provenance` |
 | `release` | volume → volume | `isomorph-bare` `default-deny` `provenance` |
+| `mean` | volume → fabula; `by` item (the panel, or the Boll's own DJ) | `fabula-checks` `journey-ordered` `one-tale` `provenance` |
+| `tell-line` | fabula → fabula, its atem told; `in` context (a cap that may only be lower than 140) | `fits-140` `meaning-atem` `nothing-added` `roles-once` `journey-ordered` `labelled` `provenance` |
+| `read-again` | volume → fabula; `by` item (the musician who reads) | `fits-140` `meaning-atem` `nothing-added` `roles-once` `journey-ordered` `one-tale` `labelled` `provenance` |
 
 The 1 to 16 Music Notes a judge gives leave a response banded, by Thym's `band` move, as `[rough, working, tight,
-soaring]`, four bands of four. `voice` is the language's; the other seven are the Talkback's, specified in the plan.
+soaring]`, four bands of four. `voice`, `mean`, `tell-line` and `read-again` are the language's; the other seven are the Talkback's,
+specified in the plan.
 
 ## 11. Checks
 
-A Popsniplish volume runs the generic checks of MacroCOSM OES 12.2 and the dialectic's own, then seven of its own:
+A Popsniplish volume runs the generic checks of MacroCOSM OES 12.2 and the dialectic's own, then eight of its own; a
+meaning's fabula and line answer to five more:
 
 | Check | Holds |
 |---|---|
-| `entry-kind` | a studio entry's kind is `tip`, `trick` or `agreement`; a personal entry's one of the ten; a talkback entry's `call`, `response` or `notice` |
+| `entry-kind` | a studio entry's kind is `tip`, `trick`, `agreement` or `another-reading`; a personal entry's one of the ten; a talkback entry's `call`, `response`, `notice` or `meaning`, with at most one meaning |
 | `grounded-in-pop` | every form's `feed` is a FEED word or the open question; every knob an entry names is a `K:knob` of the volume |
-| `one-requirement` | an agreement carries exactly one `force` and one `knob`; no other kind carries either |
+| `one-requirement` | an agreement carries exactly one `force` and one `knob`; no other kind carries either; an agreement whose `knob` is null names the tale variant it tells (`variant`) |
+| `one-reading` | another reading names its `reading`: `{song, channel, kind}`, the channel 1 to 16 and the kind `tale` or `spine`; its holder is that channel's musician |
 | `unanimous` | an adopted entry has one yes vote from every active musician holder of the volume, and no other vote |
 | `weakens-only` | an entry proposed again carries a force at or below the last |
 | `one-day` | an entry's day is a whole number from 1, at or below the calendar's day |
 | `isomorph-bare` | a shared morph carries no `evidence` and no `derived.from` |
+| `fits-140` | a meaning's line is plain text: stored in NFC, not empty, no space at either end, at most 140 code points, none of them a control (tab and newline included), a format character (zero-width characters, joiners, bidirectional marks, the soft hyphen), private use, a surrogate, a line or paragraph separator, or a noncharacter; unassigned code points are not judged, since that depends on the reader's Unicode |
+| `meaning-atem` | a meaning's atem is `atem-shape` with the line under `fits-140` instead of 15 to 25 words |
+| `journey-ordered` | one person, the hero; three journey events, one per act, beats as whole numbers in their act (1–7, 8–17, 18–24), each with the hero as agent and after the one before |
+| `one-tale` | exactly one work named `ATU <n>: <title>`, and an allusion to it at stance `deduced` |
+| `roles-once` | no role phrase of the tale is said twice in the line (case and spacing folded, whole words, the longest role first) |
 
 `fabula-checks` on an entry's fabula is the fabula's own contract, run by `popsniplish.checks`; the reference reader,
 enough, lints the same files with zero errors (section 13).
@@ -265,7 +318,7 @@ owner's, all rights reserved, and ships only inside Pop Boll's own images.
 ## 13. Conformance
 
 A reader of Popsniplish must read every `.cosm` file in the COSM YAML subset and refuse the forbidden constructs by
-name; run the generic checks under the manifest; run the seven own checks; and build, tell, measure and voice as
+name; run the generic checks under the manifest; run its own checks; and build, tell, measure and voice as
 sections 6 and 8 say, the same bytes twice from the same inputs. The conformance evidence this edition ships is the
 reference implementation's test suite and, when an enough checkout is at hand, enough's own reader: it lints the
 spec's example fabula, a constructed call, a morph volume and a studio volume with zero errors, and identifies a
@@ -273,6 +326,13 @@ Popsniplish volume by this manifest (`python -m enough.macrocosm identify …`, 
 
 ## 14. Changes
 
+- **0.2.1 (2026-11-19).** Another reading (section 6.2): the studio kind `another-reading` with its `reading`, the
+  move `read-again`, the check `one-reading`; the knob family `meaning`; an agreement may name a tale `variant` with
+  a null knob. Every 0.2.0 volume reads unchanged, so the declaration stays `popsniplish/1`.
+- **0.2.0 (2026-11-19).** A song's meaning (section 6.1): the talkback kind `meaning`, the moves `mean` and
+  `tell-line` (which writes the atem into the fabula `mean` built), the program `mean-a-song`, and five checks (`fits-140`, `meaning-atem`, `journey-ordered`, `one-tale`,
+  `roles-once`). Every 0.1.0 volume reads unchanged, so the declaration stays `popsniplish/1`. The telling move is
+  `tell-line`, not `tell`, which is the fabula's own and gives a short (design rule 7).
 - **0.1.0 (2026-11-09).** First edition: the MiniCOSM, its moves, the knob lexicon, the trimmed FEED, the builder,
   shorts by rules, measurement, voice and readings. An agreement's force and knob live on its `S:entry` row, not on
   an `N:requirement`, because the fabula's manifest gives that kind to the fabulac alone (its `flavours`).
@@ -296,8 +356,8 @@ DocOES joins a document's items to the ones it generates from the manifests: the
 | Entries | `days/<day>/<nn>-<slug>.fabulan.cosm` with its shorts beside it (studio); `entries/<day>-<n>-<slug>.fabulan.cosm` (personal) |
 | Morphs | `<holder>.morph.cosm` beside a personal volume, never inside it: the holomorph; public/isomorph.morph.cosm: the shared one |
 | Modules | 5 (S, K, H, V, F), 5 kinds, and the core's D |
-| Text | this specification, edition 0.1.0; reference implementation: Pop Boll's `popsniplish` package |
-| Moves | the sidecar `popsniplish.moves.cosm`, 8 moves |
+| Text | this specification, edition 0.2.1; reference implementation: Pop Boll's `popsniplish` package |
+| Moves | the sidecar `popsniplish.moves.cosm`, 11 moves |
 | Extension | not built |
 
 ### The catalog
@@ -313,7 +373,7 @@ Its keys, in the manifest's order, with what the manifest says of each.
 | `kind` | `studio`, `personal`, `talkback` |
 | `band` | the band's id: its soul fingerprint (SOUL-…); never a serial |
 | `device` | the device serial the volume was written on |
-| `holder` | a personal volume: the holder's id, m01 to m16 for a musician, j1 to j7 for a judge, djpb for DJ PB |
+| `holder` | a personal volume: the holder's id, m01 to m16 for a musician, j1 to j7 for a judge, djpb for DJ PB, djboll for a Boll's own DJ |
 | `handle` | a personal volume: the holder's name as the band knows them |
 | `calendar` | a studio volume: {edition, day}, the band day the volume stands at (the longitudinal index's, never the wall clock) |
 | `editions` | a studio volume: one entry per day with adoptions, appended: {day, digest, entries}; the digest is what a song's meta names |
@@ -358,12 +418,13 @@ The reader adds the core's module D, the dialectic's questions and sessions, to 
 
 | Field | Values |
 | :--- | :--- |
-| `kind` | `tip`, `trick`, `agreement`, `affinity`, `belief`, `concern`, `experience`, `interest`, `opinion`, `quale`, `skill`, `understanding`, `yearning`, `call`, `response`, `notice` |
+| `kind` | `tip`, `trick`, `agreement`, `another-reading`, `affinity`, `belief`, `concern`, `experience`, `interest`, `opinion`, `quale`, `skill`, `understanding`, `yearning`, `call`, `response`, `notice`, `meaning` |
 | `force` | `must`, `should`, `may` |
 | `role` | `musician`, `judge`, `dj`, `panel`, `house` |
 | `value` | `yes`, `no`, `unknown` |
-| `family` | `directive`, `writer`, `plan`, `study`, `roster` |
+| `family` | `directive`, `writer`, `plan`, `study`, `roster`, `meaning` |
 | `feed.origin` | `feed`, `user` |
+| `reading.kind` | `tale`, `spine` |
 
 ### The bank
 
@@ -397,23 +458,29 @@ The generic checks the manifest selects, then Popsniplish's own; their words are
 | `entry-kind` | Popsniplish's own | error |
 | `grounded-in-pop` | Popsniplish's own | error |
 | `one-requirement` | Popsniplish's own | error |
+| `one-reading` | Popsniplish's own | error |
 | `unanimous` | Popsniplish's own | error |
 | `weakens-only` | Popsniplish's own | error |
 | `one-day` | Popsniplish's own | error |
 | `isomorph-bare` | Popsniplish's own | error |
+| `fits-140` | Popsniplish's own | error |
+| `meaning-atem` | Popsniplish's own | error |
+| `journey-ordered` | Popsniplish's own | error |
+| `one-tale` | Popsniplish's own | error |
+| `roles-once` | Popsniplish's own | error |
 
 ### Lenses
 
 | Lens | Makes | Draws |
 | :--- | :--- | :--- |
 | `sheet` | a day's entries as their shorts, in order, each with its holder and its vote | `table`: columns: day, id, kind, holder, force, knob, adopted |
-| `talkback` | a song's calls, responses and notices by part and take, each as its atem line | `table`: columns: id, kind, holder, atem |
+| `talkback` | a song's calls, responses and notices by part and take, each as its atem line, and its meaning | `table`: columns: id, kind, holder, atem |
 | `holder` | a holder's page, an isograph-style card of what they say, with their public shorts and their isomorph | `mermaid`: diagram: mindmap, include: S, F |
 | `text-tree` | the text tree | `python -m enough.macrocosm tree` |
 
 ### The moves
 
-Declared in the sidecar for `thym 1` (`moves-of: popsniplish/1`): 8 moves, none of which asks a model.
+Declared in the sidecar for `thym 1` (`moves-of: popsniplish/1`): 11 moves, none of which asks a model.
 
 | Move | Takes | Gives | Modifiers | Contract | Code | Says |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -425,6 +492,9 @@ Declared in the sidecar for `thym 1` (`moves-of: popsniplish/1`): 8 moves, none 
 | `adopt` | `volume` | `volume` | — | `addressed`, `only-the-asked`, `unanimous`, `weakens-only`, `provenance` | `talkback.studio:adopt` | the settled studio volume, every unanimous proposal adopted and every other weakened or dropped |
 | `voice` | `fabula` | `short` | `with: morph`, `in: context` | `coverage`, `no-invention`, `stance-kept`, `scales-met`, `labelled`, `never-source`, `nothing-added`, `provenance` | `popsniplish.voice:voice` | a fabula told in a morph by rules, a reading when the morph is not the author's |
 | `release` | `volume` | `volume` | — | `isomorph-bare`, `default-deny`, `provenance` | `talkback.personal:release` | a holder's public page and isomorph, nothing private in either |
+| `mean` | `volume` | `fabula` | `by: item` | `fabula-checks`, `journey-ordered`, `one-tale`, `provenance` | `meaning.mean:mean` | a song's meaning as a fabula, a hero, one ATU tale type and three hero's-journey beats read from the music, its atem not yet told |
+| `tell-line` | `fabula` | `fabula` | `in: context` | `fits-140`, `meaning-atem`, `nothing-added`, `roles-once`, `journey-ordered`, `labelled`, `provenance` | `meaning.tell:tell_line` | a meaning's fabula told by rules, its atem written from the fabula's own words and FEED words, the line at most 140 characters |
+| `read-again` | `volume` | `fabula` | `by: item` | `fits-140`, `meaning-atem`, `nothing-added`, `roles-once`, `journey-ordered`, `one-tale`, `labelled`, `provenance` | `meaning.reread:another` | another reading of a band song by the musician whose own hearing of it stands apart from the panel's, another tale or another spine, told by the same rules; it never replaces the line |
 
 ### The knob lexicon
 
@@ -476,12 +546,13 @@ Declared in the sidecar for `thym 1` (`moves-of: popsniplish/1`): 8 moves, none 
 
 ### The programs
 
-9 programs, each `thym 1`, each built from the moves above.
+10 programs, each `thym 1`, each built from the moves above.
 
 | Program | File | Takes | Gives | Why |
 | :--- | :--- | :--- | :--- | :--- |
 | `call-a-take` | `call-a-take.thym` | `take: volume`, `who: item` | `s: short` | before a take, a musician says what they mean to do and why, as a fabula the band can check and a short the band can read. |
 | `land-the-vote` | `land-the-vote.thym` | `proposal: item`, `who: item`, `studio: volume` | `v: item` | one holder answers one proposal, by rules, seeded by the soul, the day, the entry and the holder, with their own words. |
+| `mean-a-song` | `mean-a-song.thym` | `song: volume`, `who: item` | `m: fabula` | every original song a Pop Boll makes gets a meaning, one English line of at most 140 characters, told as a tiny story. |
 | `measure-a-holder` | `measure-a-holder.thym` | `t: text`, `f: fabula` | `m: morph` | a holder's text measured against the null telling of its fabula: the holomorph, the departure from the plainest telling on ten scales. |
 | `nominate-to-the-studio` | `nominate-to-the-studio.thym` | `day: volume`, `studio: volume` | `g: volume` | the day's talkback nominates what the studio should keep; each proposal lands with the studio volume and the one question the bank asks of every musician. |
 | `notice-an-event` | `notice.thym` | `event: item` | `s: short` | the house says what happened: a study break, a mutation, the song's end, a retirement, a recruit. |
@@ -496,6 +567,7 @@ What they keep, and what was decided when they were written:
 | :--- | :--- | :--- | :--- |
 | `call-a-take` | nothing in the call is invented: every item is read from the plan, the roster, the directives and what the musician studied. | 2026-11-09 | the call is a standalone fabulan, told by rules, without a model. |
 | `land-the-vote` | — | 2026-11-09 | a vote is yes, no or unknown; unknown blocks adoption as a no does. |
+| `mean-a-song` | — | 2026-11-19 | who is the author, the panel for a band song or the Boll's own DJ for a song its DJ grew. |
 | `measure-a-holder` | — | 2026-11-09 | only standard moves, so the reference compiler can check this program as it is; under rules the seven statistics scales are measured and the three judgement scales are pending. |
 | `nominate-to-the-studio` | a proposal that is an agreement names exactly one force and one knob. | 2026-11-09 | the questions land in this run; the votes come back in another; no run waits. |
 | `notice-an-event` | — | 2026-11-09 | a notice is a fabula like a call, told the same way. |
@@ -517,11 +589,13 @@ The document at its atem density, as DocOES tells it: one line per section, the 
 - **4** [The volumes](#4-the-volumes) — studio, personal and talkback volumes, their files and their catalog keys
 - **5** [The modules and their kinds](#5-the-modules-and-their-kinds) — six modules, their kinds, the envelope and the closed lists
 - **6** [Entries: constructed fabulas and their shorts](#6-entries-constructed-fabulas-and-their-shorts) — an entry is a standalone fabulan, told as a short by rules
+  - **6.1** [A song's meaning](#61-a-songs-meaning) — Every original song a Boll makes has a meaning…
+  - **6.2** [Another reading](#62-another-reading) — a musician's own reading of a song, put to the band as a studio entry
 - **7** [The dialectic, applied: the vote](#7-the-dialectic-applied-the-vote) — one question, every musician's answer by rules, unanimity or weakening
 - **8** [Morphs: holomorphs, isomorphs, voice and readings](#8-morphs-holomorphs-isomorphs-voice-and-readings) — ten scales measured by rules; the holder's morph, private and shared; voice
 - **9** [The knob lexicon](#9-the-knob-lexicon) — the closed list of factory inputs an agreement may name
-- **10** [The moves](#10-the-moves) — eight moves declared for Thym, every one transcoding
-- **11** [Checks](#11-checks) — the generic checks, the dialectic's, and seven of Popsniplish's own
+- **10** [The moves](#10-the-moves) — eleven moves declared for Thym, every one transcoding
+- **11** [Checks](#11-checks) — the generic checks, the dialectic's, and thirteen of Popsniplish's own
 - **12** [FEED on a Boll](#12-feed-on-a-boll) — the trimmed dictionary the image ships, and where the full one lives
 - **13** [Conformance](#13-conformance) — what a reader of Popsniplish must do, and the evidence this edition ships
 - **14** [Changes](#14-changes) — what each edition changed, newest first
@@ -541,6 +615,7 @@ The document at its atem density, as DocOES tells it: one line per section, the 
 | **The envelope** | [5](#5-the-modules-and-their-kinds) | The envelope is MacroCOSM's: id type name summary provenance required; status, visibility, pending… |
 | **atem** | [6](#6-entries-constructed-fabulas-and-their-shorts) | The atem is constructed with the items: the line (15 to 25 words)… |
 | **short** | [6](#6-entries-constructed-fabulas-and-their-shorts) | A short is compiled by rules: by weight for a standalone fabula |
+| **Another reading** | [6.2](#62-another-reading) | Another reading is a studio entry of kind another-reading… |
 
 ## Colophon
 
@@ -550,4 +625,4 @@ owner's. The reference implementation is closed today. A core subset of it that
 needs no FEED is to be published under Apache-2.0 in the Bollard SDK, with a JavaScript twin; that is decided and
 not done. Voice, morph and the FEED dictionary stay closed.*
 
-This page is generated from the specification's one text (edition 0.1.0, revised 2026-11-10), which Pop Boll keeps, and a check holds the page in step with it. The text is given word for word, with its HTML comments removed and its Contents linked, but for 11 places where it names a file in Pop Boll's private repository: there the page says the same thing without the file's name. The reference, the outline and the glossary are made from the manifest, the programs and DocOES's rules, and nothing else is written here.
+This page is generated from the specification's one text (edition 0.2.1, revised 2026-11-19), which Pop Boll keeps, and a check holds the page in step with it. The text is given word for word, with its HTML comments removed and its Contents linked, but for 11 places where it names a file in Pop Boll's private repository: there the page says the same thing without the file's name. The reference, the outline and the glossary are made from the manifest, the programs and DocOES's rules, and nothing else is written here.

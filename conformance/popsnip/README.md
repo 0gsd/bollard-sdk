@@ -28,3 +28,8 @@ the order they are tried:
 
 `parse()` adds `bad_json` and `duplicate_key`. It counts nesting over the text before anything else, so deep input
 is `bad_json` whatever it holds.
+
+`accept.json` holds the device check's cases (`accept()` in Python, `checkAccept()` in JavaScript): a signed history,
+its variants, and each case's expected code. `ed25519.json` pins the one Ed25519 verify equation both twins use:
+cofactorless, S below L, canonical points, and an A or R of small order refused. A verifier that is cofactored, or
+that lets mixed-order points through differently, gives other answers on its mixed-order cases.

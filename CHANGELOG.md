@@ -1,7 +1,28 @@
 # Changelog
 
 What each version of the Bollawax Bollard SDK added and changed. The SDK has its own version, and
-its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`, `0.5.0`); it is not the Bollawax image version.
+its tags are the version number (`0.1.0`, `0.2.0`, `0.3.0`, `0.4.0`, `0.5.0`, `0.6.0`); it is not the Bollawax image version.
+
+## 0.6.0 (2026-11-19)
+
+Shipped with Bollawax 0.4.2. **No breaks: everything is added.** Nothing that was in 0.5.0 changed its arguments,
+its answers or its wire. `MIN_BOLLAWAX` stays 0.3.7 and `SPEAKS` is unchanged (`popsnip: "popsnip/1"`): the records,
+the list and the conformance files read as before, with more cases.
+
+- **New: `bollardeck.popsnip.checkAccept(...)` in JavaScript**, the twin of Python's `accept()` (the same arguments in
+  the same order; files as `Uint8Array`s, the list and the held list as `[index, pages]`). A Promise of
+  `{ok, code, detail}`; it never rejects on bad input (`malformed`). It passes every case in
+  `conformance/popsnip/accept.json`.
+- **New: `bollardeck.popsnip.verify(pub, message, signature)`**, Ed25519 in plain BigInt arithmetic with SHA-512 from
+  `crypto.subtle`. The platform's verifier is not used: verifiers differ on the cofactor and on small and mixed order.
+- **`verify` keeps the answers it has worked out** (bounded at 65,536), keyed by the key, the signature and the SHA-512
+  of `R || A || M`. A device or a host that checks the same log again pays one SHA-512 per signature after the first
+  check. Inputs are copied at the call. No answer changes.
+- **More `accept.json` cases:** `version`, `list_signature`, a log entry earlier than the one before, a fork at the held
+  seq, and a head refusal before a release refusal. The Ed25519 vectors gain a valid key whose sign bit is set.
+- **New: `conformance/popsnip/ed25519.json`** pins the one equation both twins use: cofactorless, S below L,
+  canonical points, an A or R of small order refused. It includes mixed-order keys and R values that a cofactored
+  verifier accepts and these refuse.
 
 ## 0.5.0 (2026-11-17)
 

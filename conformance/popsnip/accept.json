@@ -602,6 +602,76 @@
    "pinned": "release",
    "release": "r1",
    "roots": "malformed"
+  },
+  {
+   "app": "drumtoy",
+   "code": "version",
+   "files": "r2",
+   "head": "badversion",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "badversion",
+   "name": "a publish entry whose version is not the release's",
+   "pinned": "release",
+   "release": "r2",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "list_signature",
+   "files": "r1",
+   "head": "main",
+   "held_head": null,
+   "held_list": null,
+   "list": "badsig",
+   "log": "main",
+   "name": "a list index signed by a key with no certificate",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "log",
+   "files": "r1",
+   "head": "timeback",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "timeback",
+   "name": "a log entry earlier than the one before",
+   "pinned": "release",
+   "release": "r1",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "rollback",
+   "files": "r3",
+   "head": "main",
+   "held_head": "held_other3",
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "a held head at seq 3 of another history (a fork at the held seq)",
+   "pinned": "release",
+   "release": "r3",
+   "roots": "none"
+  },
+  {
+   "app": "drumtoy",
+   "code": "head",
+   "files": "r1",
+   "head": "short",
+   "held_head": null,
+   "held_list": null,
+   "list": null,
+   "log": "main",
+   "name": "the release is fine, the head is not: the head's refusal comes first",
+   "pinned": "release",
+   "release": "r1_badsig",
+   "roots": "none"
   }
  ],
  "certs": [
@@ -665,6 +735,15 @@
    "signature": "9baOy3XoIpSaTf919h29lfUaCPQTZgHkd0B1fNxTierUAE5Fr4qBAvDkU2nGZb4VBtKmpxt3ZcopKEFtnWp9Dg",
    "v": 1
   },
+  "badversion": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "25d3489b38b11ac64711f31683e2100d1673ed44ce106d27b2ae80bd50f801bb",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 3,
+   "signature": "Tu72xa34YpDBs2YA-5nRgjDBr1Hjf7Qh50RuYoFMRvKjwML4S-7zDfoml9ZjVWvA-_rex0Uu2suEuiBsAU9mDA",
+   "v": 1
+  },
   "cancels": {
    "at": "2026-11-27T09:00:00Z",
    "head_hash": "2a5b0beedb92adf4242ae15527d20a1c75faceb66211962b202ccda272a36606",
@@ -701,6 +780,15 @@
    "signature": "9ISgYRgWCyDy5-GU8vtEdFZo5yJk7VMxfm9iqFM7Uu6wQlUVPLOMjMDZIzLakr6wl_b1b-31WmBLodhV-BMLBg",
    "v": 1
   },
+  "held_other3": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "5ced9895c4089fd6d3a3856d4ce7908fcf96213efb01a2fbaa76c1cfcb2a1a0d",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 3,
+   "signature": "_Qu6ecA2VmmRb1CZ1magGy96dlouPrIOr8E1LUlO_0ofDbnRqcSKymM7YUPHyX9sUBk8AjvEIPrX9wnKEWHkDw",
+   "v": 1
+  },
   "main": {
    "at": "2026-11-20T09:00:00Z",
    "head_hash": "8115324b216ba2f9b648498a9049e528d02d77ab77698a1025bca03d92de4b21",
@@ -735,6 +823,15 @@
    "kind": "popsnip.head",
    "seq": 5,
    "signature": "nx0-JAN9rAsXnOmyZQgdg7l7B5v297zJbHIjfTTG9UcI38lyti5Q8Gbewm7FBYgFUfbSo7oLmM8JZE9cydmaAA",
+   "v": 1
+  },
+  "timeback": {
+   "at": "2026-11-20T09:00:00Z",
+   "head_hash": "eaf66bd5fb8b83de79e8e492f4614b6bca49e94cbfb937d1f129f4dcc6c12744",
+   "kid": "launch-test1",
+   "kind": "popsnip.head",
+   "seq": 3,
+   "signature": "rY3VWK05lBvq8p1kVR0Wsy4Bw07QOJNtYCrmsP3EKeu0dXtkB0c11N_PqevBuMr7L-8Dwh3OaVs0WmA6XWWjAg",
    "v": 1
   },
   "twice": {
@@ -829,6 +926,42 @@
        "ground": "malware",
        "n": 2,
        "notice": "https://popboll.com/dev/notices/r2",
+       "target": {
+        "app": "drumtoy"
+       }
+      }
+     ],
+     "kind": "popsnip.revocation-page",
+     "page": 0,
+     "v": 1
+    }
+   ]
+  },
+  "badsig": {
+   "index": {
+    "at": "2026-11-20T09:00:00Z",
+    "count": 1,
+    "kid": "launch-test1",
+    "kind": "popsnip.revocations",
+    "page_size": 256,
+    "pages": [
+     "48e213117d75769632eb3108e995d994b67d73d639de2f7e926f07d9baa53048"
+    ],
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "seq": 1,
+    "signature": "8ToZUGmUN2kCCHeb24NDAI8VrTEieo7GGevrfK8kGe4S1gzf-1nEu30YUlCTe8UjdCf4Rgl1EuYV6oBmFZ45Dg",
+    "v": 1
+   },
+   "pages": [
+    {
+     "entries": [
+      {
+       "action": "revoke",
+       "at": "2026-11-20T09:00:00Z",
+       "by": "owner",
+       "ground": "malware",
+       "n": 1,
+       "notice": "https://popboll.com/dev/notices/r1",
        "target": {
         "app": "drumtoy"
        }
@@ -1104,6 +1237,49 @@
     "published_at": "2026-11-19T09:00:00Z",
     "seq": 5,
     "signature": "iWdqNV6rTS_Ur-eD5Iic38fkzhPuIiLuDRZjAEqItSs6vWF0V1D9k0pEvUhwvma4tgHq_xvTWXT-B3rFCiyeAw",
+    "v": 1,
+    "version": 3
+   }
+  ],
+  "badversion": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 2,
+    "signature": "qGqFAGH0rk6zscl2fDewWwudK8IRjYrsgj4n5bCBn8bRN_XlCXFg1YL776CQ5vZDqYyyfG9siSj0_C_1IYuiBQ",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "f69ac281677852649dad0ac24ed9b4237f83b12a0434742b92b82fcd493913a3",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 3,
+    "signature": "bLWKtTYLryGZ-6-wNrja-I9lXhRtF07HSO4xFwUZrF-MoKqh04B95Y1UOHfaHMwp3b5e852ggkUY2_JJVNpICA",
     "v": 1,
     "version": 3
    }
@@ -1502,6 +1678,49 @@
     "signature": "pqqe43SD2Juf3wmQrSXEOuqWKSI0sErO_TCjoJbP2TGG8jBkt7IP50BYsyAt4WCwaScSK-DgLjv882prhXwlAw",
     "v": 1,
     "version": 3
+   }
+  ],
+  "timeback": [
+   {
+    "account": "acct_TEST0001",
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.launch",
+    "launched_at": "2026-11-17T09:00:00Z",
+    "pass_active": true,
+    "pass_kind": "standard",
+    "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release0": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "seq": 1,
+    "signature": "vOm55jPoTxPSiRibkQ8XbDxFLKEFSLUciK556KESCCxacmFvm2rG500HLoldyXfuyr2REb_dXH70vorpXu7_AQ",
+    "v": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "07bcefcb7bcb38625c8f39a4060580d1870d1d75b97c36b12a941dd0ce319ce0",
+    "prev": "66ba6148e6bae521b2d8118682c9bc5641de26979ceacafc50efcbabd1fee666",
+    "published_at": "2026-11-17T10:00:00Z",
+    "seq": 2,
+    "signature": "F7pePiPsCPfVDGTeiUPigosFz922rIrtcZviS2kVtDSESd0fpDmipJqd9IMC9Mi9xKMJIFDI9vyDPuPxOg7gBg",
+    "v": 1,
+    "version": 1
+   },
+   {
+    "app": "drumtoy",
+    "dev_key": "TI8wUCAe5ckDwuRyojE6k2LyOwEOjbWBDBE8yxg16yk",
+    "kid": "launch-test1",
+    "kind": "popsnip.publish",
+    "manifest": "5e71919664509bdcd86439aa79f258db63b9c91df4bb87fea51fe37b0b0ab00e",
+    "prev": "87e0d3afbe0d69a2d7b187d2264be4ff3acb057ee83876a74dd8139401dab0f3",
+    "published_at": "2026-11-17T09:00:00Z",
+    "seq": 3,
+    "signature": "jSk8dF_bHStLYv7pi6v54Cm_5bFeQBkGKWkRgqJurTV0RZpv4KUQEHhJe2HRk2st0foSxRTgDqlnWVBj-HSzAw",
+    "v": 1,
+    "version": 2
    }
   ],
   "twice": [

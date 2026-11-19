@@ -15,6 +15,9 @@
  *   p.check(record, signed)  the record, or throws p.RecordError with the code the Python twin gives
  *                            (signed === false: a record about to be signed, without its signature)
  *   p.rekeyRequest(entry)    what a rotation's old_key_sig covers
+ *   p.verify(pub, msg, sig)  Promise of an Ed25519 verdict, by the one equation both twins use (ed25519.json)
+ *   p.checkAccept(...)       Promise of the device check's verdict on one release of one app (accept.json): the twin
+ *                            of Python's bollardeck.popsnip.accept
  *
  * A verifier never hashes or verifies the bytes it received: it parses them, checks the record, and verifies the
  * signature over CONTEXT + canonical(record) as made here.
@@ -603,12 +606,359 @@
     if (nw.seq <= old.seq || nw.count < old.count || !same) throw new RecordError("rule:extends");
   }
 
+  // ── Ed25519 verification: the one equation both twins use (conformance/popsnip/ed25519.json) ────────────────────
+  // Cofactorless [S]B == R + [h]A (RFC 8032 section 5.1.7), S below L, A and R canonical points, and an A or R of small
+  // order refused: exactly bollardeck.corpus._ed25519 in Python. The platform's own verifier (WebCrypto) is not used:
+  // verifiers differ on small and mixed order, and on the cofactor, and a device must give one answer for any record.
+  // Verify only, public data only, so not constant time.
+  var ED = null;
+
+  function ed() {
+    if (ED === null) {
+      var c = curve(), B = c.B, p = c.p;
+      var md = function (a) { a %= p; return a < B(0) ? a + p : a; };
+      var L = (B(1) << B(252)) + B("27742317777372353535851937790883648493");
+      var d2 = c.d * B(2) % p;
+      var add = function (a, b) {
+        var A = md((a[1] - a[0]) * (b[1] - b[0])), Bb = md((a[1] + a[0]) * (b[1] + b[0]));
+        var C = md(a[3] * b[3] % p * d2), D = md(B(2) * a[2] * b[2]);
+        var E = Bb - A, F = D - C, G = D + C, H = Bb + A;
+        return [md(E * F), md(G * H), md(F * G), md(E * H)];
+      };
+      var mul = function (k, pt) {
+        var out = [B(0), B(1), B(1), B(0)];
+        while (k > B(0)) {
+          if (k & B(1)) out = add(out, pt);
+          pt = add(pt, pt);
+          k >>= B(1);
+        }
+        return out;
+      };
+      var equal = function (a, b) { return md(a[0] * b[2] - b[0] * a[2]) === B(0) && md(a[1] * b[2] - b[1] * a[2]) === B(0); };
+      var le = function (bytes) {
+        var n = B(0);
+        for (var k = bytes.length - 1; k >= 0; k--) n = (n << B(8)) | B(bytes[k]);
+        return n;
+      };
+      var decode = function (raw) {                             // a point from its 32 bytes, or null (the Python _decode)
+        var y = le(raw), sign = y >> B(255);
+        y &= (B(1) << B(255)) - B(1);
+        if (y >= p) return null;
+        var x2 = md((y * y - B(1)) * c.pow(md(c.d * y * y + B(1)), p - B(2)));
+        var x;
+        if (x2 === B(0)) {
+          if (sign) return null;
+          x = B(0);
+        } else {
+          x = c.pow(x2, (p + B(3)) / B(8));
+          if (md(x * x - x2) !== B(0)) x = x * c.i % p;
+          if (md(x * x - x2) !== B(0)) return null;
+          if ((x & B(1)) !== sign) x = p - x;
+        }
+        return [x, y, B(1), x * y % p];
+      };
+      var gy = B(4) * c.pow(B(5), p - B(2)) % p, gBytes = [];
+      for (var k = 0; k < 32; k++) gBytes.push(Number((gy >> B(8 * k)) & B(255)));
+      ED = { B: B, L: L, add: add, mul: mul, equal: equal, le: le, decode: decode, G: decode(gBytes),
+             I: [B(0), B(1), B(1), B(0)] };
+    }
+    return ED;
+  }
+
+  function isBytes(v) { return v instanceof Uint8Array; }
+
+  // Answers already worked out, by (A, R, S, SHA-512(R || A || M)): the hash fixes the message for that A and R, so a
+  // hit is the same question. A device or the app host checks the same log again and again (every app, every new
+  // head); with this, a signature costs one SHA-512 after its first check instead of three scalar multiplications.
+  // Bounded: past MEMO_MAX answers it starts again. It changes no answer.
+  var MEMO_MAX = 65536, memo = new Map();
+  function hexOf(b) { var s = ""; for (var i = 0; i < b.length; i++) s += (b[i] < 16 ? "0" : "") + b[i].toString(16); return s; }
+
+  // Promise of true when `signature` (64 bytes) is `publicKey`'s (32 bytes) Ed25519 signature of `message`; all three
+  // are Uint8Arrays. Anything else, or no BigInt or crypto.subtle, is false (rejects only when subtle is missing).
+  function verify(publicKey, message, signature) {
+    // the inputs are read and copied now, at the call: a caller that changes its buffers afterwards changes nothing
+    if (!isBytes(publicKey) || !isBytes(message) || !isBytes(signature)) return Promise.resolve(false);
+    if (publicKey.length !== 32 || signature.length !== 64 || typeof BigInt !== "function") return Promise.resolve(false);
+    var pk = new Uint8Array(publicKey), sg = new Uint8Array(signature);   // copies (a Buffer's slice is a view)
+    var buf = new Uint8Array(64 + message.length);
+    buf.set(sg.subarray(0, 32), 0);
+    buf.set(pk, 32);
+    buf.set(message, 64);
+    return Promise.resolve().then(function () {
+      var subtle = root.crypto && root.crypto.subtle;
+      if (!subtle) throw new Error("verify needs crypto.subtle (a secure context, or Node 19+)");
+      return subtle.digest("SHA-512", buf).then(function (digest) {
+        var d = new Uint8Array(digest), key = hexOf(pk) + hexOf(sg) + hexOf(d);
+        if (memo.has(key)) return memo.get(key);
+        var e = ed(), a = e.decode(pk), r = e.decode(sg.subarray(0, 32)), s = e.le(sg.subarray(32));
+        var ok = false;
+        if (a !== null && r !== null && s < e.L) {
+          var small = function (pt) { return e.equal(e.mul(e.B(8), pt), e.I); };
+          if (!small(a) && !small(r)) {                         // no secret behind them: the identity "signs" anything
+            var h = e.le(d) % e.L;
+            ok = e.equal(e.mul(s, e.G), e.add(r, e.mul(h, a)));
+          }
+        }
+        if (memo.size >= MEMO_MAX) memo.clear();
+        memo.set(key, ok);
+        return ok;
+      });
+    });
+  }
+
+  function b64uToBytes(v) { return new Uint8Array(b64uDecode(v)); }
+
+  // ── accept: the device check for a Pop Snip app (the twin of Python's bollardeck.popsnip.accept) ──────────────────
+  //   p.checkAccept(app, release, files, log, head, certs, rootRecords, revocations, pinned, heldHead, heldList)
+  //     -> Promise of { ok, code, detail }
+  // files: { path: Uint8Array }; log: every entry from seq 1 to the head; revocations and heldList: [index, pages] or
+  // null; pinned: the release public keys, as Uint8Arrays; heldHead: the head the device already accepted, or null.
+  // It reads only its arguments (no environment, storage or network), has no unsigned mode, and has no argument a
+  // lapsed pass could change. It never rejects: a malformed argument is the code "malformed". The codes, in the order
+  // they are tried, are the Python twin's (its docstring lists them); conformance/popsnip/accept.json holds both.
+  function Refused(code, detail) { this.code = code; this.detail = detail || ""; }
+  function Malformed(what) { this.what = what; }
+
+  function list(v) { if (!Array.isArray(v)) throw new Malformed("not a list"); return v; }
+  function field(o, k) { if (!isObj(o) || !has(o, k)) throw new Malformed("no " + k); return o[k]; }
+  function checked(record) { check(record); return record; }      // RecordError passes through (Python: R.RecordError)
+
+  async function signedBy(record, pub) {
+    return pub !== null && pub !== undefined && verify(pub, signedMessage(record), b64uToBytes(record.signature));
+  }
+
+  async function pinnedRecord(record, kind, pinned) {
+    try { check(record); } catch (e) { if (e instanceof RecordError) return null; throw e; }
+    if (record.kind !== kind) return null;
+    for (var k of list(pinned)) if (await signedBy(record, k)) return record;
+    return null;
+  }
+
+  async function acceptRoots(certs, rootRecords, pinned) {
+    var keys = new Map(), revoked = new Map(), reaffirmed = new Map();
+    for (var c of list(certs)) {
+      c = await pinnedRecord(c, "popsnip.launch-key", pinned);
+      if (c !== null) keys.set(c.kid, [b64uToBytes(c.pub), toSeconds(c.not_before), toSeconds(c.not_after)]);
+    }
+    for (var rec of list(rootRecords)) {
+      var r = await pinnedRecord(rec, "popsnip.launch-key-revoked", pinned);
+      if (r !== null) {
+        revoked.set(r.kid, Math.min(r.after_seq, revoked.has(r.kid) ? revoked.get(r.kid) : r.after_seq));
+        continue;
+      }
+      var a = await pinnedRecord(rec, "popsnip.reaffirm", pinned);
+      if (a === null) throw new Refused("roots", "a root record is malformed or not signed by a pinned release key");
+      if (!reaffirmed.has(a.kid)) reaffirmed.set(a.kid, new Map());
+      a.reaffirmed.forEach(function (e) { reaffirmed.get(a.kid).set(e.seq, e.id); });
+    }
+    return { keys: keys, revoked: revoked, reaffirmed: reaffirmed };
+  }
+
+  function reaffirmedAs(t, kid, seq) { return t.reaffirmed.has(kid) ? t.reaffirmed.get(kid).get(seq) : undefined; }
+
+  async function acceptLog(log, head, t) {
+    try { check(head); } catch (e) { if (e instanceof RecordError) throw new Refused("head", "the head is malformed"); throw e; }
+    if (head.kind !== "popsnip.head") throw new Refused("head", "not a head");
+    if (!t.keys.has(head.kid)) throw new Refused("cert", "no certificate for the head's key " + head.kid);
+    if (!(await signedBy(head, t.keys.get(head.kid)[0]))) throw new Refused("head", "the head's signature does not verify");
+    if (t.revoked.has(head.kid) && reaffirmedAs(t, head.kid, head.seq) !== head.head_hash) {
+      // ANY head by a root-revoked key, unless the owner reaffirmed that head's seq and head_hash (see the Python twin)
+      throw new Refused("launch_key_revoked", "the head is signed by " + head.kid + ", which is revoked");
+    }
+    var prevId = GENESIS, prevTime = "", ids = [];
+    list(log);
+    for (var n = 1; n <= log.length; n++) {
+      var e = log[n - 1];
+      try { check(e); } catch (err) {
+        if (err instanceof RecordError) throw new Refused("log", "entry " + n + " is malformed (" + err.code + ")");
+        throw err;
+      }
+      if (!oneOf(e.kind, LOG_KINDS) || e.seq !== n || e.prev !== prevId) {
+        throw new Refused("log", "entry " + n + " does not follow the one before");
+      }
+      var tm = e[TIME_FIELD[e.kind]];
+      if (tm < prevTime) throw new Refused("log", "entry " + n + " is earlier than the one before");
+      if (!t.keys.has(e.kid)) throw new Refused("cert", "no certificate for key " + e.kid + " (entry " + n + ")");
+      var k = t.keys.get(e.kid), at = toSeconds(tm);
+      if (!(k[1] <= at && at < k[2]) || !(await signedBy(e, k[0]))) {
+        throw new Refused("log", "entry " + n + " is not signed by its key inside its certificate's window");
+      }
+      var id = await recordId(e);
+      if (t.revoked.has(e.kid) && n > t.revoked.get(e.kid) && reaffirmedAs(t, e.kid, n) !== id) {
+        throw new Refused("launch_key_revoked", "entry " + n + " is signed by " + e.kid + " after its revocation");
+      }
+      ids.push(id);
+      prevId = id;
+      prevTime = tm;
+    }
+    if (head.seq !== log.length || !log.length || head.head_hash !== ids[ids.length - 1]) {
+      throw new Refused("head", "the head does not name the snapshot's last entry");
+    }
+    return ids;
+  }
+
+  // (account, key) for the app at log time `at`, for an entry at position `seq`: the key walk (the `states` vectors)
+  function acceptState(entries, ids, app, at, seq) {
+    var binding = entries.find(function (e) { return e.kind === "popsnip.launch" && e.app === app; });
+    var key = binding.dev_key, account = binding.account;
+    var rekeys = new Map();
+    entries.forEach(function (e) { if (e.kind === "popsnip.rekey" && e.app === app) rekeys.set(e.seq, e); });
+    var cancelled = new Set();                                  // every valid cancel counts, whatever else names the seq
+    entries.forEach(function (c) {
+      if (c.kind === "popsnip.rekey-cancel" && c.app === app && c.seq < seq) {
+        var e = rekeys.get(c.cancels);
+        if (e !== undefined && c.cancels_id === ids[e.seq - 1] && c.requested_at < e.effective_at) cancelled.add(e.seq);
+      }
+    });
+    var changes = [];
+    rekeys.forEach(function (e, s) { if (s < seq && e.effective_at <= at && !cancelled.has(s)) changes.push(e); });
+    changes.sort(function (x, y) {
+      return x.effective_at < y.effective_at ? -1 : x.effective_at > y.effective_at ? 1 : x.seq - y.seq;
+    });
+    changes.forEach(function (e) {
+      if (e.from_key === key && e.from_account === account) { key = e.to_key; account = e.to_account; }
+    });
+    return [account, key];
+  }
+
+  async function acceptRekeys(entries, app) {
+    var seen = new Set();
+    for (var e of entries) {
+      if (e.kind !== "popsnip.rekey" || e.app !== app) continue;
+      if (seen.has(e.challenge)) throw new Refused("repeated_challenge", "entry " + e.seq + " reuses a rotation challenge");
+      seen.add(e.challenge);
+      if (e.path === "old_key" &&
+          !(await verify(b64uToBytes(e.from_key), signedMessage(rekeyRequest(e)), b64uToBytes(e.old_key_sig)))) {
+        throw new Refused("rekey_sig", "entry " + e.seq + "'s old_key_sig is not the old key's");
+      }
+    }
+  }
+
+  function pair(v) { if (!Array.isArray(v) || v.length !== 2) throw new Malformed("not a pair"); return v; }
+
+  async function acceptList(revocations, t) {
+    if (revocations === null || revocations === undefined) return [];
+    var index = pair(revocations)[0], pages = revocations[1];
+    try { check(index); } catch (e) {
+      if (e instanceof RecordError) throw new Refused("list_signature", "the list's index is malformed");
+      throw e;
+    }
+    if (index.kind !== "popsnip.revocations" || !t.keys.has(index.kid) || !(await signedBy(index, t.keys.get(index.kid)[0]))) {
+      throw new Refused("list_signature", "the list's index is not signed by a certified key");
+    }
+    if (t.revoked.has(index.kid)) {
+      throw new Refused("list_key_revoked", "the list's newest index is signed by a revoked key; wait for its re-sign");
+    }
+    try { return await checkList(index, pages); } catch (e) {
+      if (e instanceof RecordError) throw new Refused("list_pages", "the list's pages are not its index's");
+      throw e;
+    }
+  }
+
+  async function acceptHeldList(heldList, index, entries) {
+    if (heldList === null || heldList === undefined) return;
+    var hIndex = pair(heldList)[0];
+    check(hIndex);
+    var hEntries = await checkList(hIndex, heldList[1]);
+    if (index === null) throw new Refused("list_rollback", "the device holds a list, and none was given");
+    if (index.seq === hIndex.seq) {
+      if ((await recordId(index)) !== (await recordId(hIndex))) {
+        throw new Refused("list_rollback", "another list at the seq the device holds");
+      }
+      return;
+    }
+    try { checkExtends(hIndex, hEntries, index, entries); } catch (e) {
+      if (e instanceof RecordError) throw new Refused("list_rollback", "the list does not extend the one the device holds");
+      throw e;
+    }
+  }
+
+  async function sha256Hex(bytes) {
+    var subtle = root.crypto && root.crypto.subtle;
+    if (!subtle) throw new Error("checkAccept needs crypto.subtle (a secure context, or Node 19+)");
+    return hex(await subtle.digest("SHA-256", bytes));
+  }
+
+  async function acceptSteps(app, release, files, log, head, certs, rootRecords, revocations, pinned, heldHead, heldList) {
+    var t = await acceptRoots(certs, rootRecords, pinned);
+    var ids = await acceptLog(log, head, t);
+    if (heldHead !== null && heldHead !== undefined) {
+      checked(heldHead);
+      var h = field(heldHead, "seq");                          // head_hash is read only when the seqs allow it,
+      if (head.seq < h || ids[h - 1] !== field(heldHead, "head_hash")) {   // as Python reads it
+        throw new Refused("rollback", "the log does not extend the head the device holds (seq " + h + ")");
+      }
+    }
+    if (!log.some(function (e) { return e.kind === "popsnip.launch" && e.app === app; })) {
+      throw new Refused("no_binding", app + " was never launched");
+    }
+    await acceptRekeys(log, app);
+    try { check(release); } catch (e) {
+      if (e instanceof RecordError) throw new Refused("release_signature", "the release is malformed (" + e.code + ")");
+      throw e;
+    }
+    var rid = await recordId(release);
+    var pub = log.find(function (e) {
+      return e.kind === "popsnip.publish" && e.app === app && e.manifest === rid && release.kind === "popsnip.release" &&
+        release.app === app;
+    });
+    if (pub === undefined) throw new Refused("not_published", "this release of " + app + " is not in the log");
+    if (pub.version !== release.version) throw new Refused("version", "the log publishes it as version " + pub.version);
+    var key = acceptState(log, ids, app, pub.published_at, pub.seq)[1];
+    if (release.dev_key !== key || pub.dev_key !== key) {
+      throw new Refused("wrong_key", "the app's key at entry " + pub.seq + " is another");
+    }
+    if (!(await signedBy(release, b64uToBytes(release.dev_key)))) {
+      throw new Refused("release_signature", "the developer's signature does not verify");
+    }
+    if (!isObj(files)) throw new Malformed("files are not a mapping");
+    var want = release.files, paths = Object.keys(files), wanted = Object.keys(want);
+    if (paths.length !== wanted.length || !paths.every(function (q) { return has(want, q); })) {
+      throw new Refused("files", "the files are not exactly the release's");
+    }
+    for (var q of wanted) {
+      if (!isBytes(files[q])) throw new Malformed("a file is not bytes");
+      if ((await sha256Hex(files[q])) !== want[q]) throw new Refused("files", "the files are not exactly the release's");
+    }
+    var listed = await acceptList(revocations, t);
+    await acceptHeldList(heldList, revocations !== null && revocations !== undefined ? revocations[0] : null, listed);
+    var latest = new Map();
+    listed.forEach(function (e) {
+      var kind = Object.keys(e.target)[0];
+      latest.set(kind + " " + e.target[kind], e);
+    });
+    var targets = [["revoked_release", "release " + rid], ["revoked_app", "app " + app],
+                   ["revoked_key", "dev_key " + release.dev_key]];
+    for (var x of targets) {
+      var e = latest.get(x[1]);
+      if (e === undefined || e.action !== "revoke") continue;
+      if (x[0] === "revoked_key" && has(e, "after_seq") && pub.seq <= e.after_seq) continue;   // before the theft
+      throw new Refused(x[0], x[0] + " (" + e.ground + ", " + e.notice + ")");
+    }
+  }
+
+  function checkAccept(app, release, files, log, head, certs, rootRecords, revocations, pinned, heldHead, heldList) {
+    return Promise.resolve()
+      .then(function () {
+        return acceptSteps(app, release, files, log, head, certs, rootRecords, revocations, pinned, heldHead, heldList);
+      })
+      .then(function () { return { ok: true, code: null, detail: "accepted" }; }, function (e) {
+        if (e instanceof Refused) return { ok: false, code: e.code, detail: e.detail };
+        if (e instanceof Malformed || e instanceof RecordError || e instanceof TypeError || e instanceof RangeError) {
+          return { ok: false, code: "malformed", detail: "an argument is not the shape the check needs" };
+        }
+        throw e;                                                  // no crypto.subtle: not a verdict
+      });
+  }
+
   var api = {
     V: V, CONTEXT: CONTEXT, GENESIS: GENESIS, MAX_INT: MAX_INT, REKEY_DELAY: REKEY_DELAY, GROUNDS: GROUNDS,
     PASS_KINDS: PASS_KINDS, LOG_KINDS: LOG_KINDS, SMALL_ORDER: SMALL_ORDER.slice(), isPublicKey: point, KINDS: Object.keys(KINDS), SIGNER: SIGNER, TIME_FIELD: TIME_FIELD,
     RecordError: RecordError, canonical: canonical, canonicalText: canonicalText, signedMessage: signedMessage,
     recordId: recordId, parse: parse, check: check, rekeyRequest: rekeyRequest, toSeconds: toSeconds,
-    PAGE_SIZE: PAGE_SIZE, paginate: paginate, checkList: checkList, checkExtends: checkExtends
+    PAGE_SIZE: PAGE_SIZE, paginate: paginate, checkList: checkList, checkExtends: checkExtends,
+    verify: verify, checkAccept: checkAccept
   };
 
   var bollardeck = (typeof root.bollardeck === "object" && root.bollardeck) ||

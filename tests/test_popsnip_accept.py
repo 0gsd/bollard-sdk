@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """bollardeck.popsnip.accept: the device check, held to
-conformance/popsnip/accept.json, which the JavaScript twin will pass too."""
+conformance/popsnip/accept.json, which the JavaScript twin (checkAccept, tests/js/popsnip-accept.test.js) passes
+too, and the one Ed25519 equation both twins use (conformance/popsnip/ed25519.json)."""
 import ast
 import base64
 import inspect
@@ -16,6 +17,7 @@ import bollardeck.popsnip as P  # noqa: E402
 from bollardeck.popsnip import accept as A_MODULE  # noqa: E402,F401
 
 V = json.loads((ROOT / "conformance" / "popsnip" / "accept.json").read_text(encoding="ascii"))
+SIG = json.loads((ROOT / "conformance" / "popsnip" / "ed25519.json").read_text(encoding="ascii"))
 SOURCE = (ROOT / "python" / "bollardeck" / "popsnip" / "accept.py").read_text(encoding="utf-8")
 
 
@@ -42,6 +44,15 @@ class TheVectors(unittest.TestCase):
             self.assertEqual((v.ok, v.code), (c["code"] is None, c["code"]), c["name"])
         self.assertGreaterEqual(len(V["cases"]), 25)
         self.assertGreaterEqual(sum(c["code"] is None for c in V["cases"]), 7)
+
+
+class TheEquation(unittest.TestCase):
+    def test_every_ed25519_case(self):
+        from bollardeck.corpus import _ed25519 as E
+        for c in SIG["cases"]:
+            got = E.verify(bytes.fromhex(c["pub"]), bytes.fromhex(c["message"]), bytes.fromhex(c["signature"]))
+            self.assertIs(got, c["valid"], c["name"])
+        self.assertGreaterEqual(sum("mixed-order" in c["name"] for c in SIG["cases"]), 3)
 
 
 class WhatItCannotReach(unittest.TestCase):

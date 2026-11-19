@@ -1,0 +1,138 @@
+{
+ "about": "Ed25519 verification as both twins do it (bollardeck.corpus._ed25519 and bollardeck.popsnip.verify), written by tools/popsnip_vectors.py: `valid` is the answer for the public key, message and signature (hex). The equation is cofactorless, S must be below L, A and R must be canonical points, and an A or R of small order is refused.",
+ "cases": [
+  {
+   "message": "",
+   "name": "RFC 8032 test 1",
+   "pub": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+   "signature": "e5564300c360ac729086e2cc806e828a84877f1eb8e5d974d873e065224901555fb8821590a33bacc61e39701cf9b46bd25bf5f0595bbe24655141438e7a100b",
+   "valid": true
+  },
+  {
+   "message": "72",
+   "name": "RFC 8032 test 2",
+   "pub": "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c",
+   "signature": "92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00",
+   "valid": true
+  },
+  {
+   "message": "af82",
+   "name": "RFC 8032 test 3",
+   "pub": "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025",
+   "signature": "6291d657deec24024827e69c3abe01a30ce548a284743a445e3680d7db5ac3ac18ff9b538d16f290ae67f760984dc6594a7c15e9716ed28dc027beceea1ec40a",
+   "valid": true
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a test key's signature",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bc33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa806",
+   "valid": true
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e21",
+   "name": "another message",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bc33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa806",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "S + L, the same S not reduced",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bb0081bc0786a56040b2eb02d097e6de0ccaf613f0888dfcb2f24b70c841aa816",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "S = 2^256 - 1",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a key with y = p + 1 (a non-canonical spelling of the identity: refused as small order as well)",
+   "pub": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bc33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa806",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "R with y = p + 1 (the same; no valid vector can pin the canonical-y rule alone)",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7fc33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa806",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a valid signature by a key whose sign bit is set",
+   "pub": "6933004250e61a9a58049d5b55ef9312533dac85b16be598628856f728f12fdd",
+   "signature": "7aa154bb52d36cd6768809ae5f0fcbb03b5107f4db69c2d6d27cd0eb2c5557d300051f66446d68f047cd8b475c13a01bb5788772109a9f189ce4de5bfef6ba0c",
+   "valid": true
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a key that is no point",
+   "pub": "0200000000000000000000000000000000000000000000000000000000000000",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bc33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa806",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "the identity as key, R and S = 0: the equation holds, the key is refused",
+   "pub": "0100000000000000000000000000000000000000000000000000000000000000",
+   "signature": "01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a key of order 8, R the identity, S = 0",
+   "pub": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+   "signature": "01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a good key, R of small order",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05c33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa806",
+   "valid": false
+  },
+  {
+   "message": "6d697865642d30",
+   "name": "a mixed-order key, h*T not the identity: cofactored would accept, cofactorless refuses",
+   "pub": "e1e52966d7d052034018ced2e4e4513c3fea9ee7a688cafd0c6a7f2c471adf1c",
+   "signature": "7767a3242dc9b58bbc68488c1265cc6cc5f26c6f3c88a5d55e901b0734dca572bc95f278f81ae19bc52e8fc7afa2c4f666b7dff1c23d553137709424f71cc700",
+   "valid": false
+  },
+  {
+   "message": "6d697865642d33",
+   "name": "a mixed-order key, h*T the identity: both equations accept",
+   "pub": "e1e52966d7d052034018ced2e4e4513c3fea9ee7a688cafd0c6a7f2c471adf1c",
+   "signature": "7767a3242dc9b58bbc68488c1265cc6cc5f26c6f3c88a5d55e901b0734dca572ad014e97d19492e6dff519b3d8454b7a92f36d6ff6eb2617c5d08fbb9bc51c07",
+   "valid": true
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a mixed-order R: cofactored would accept, cofactorless refuses",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "b15bf26424d1b69dd33b7a9e57db5de4a2aadea4a2a051efd9bfd6af74165d2bb81229106a8a67ce0ce7f2ce93e0fb78b51bf941b70e45b8dd224267331a7302",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a key of 31 bytes",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bc33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa806",
+   "valid": false
+  },
+  {
+   "message": "706f70736e69702f310a746865206571756174696f6e",
+   "name": "a signature of 63 bytes",
+   "pub": "4c8f3050201ee5c903c2e472a2313a9362f23b010e8db5810c113ccb1835eb29",
+   "signature": "ef3ec85c22f293fe348a668c584234c1ebc996893d1069e961098efff9aef23bc33425635e0744ac3491b88a2a848ecbccaf613f0888dfcb2f24b70c841aa8",
+   "valid": false
+  }
+ ]
+}
